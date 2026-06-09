@@ -646,6 +646,92 @@ input:focus {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== Checkbox groepen ===== */
+.check-group {
+  border: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+.check-group-legend {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 0;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.check-item:last-child { border-bottom: none; }
+.check-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.check-item div { display: flex; flex-direction: column; gap: 2px; }
+.check-item span { font-size: 0.95rem; color: var(--text); line-height: 1.4; }
+
+/* ===== Personenlijst op home screen ===== */
+.persons-list {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.person-item {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: rise 0.25s ease both;
+}
+.person-item-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.person-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.person-item-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.person-item-type {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.person-item-delete {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.person-item-delete:hover { color: var(--danger); background: rgba(255,107,107,0.12); }
+
 @media (min-width: 640px) {
   .screen { padding-left: 28px; padding-right: 28px; }
   .entities { max-width: 760px; margin: 0 auto; }

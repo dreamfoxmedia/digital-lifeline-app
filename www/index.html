@@ -34,10 +34,19 @@
 
       <nav class="home-options">
         <button id="add-person-btn" class="option-card">
-          <span class="option-icon">👤</span>
+          <span class="option-icon">🫀</span>
           <div class="option-body">
-            <strong>Persoon toevoegen</strong>
-            <span>Voeg een persoon toe voor wie je via Digital Lifeline een extra oogje in het zeil wilt houden.</span>
+            <strong>Bewaakt persoon toevoegen</strong>
+            <span>Voeg de persoon toe die je via Digital Lifeline in de gaten wilt houden.</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <button id="add-family-btn" class="option-card hidden">
+          <span class="option-icon">👨‍👩‍👧</span>
+          <div class="option-body">
+            <strong>Familielid toevoegen</strong>
+            <span>Voeg een familielid of mantelzorger toe die meldingen ontvangt.</span>
           </div>
           <span class="option-chevron">›</span>
         </button>
@@ -51,6 +60,8 @@
           <span class="option-chevron">›</span>
         </a>
       </nav>
+
+      <div id="persons-list" class="persons-list"></div>
     </div>
 
     <footer class="foot home-foot">
@@ -84,19 +95,16 @@
         </label>
       </div>
 
-      <label class="field">
-        <span>Naam voor herkenning binnen de familie</span>
-        <input id="person-nickname" type="text" autocomplete="off"
-               placeholder="Roepnaam, bijnaam of volledige naam" />
-        <small class="field-hint">Vul een naam in waaraan familieleden direct herkennen om wie het gaat. Dit mag een roepnaam, bijnaam of volledige naam zijn.</small>
-      </label>
-
-      <label class="field">
-        <span>Weergavenaam voor meldingen</span>
-        <input id="person-display-name" type="text" autocomplete="off"
-               placeholder="Naam in meldingen en berichten" />
-        <small class="field-hint">Deze naam gebruiken we in meldingen naar familieleden, mantelzorgers en eventuele zorginstanties. Kies daarom bij voorkeur een duidelijke en nette naam.</small>
-      </label>
+      <div class="field-row">
+        <label class="field" style="flex:1">
+          <span>Voornaam</span>
+          <input id="person-firstname" type="text" autocomplete="given-name" placeholder="Voornaam" />
+        </label>
+        <label class="field" style="flex:1">
+          <span>Achternaam</span>
+          <input id="person-lastname" type="text" autocomplete="family-name" placeholder="Achternaam" />
+        </label>
+      </div>
 
       <label class="field">
         <span>Geboortedatum</span>
@@ -135,16 +143,6 @@
         <span>E-mailadres</span>
         <input id="person-email" type="email" autocomplete="off"
                placeholder="naam@voorbeeld.nl" />
-      </label>
-
-      <label class="field">
-        <span>Type persoon</span>
-        <select id="person-type">
-          <option value="monitored">Bewaakt persoon</option>
-          <option value="family">Familielid</option>
-          <option value="caregiver">Hulpverlener</option>
-        </select>
-        <small class="field-hint">Geeft aan of dit de bewaakt persoon is, een familielid dat meldingen ontvangt, of een hulpverlener.</small>
       </label>
 
       <label class="field">
@@ -211,9 +209,120 @@
           <dt>Medicijngebruik</dt>
           <dd id="preview-medication"></dd>
         </div>
+        <div class="info-row hidden" id="preview-gender-row">
+          <dt>Geslacht</dt>
+          <dd id="preview-gender"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-relation-row">
+          <dt>Relatie</dt>
+          <dd id="preview-relation"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-notifications-row">
+          <dt>Meldingen</dt>
+          <dd id="preview-notifications"></dd>
+        </div>
       </dl>
 
       <button id="preview-done-btn" class="btn-primary">Klaar</button>
+    </div>
+  </section>
+
+  <!-- ===== Familielid toevoegen ===== -->
+  <section id="add-family-screen" class="screen add-family-screen hidden">
+    <div class="form-card">
+      <button id="add-family-back-btn" class="back-btn">‹ Terug</button>
+
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Familielid toevoegen</h1>
+      </div>
+
+      <p class="form-section">Persoonlijke gegevens</p>
+
+      <label class="field">
+        <span>Geslacht</span>
+        <select id="family-gender">
+          <option value="">Kies...</option>
+          <option value="man">Man</option>
+          <option value="vrouw">Vrouw</option>
+          <option value="niet_zeggen">Niet zeggen</option>
+        </select>
+      </label>
+
+      <div class="field-row">
+        <label class="field" style="flex:1">
+          <span>Voornaam</span>
+          <input id="family-firstname" type="text" autocomplete="given-name" placeholder="Voornaam" />
+        </label>
+        <label class="field" style="flex:1">
+          <span>Achternaam</span>
+          <input id="family-lastname" type="text" autocomplete="family-name" placeholder="Achternaam" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>E-mailadres</span>
+        <input id="family-email" type="email" autocomplete="email" placeholder="naam@voorbeeld.nl" />
+      </label>
+
+      <label class="field">
+        <span>Telefoonnummer</span>
+        <input id="family-phone" type="tel" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
+      </label>
+
+      <p class="form-section">Relatie &amp; meldingen</p>
+
+      <label class="field">
+        <span>Relatie met bewaakt persoon</span>
+        <select id="family-relation">
+          <option value="">Kies...</option>
+          <option value="partner">Partner</option>
+          <option value="kind">Kind</option>
+          <option value="ouder">Ouder</option>
+          <option value="broer_zus">Broer / Zus</option>
+          <option value="vriend">Vriend / Vriendin</option>
+          <option value="buurman">Buurman / Buurvrouw</option>
+          <option value="mantelzorger">Mantelzorger</option>
+          <option value="anders">Anders</option>
+        </select>
+      </label>
+
+      <fieldset class="check-group">
+        <legend class="check-group-legend">Welke meldingen ontvangen?</legend>
+        <label class="check-item">
+          <input type="checkbox" id="family-notify-system" />
+          <div>
+            <span>Systeemmeldingen</span>
+            <small class="field-hint">Lege batterijen, apparaten offline, etc.</small>
+          </div>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="family-notify-critical" />
+          <div>
+            <span>Kritieke meldingen</span>
+            <small class="field-hint">Noodmeldingen en alarmsignalen.</small>
+          </div>
+        </label>
+      </fieldset>
+
+      <fieldset class="check-group">
+        <legend class="check-group-legend">Via welk kanaal?</legend>
+        <label class="check-item">
+          <input type="checkbox" id="family-channel-sms" />
+          <div><span>SMS</span></div>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="family-channel-email" />
+          <div><span>E-mail</span></div>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="family-channel-whatsapp" />
+          <div><span>WhatsApp</span></div>
+        </label>
+      </fieldset>
+
+      <button id="save-family-btn" class="btn-primary">Familielid opslaan</button>
+      <p id="family-status" class="status" role="status"></p>
     </div>
   </section>
 
