@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1014" />
+  <title>Digital Lifeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ===== Splash screen ===== -->
+  <div id="splash" class="splash">
+    <div class="splash-logo">
+      <svg class="splash-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2" opacity="0.18"/>
+        <polyline points="8,32 18,32 22,20 27,44 33,24 37,38 41,32 56,32"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 class="splash-title">Digital<br>Lifeline</h1>
+    </div>
+  </div>
+
+  <!-- ===== Home screen ===== -->
+  <section id="home-screen" class="screen home-screen hidden">
+    <div class="home-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Digital Lifeline</h1>
+      </div>
+      <p class="tagline">Houd dierbaren veilig in de gaten.</p>
+
+      <nav class="home-options">
+        <button id="add-person-btn" class="option-card">
+          <span class="option-icon">👤</span>
+          <div class="option-body">
+            <strong>Persoon toevoegen</strong>
+            <span>Voeg een persoon toe voor wie je via Digital Lifeline een extra oogje in het zeil wilt houden.</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <a href="https://help.digitallifeline.nl" target="_blank" rel="noopener noreferrer" class="option-card">
+          <span class="option-icon">💬</span>
+          <div class="option-body">
+            <strong>Hulp</strong>
+            <span>help.digitallifeline.nl</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </a>
+      </nav>
+    </div>
+
+    <footer class="foot home-foot">
+      <a href="https://www.digitallifeline.nl" target="_blank" rel="noopener noreferrer">digitallifeline.nl</a>
+    </footer>
+  </section>
+
+  <!-- ===== Persoon toevoegen ===== -->
+  <section id="add-person-screen" class="screen add-person-screen hidden">
+    <div class="form-card">
+      <button id="add-person-back-btn" class="back-btn">‹ Terug</button>
+
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Persoon toevoegen</h1>
+      </div>
+
+      <p class="form-section">Persoon</p>
+
+      <div class="photo-upload-wrap">
+        <input id="person-photo" type="file" accept="image/*" />
+        <label for="person-photo" class="photo-upload">
+          <div class="photo-circle">
+            <img id="person-photo-preview" class="photo-preview hidden" alt="Profielfoto" />
+            <svg class="photo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="photo-caption">Profielfoto toevoegen</span>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Naam voor herkenning binnen de familie</span>
+        <input id="person-nickname" type="text" autocomplete="off"
+               placeholder="Roepnaam, bijnaam of volledige naam" />
+        <small class="field-hint">Vul een naam in waaraan familieleden direct herkennen om wie het gaat. Dit mag een roepnaam, bijnaam of volledige naam zijn.</small>
+      </label>
+
+      <label class="field">
+        <span>Weergavenaam voor meldingen</span>
+        <input id="person-display-name" type="text" autocomplete="off"
+               placeholder="Naam in meldingen en berichten" />
+        <small class="field-hint">Deze naam gebruiken we in meldingen naar familieleden, mantelzorgers en eventuele zorginstanties. Kies daarom bij voorkeur een duidelijke en nette naam.</small>
+      </label>
+
+      <label class="field">
+        <span>Geboortedatum</span>
+        <input id="person-birthdate" type="text" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" />
+      </label>
+
+      <div class="field-row">
+        <label class="field" style="flex:3">
+          <span>Straat</span>
+          <input id="person-street" type="text" autocomplete="off" placeholder="Straatnaam" />
+        </label>
+        <label class="field" style="flex:1">
+          <span>Huisnummer</span>
+          <input id="person-housenumber" type="text" autocomplete="off" placeholder="12 B" />
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field" style="flex:1">
+          <span>Postcode</span>
+          <input id="person-zipcode" type="text" autocomplete="off" placeholder="1234 AB" />
+        </label>
+        <label class="field" style="flex:2">
+          <span>Woonplaats</span>
+          <input id="person-city" type="text" autocomplete="off" placeholder="Plaatsnaam" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Telefoonnummer</span>
+        <input id="person-phone" type="tel" autocomplete="off"
+               placeholder="+31 6 12 34 56 78" />
+      </label>
+
+      <label class="field">
+        <span>E-mailadres</span>
+        <input id="person-email" type="email" autocomplete="off"
+               placeholder="naam@voorbeeld.nl" />
+      </label>
+
+      <label class="field">
+        <span>Type persoon</span>
+        <select id="person-type">
+          <option value="monitored">Bewaakt persoon</option>
+          <option value="family">Familielid</option>
+          <option value="caregiver">Hulpverlener</option>
+        </select>
+        <small class="field-hint">Geeft aan of dit de bewaakt persoon is, een familielid dat meldingen ontvangt, of een hulpverlener.</small>
+      </label>
+
+      <label class="field">
+        <span>Medicijngebruik</span>
+        <textarea id="person-medication" autocomplete="off" rows="4"
+                  placeholder="Bijv. Metformine 500mg, bloedverdunners…"></textarea>
+        <small class="field-hint">Vul hier medicijngebruik en andere belangrijke informatie die eventueel wordt meegezonden naar hulpverleners.</small>
+      </label>
+
+      <button id="save-person-btn" class="btn-primary">Persoon opslaan</button>
+      <p id="person-status" class="status" role="status"></p>
+    </div>
+  </section>
+
+  <!-- ===== Persoon preview ===== -->
+  <section id="person-preview-screen" class="screen person-preview-screen hidden">
+    <div class="preview-card">
+
+      <div class="preview-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="7 12 10.5 15.5 17 9"/>
+        </svg>
+        <span>Opgeslagen!</span>
+      </div>
+
+      <div class="preview-profile">
+        <div class="preview-photo-circle">
+          <img id="preview-photo" class="preview-photo hidden" alt="Profielfoto" />
+          <svg id="preview-photo-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 id="preview-nickname" class="preview-name"></h2>
+      </div>
+
+      <dl class="preview-info">
+        <div class="info-row hidden" id="preview-display-name-row">
+          <dt>Weergavenaam</dt>
+          <dd id="preview-display-name"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-birthdate-row">
+          <dt>Geboortedatum</dt>
+          <dd id="preview-birthdate"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-address-row">
+          <dt>Adres</dt>
+          <dd id="preview-address"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-phone-row">
+          <dt>Telefoonnummer</dt>
+          <dd id="preview-phone"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-email-row">
+          <dt>E-mailadres</dt>
+          <dd id="preview-email"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-type-row">
+          <dt>Type persoon</dt>
+          <dd id="preview-type"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-medication-row">
+          <dt>Medicijngebruik</dt>
+          <dd id="preview-medication"></dd>
+        </div>
+      </dl>
+
+      <button id="preview-done-btn" class="btn-primary">Klaar</button>
+    </div>
+  </section>
+
+  <!-- ===== Verbindingsscherm ===== -->
+  <section id="connect-screen" class="screen connect-screen">
+    <div class="connect-card">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Digital Lifeline</h1>
+      </div>
+      <p class="tagline">Verbind met je Digital Lifeline omgeving</p>
+
+      <label class="field">
+        <span>Digital Lifeline URL</span>
+        <input id="ha-url" type="url" inputmode="url" autocomplete="off"
+               placeholder="https://3328159.digitallifeline.nl" />
+      </label>
+
+      <label class="field">
+        <span>Digital Lifeline code</span>
+        <input id="ha-token" type="password" autocomplete="off"
+               placeholder="Plak je toegangscode" />
+      </label>
+
+      <button id="connect-btn" class="btn-primary">Verbinden</button>
+      <p id="connect-status" class="status" role="status"></p>
+
+      <details class="hint">
+        <summary>Hoe kom ik aan mijn Digital Lifeline URL en code?</summary>
+        <p>Ga naar <a href="https://www.digitallifeline.nl" target="_blank" rel="noopener noreferrer">digitallifeline.nl</a> en log in met je inloggegevens. Na het inloggen kom je automatisch op je dashboard. Daar vind je de gegevens die je nodig hebt.</p>
+      </details>
+    </div>
+    <footer class="foot">Lokaal opgeslagen op dit toestel &middot; geen server van derden</footer>
+  </section>
+
+  <!-- ===== Dashboard ===== -->
+  <section id="dashboard-screen" class="screen dashboard-screen hidden">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="brand-dot small"></span>
+        <h2>Huisbeheer</h2>
+      </div>
+      <div class="topbar-actions">
+        <span id="conn-pill" class="pill">verbonden</span>
+        <button id="disconnect-btn" class="icon-btn" title="Verbreken">&#x23FB;</button>
+      </div>
+    </header>
+
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Zoek apparaat of entiteit&hellip;" />
+    </div>
+
+    <main id="entities" class="entities"></main>
+    <p id="empty-note" class="empty-note hidden">Geen entiteiten gevonden.</p>
+  </section>
+
+  <!-- ===== Vaste hulpknop ===== -->
+  <a href="https://help.digitallifeline.nl" target="_blank" rel="noopener noreferrer" class="help-link">
+    <span class="help-link-icon">💬</span> Hulp nodig?
+  </a>
+
+  <script src="js/ha-client.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
