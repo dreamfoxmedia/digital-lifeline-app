@@ -132,6 +132,18 @@ const el = {
   connPill:      document.getElementById("conn-pill"),
   disconnectBtn: document.getElementById("disconnect-btn"),
   addPersonBtn:  document.getElementById("add-person-btn"),
+  // Connectie knop + sheet
+  connStatusBtn:          document.getElementById("conn-status-btn"),
+  connStatusIcon:         document.getElementById("conn-status-icon"),
+  connStatusLabel:        document.getElementById("conn-status-label"),
+  connSheetModal:         document.getElementById("conn-sheet-modal"),
+  connSheetTitle:         document.getElementById("conn-sheet-title"),
+  connSheetDot:           document.getElementById("conn-sheet-dot"),
+  connSheetStatus:        document.getElementById("conn-sheet-status"),
+  connSheetUrlRow:        document.getElementById("conn-sheet-url-row"),
+  connSheetUrl:           document.getElementById("conn-sheet-url"),
+  connSheetCloseBtn:      document.getElementById("conn-sheet-close-btn"),
+  connSheetDisconnectBtn: document.getElementById("conn-sheet-disconnect-btn"),
 };
 
 let client = null;
@@ -197,6 +209,7 @@ function showHome() {
   el.addPersonBtn.classList.toggle("hidden", hasMonitored);
   el.addFamilyBtn.classList.toggle("hidden", !hasMonitored);
   renderPersonsList(persons);
+  updateConnStatusBtn();
 }
 
 function showAppDashboard(persons) {
@@ -268,14 +281,48 @@ function showConnect() {
   el.connectScreen.classList.remove("hidden");
 }
 
+function updateConnStatusBtn() {
+  const url = store.get("ha_url") || "";
+  const connected = client != null;
+  if (connected) {
+    el.connStatusIcon.textContent = "🟢";
+    el.connStatusLabel.textContent = "Verbonden met " + (url.replace(/^https?:\/\//, "") || "Home Assistant");
+  } else if (url) {
+    el.connStatusIcon.textContent = "🔴";
+    el.connStatusLabel.textContent = "Niet verbonden";
+  } else {
+    el.connStatusIcon.textContent = "🔗";
+    el.connStatusLabel.textContent = "Geen verbinding ingesteld";
+  }
+}
+
+function openConnSheet() {
+  const url = store.get("ha_url") || "";
+  const connected = client != null;
+  el.connSheetDot.className = "conn-dot " + (connected ? "conn-dot-on" : "conn-dot-off");
+  el.connSheetStatus.textContent = connected ? "Verbonden" : "Niet verbonden";
+  if (url) {
+    el.connSheetUrl.textContent = url;
+    el.connSheetUrlRow.classList.remove("hidden");
+  } else {
+    el.connSheetUrlRow.classList.add("hidden");
+  }
+  el.connSheetDisconnectBtn.classList.toggle("hidden", !connected);
+  el.connSheetModal.classList.remove("hidden");
+}
+
 function disconnect() {
   if (client) client.disconnect();
   client = null;
-  el.connPill.textContent = "verbonden";
-  el.connPill.classList.remove("off");
+  store.del("ha_url");
+  store.del("ha_token");
+  updateConnStatusBtn();
+  el.connPill.textContent = "verbroken";
+  el.connPill.classList.add("off");
   el.status.textContent = "";
   el.status.className = "status";
-  showHome();
+  allScreensHidden();
+  el.connectScreen.classList.remove("hidden");
 }
 
 function openDashMenu()  { el.dashMenuOverlay.classList.remove("hidden"); }
@@ -470,6 +517,7 @@ async function doConnect(url, token, opts = {}) {
   client.onClose = () => {
     el.connPill.textContent = "verbroken";
     el.connPill.classList.add("off");
+    updateConnStatusBtn();
   };
 
   try {
@@ -481,6 +529,7 @@ async function doConnect(url, token, opts = {}) {
     store.set("ha_token", token);
     syncPersonsFromHA(states);
     renderHADashboard();
+    updateConnStatusBtn();
     if (onSuccess) onSuccess();
     else { el.connectScreen.classList.add("hidden"); showHome(); }
   } catch (e) {
@@ -618,6 +667,18 @@ el.connectBtn.addEventListener("click", () => {
 [el.url, el.token].forEach(i => i.addEventListener("keydown", e => { if (e.key === "Enter") el.connectBtn.click(); }));
 el.disconnectBtn.addEventListener("click", disconnect);
 el.search.addEventListener("input", renderHADashboard);
+
+/* ============ Events: connectie sheet ============ */
+el.connStatusBtn.addEventListener("click", openConnSheet);
+el.connSheetCloseBtn.addEventListener("click", () => el.connSheetModal.classList.add("hidden"));
+el.connSheetModal.addEventListener("click", e => { if (e.target === el.connSheetModal) el.connSheetModal.classList.add("hidden"); });
+el.connSheetDisconnectBtn.addEventListener("click", () => {
+  el.connSheetModal.classList.add("hidden");
+  askConfirm(
+    "Weet je zeker dat je de verbinding met Home Assistant wilt verbreken? Je gegevens blijven bewaard.",
+    () => disconnect()
+  );
+});
 
 /* ============ Events: navigatie ============ */
 el.addPersonBtn.addEventListener("click", showAddPerson);

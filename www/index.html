@@ -59,6 +59,15 @@
           </div>
           <span class="option-chevron">›</span>
         </a>
+
+        <button id="conn-status-btn" class="option-card">
+          <span class="option-icon" id="conn-status-icon">🔗</span>
+          <div class="option-body">
+            <strong>Connectie</strong>
+            <span id="conn-status-label">Controleren…</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
       </nav>
 
       <div id="persons-list" class="persons-list"></div>
@@ -568,6 +577,30 @@
   <a href="https://help.digitallifeline.nl" target="_blank" rel="noopener noreferrer" class="help-link">
     <span class="help-link-icon">💬</span> Hulp nodig?
   </a>
+
+  <!-- ===== Connectie sheet ===== -->
+  <div id="conn-sheet-modal" class="confirm-modal hidden">
+    <div class="confirm-sheet">
+      <div class="conn-sheet-header">
+        <span id="conn-sheet-dot" class="conn-dot"></span>
+        <h3 class="confirm-title" style="margin:0" id="conn-sheet-title">Connectie</h3>
+      </div>
+      <div class="conn-sheet-info">
+        <div class="conn-info-row">
+          <span>Status</span>
+          <strong id="conn-sheet-status">—</strong>
+        </div>
+        <div class="conn-info-row" id="conn-sheet-url-row">
+          <span>Server</span>
+          <strong id="conn-sheet-url">—</strong>
+        </div>
+      </div>
+      <div class="confirm-actions">
+        <button id="conn-sheet-close-btn" class="btn-ghost">Sluiten</button>
+        <button id="conn-sheet-disconnect-btn" class="btn-danger">Verbinding verbreken</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== Bevestigingsmodal ===== -->
   <div id="confirm-modal" class="confirm-modal hidden">
