@@ -355,17 +355,73 @@ textarea:focus {
   gap: 22px;
 }
 
-.preview-success {
+.preview-check-header {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--on);
-  font-weight: 700;
-  font-size: 1rem;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 10px;
+  padding: 14px;
 }
-.preview-success svg {
+.preview-check-header svg {
   width: 22px; height: 22px;
   flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 1px;
+}
+.preview-check-header strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.preview-check-header span {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+}
+.preview-actions .btn-secondary { flex: 1; }
+.preview-actions .btn-primary   { flex: 2; }
+
+.preview-success-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 12px 0 8px;
+}
+.preview-success-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--on) 12%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.preview-success-icon svg {
+  width: 38px; height: 38px;
+  color: var(--on);
+}
+.preview-success-big h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.preview-success-big p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
 }
 
 .preview-profile {

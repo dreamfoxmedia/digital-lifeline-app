@@ -169,7 +169,7 @@
         <small class="field-hint">Aanvullende informatie over beperkingen of bijzonderheden voor hulpverleners.</small>
       </label>
 
-      <button id="save-person-btn" class="btn-primary">Persoon opslaan</button>
+      <button id="save-person-btn" class="btn-primary">Versturen</button>
       <p id="person-status" class="status" role="status"></p>
     </div>
   </section>
@@ -178,26 +178,32 @@
   <section id="person-preview-screen" class="screen person-preview-screen hidden">
     <div class="preview-card">
 
-      <div class="preview-success">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="7 12 10.5 15.5 17 9"/>
-        </svg>
-        <span>Opgeslagen!</span>
-      </div>
-
-      <div class="preview-profile">
-        <div class="preview-photo-circle">
-          <img id="preview-photo" class="preview-photo hidden" alt="Profielfoto" />
-          <svg id="preview-photo-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-linecap="round"/>
+      <!-- Review-staat: controleer gegevens -->
+      <div id="preview-review-state">
+        <div class="preview-check-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
+          <div>
+            <strong>Klopt alles?</strong>
+            <span>Controleer de gegevens goed voordat je opslaat. Je kunt nog terug om iets aan te passen.</span>
+          </div>
         </div>
-        <h2 id="preview-nickname" class="preview-name"></h2>
-      </div>
 
-      <dl class="preview-info">
+        <div class="preview-profile">
+          <div class="preview-photo-circle">
+            <img id="preview-photo" class="preview-photo hidden" alt="Profielfoto" />
+            <svg id="preview-photo-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h2 id="preview-nickname" class="preview-name"></h2>
+        </div>
+
+        <dl class="preview-info">
         <div class="info-row hidden" id="preview-display-name-row">
           <dt>Weergavenaam</dt>
           <dd id="preview-display-name"></dd>
@@ -252,7 +258,27 @@
         </div>
       </dl>
 
-      <button id="preview-done-btn" class="btn-primary">Klaar</button>
+        <div class="preview-actions">
+          <button id="preview-back-btn" class="btn-secondary">‹ Terug aanpassen</button>
+          <button id="preview-done-btn" class="btn-primary">Opslaan</button>
+        </div>
+      </div><!-- /preview-review-state -->
+
+      <!-- Succes-staat: na opslaan -->
+      <div id="preview-saved-state" class="hidden">
+        <div class="preview-success-big">
+          <div class="preview-success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="7 12 10.5 15.5 17 9"/>
+            </svg>
+          </div>
+          <h2>Bewaakt persoon is toegevoegd!</h2>
+          <p>De gegevens zijn opgeslagen en beschikbaar in Home Assistant.</p>
+          <button id="preview-finish-btn" class="btn-primary">Klaar</button>
+        </div>
+      </div><!-- /preview-saved-state -->
+
     </div>
   </section>
 

@@ -48,6 +48,10 @@ const el = {
   previewFunctionRow:       document.getElementById("preview-function-row"),
   previewFunction:          document.getElementById("preview-function"),
   previewDoneBtn:           document.getElementById("preview-done-btn"),
+  previewBackBtn:           document.getElementById("preview-back-btn"),
+  previewFinishBtn:         document.getElementById("preview-finish-btn"),
+  previewReviewState:       document.getElementById("preview-review-state"),
+  previewSavedState:        document.getElementById("preview-saved-state"),
   // Bewaakt persoon form
   addPersonBackBtn:    document.getElementById("add-person-back-btn"),
   personPhoto:         document.getElementById("person-photo"),
@@ -319,6 +323,7 @@ function renderPersonsList(persons) {
 
 /* ============ Bevestigingsdialog ============ */
 let _pendingAction = null;
+let _pendingPerson = null;
 
 function askConfirm(message, onConfirm) {
   _pendingAction = onConfirm;
@@ -385,6 +390,8 @@ function showPersonPreview(person) {
     setInfoRow(el.previewNotificationsRow, el.previewNotifications, notifSummary(person));
   }
 
+  el.previewReviewState.classList.remove("hidden");
+  el.previewSavedState.classList.add("hidden");
   allScreensHidden();
   el.personPreviewScreen.classList.remove("hidden");
 }
@@ -560,7 +567,31 @@ el.addFamilyBtn.addEventListener("click", showAddFamily);
 el.addPersonBackBtn.addEventListener("click", showHome);
 el.addFamilyBackBtn.addEventListener("click", showHome);
 el.addCaregiverBackBtn.addEventListener("click", showHome);
-el.previewDoneBtn.addEventListener("click", showHome);
+el.previewBackBtn.addEventListener("click", () => {
+  allScreensHidden();
+  el.addPersonScreen.classList.remove("hidden");
+});
+
+el.previewDoneBtn.addEventListener("click", () => {
+  if (!_pendingPerson) { showHome(); return; }
+  const person = _pendingPerson;
+  _pendingPerson = null;
+  savePerson(person);
+  if (client) {
+    client.callServiceData("digital_lifeline", "add_person", {
+      id: String(person.id),
+      nickname: person.nickname,
+      first_name: person.firstName, last_name: person.lastName,
+      birthdate: person.birthdate, street: person.street, housenumber: person.housenumber,
+      zipcode: person.zipcode, city: person.city, phone: person.phone,
+      email: person.email, medication: person.medication, notes: person.notes, person_type: "monitored",
+    }).catch(e => console.warn("add_person:", e.message));
+  }
+  el.previewReviewState.classList.add("hidden");
+  el.previewSavedState.classList.remove("hidden");
+});
+
+el.previewFinishBtn.addEventListener("click", showHome);
 
 /* ============ Events: bevestigingsdialog ============ */
 el.confirmOkBtn.addEventListener("click", () => {
@@ -622,7 +653,7 @@ el.personPhoto.addEventListener("change", e => {
   reader.readAsDataURL(file);
 });
 
-/* ============ Events: bewaakt persoon opslaan ============ */
+/* ============ Events: bewaakt persoon versturen (→ preview) ============ */
 el.savePersonBtn.addEventListener("click", () => {
   const firstName = el.personFirstname.value.trim();
   if (!firstName) {
@@ -631,7 +662,8 @@ el.savePersonBtn.addEventListener("click", () => {
     el.personFirstname.focus();
     return;
   }
-  const person = {
+  el.personStatus.textContent = "";
+  _pendingPerson = {
     id: Date.now(), personType: "monitored",
     nickname: el.personNickname.value.trim(),
     firstName, lastName: el.personLastname.value.trim(),
@@ -643,19 +675,7 @@ el.savePersonBtn.addEventListener("click", () => {
     notes: el.personNotes.value.trim(),
     photo: !el.personPhotoPreview.classList.contains("hidden") ? el.personPhotoPreview.src : null,
   };
-  savePerson(person);
-  if (client) {
-    client.callServiceData("digital_lifeline", "add_person", {
-      id: String(person.id),
-      nickname: person.nickname,
-      first_name: person.firstName, last_name: person.lastName,
-      birthdate: person.birthdate, street: person.street, housenumber: person.housenumber,
-      zipcode: person.zipcode, city: person.city, phone: person.phone,
-      email: person.email, medication: person.medication, notes: person.notes, person_type: "monitored",
-    }).catch(e => console.warn("add_person:", e.message));
-  }
-  el.personStatus.textContent = "";
-  showPersonPreview(person);
+  showPersonPreview(_pendingPerson);
 });
 
 /* ============ Events: familielid opslaan ============ */
