@@ -103,6 +103,11 @@ const el = {
   dashAddFamilyBtn:    document.getElementById("dash-add-family-btn"),
   dashAddCaregiverBtn: document.getElementById("dash-add-caregiver-btn"),
   dashCloseMenuBtn:    document.getElementById("dash-close-menu-btn"),
+  // Bevestigingsmodal
+  confirmModal:     document.getElementById("confirm-modal"),
+  confirmMessage:   document.getElementById("confirm-message"),
+  confirmOkBtn:     document.getElementById("confirm-ok-btn"),
+  confirmCancelBtn: document.getElementById("confirm-cancel-btn"),
   // Connect / HA entities dashboard
   url:           document.getElementById("ha-url"),
   token:         document.getElementById("ha-token"),
@@ -250,7 +255,7 @@ function renderAppDashboard(persons) {
       <button class="dash-monitored-delete" title="Verwijderen" data-id="${escapeHtml(String(monitored.id))}">🗑</button>
     `;
     el.dashMonitoredCard.querySelector(".dash-monitored-delete")
-      .addEventListener("click", () => deletePerson(monitored.id));
+      .addEventListener("click", () => deletePerson(monitored.id, personName(monitored)));
   }
 
   // Familie
@@ -278,7 +283,7 @@ function renderDashList(container, persons, subFn) {
       <button class="dash-person-card-delete" title="Verwijderen" data-id="${escapeHtml(String(p.id))}">🗑</button>
     `;
     card.querySelector(".dash-person-card-delete")
-      .addEventListener("click", () => deletePerson(p.id));
+      .addEventListener("click", () => deletePerson(p.id, personName(p)));
     container.appendChild(card);
   }
 }
@@ -299,21 +304,35 @@ function renderPersonsList(persons) {
     `;
     item.querySelector(".person-item-delete").addEventListener("click", (e) => {
       e.stopPropagation();
-      deletePerson(p.id);
+      deletePerson(p.id, personName(p));
     });
     el.personsList.appendChild(item);
   }
 }
 
+/* ============ Bevestigingsdialog ============ */
+let _pendingAction = null;
+
+function askConfirm(message, onConfirm) {
+  _pendingAction = onConfirm;
+  el.confirmMessage.textContent = message;
+  el.confirmModal.classList.remove("hidden");
+}
+
 /* ============ Persoon verwijderen ============ */
-function deletePerson(id) {
-  const persons = JSON.parse(store.get("dl_persons") || "[]");
-  store.set("dl_persons", JSON.stringify(persons.filter(p => String(p.id) !== String(id))));
-  if (client) {
-    client.callServiceData("digital_lifeline", "remove_person", { person_id: String(id) })
-      .catch(e => console.warn("remove_person:", e.message));
-  }
-  showHome();
+function deletePerson(id, name) {
+  askConfirm(
+    `Wil je "${name || "deze persoon"}" verwijderen? Dit kan niet ongedaan worden gemaakt.`,
+    () => {
+      const persons = JSON.parse(store.get("dl_persons") || "[]");
+      store.set("dl_persons", JSON.stringify(persons.filter(p => String(p.id) !== String(id))));
+      if (client) {
+        client.callServiceData("digital_lifeline", "remove_person", { person_id: String(id) })
+          .catch(e => console.warn("remove_person:", e.message));
+      }
+      showHome();
+    }
+  );
 }
 
 /* ============ Preview ============ */
@@ -534,6 +553,16 @@ el.addFamilyBackBtn.addEventListener("click", showHome);
 el.addCaregiverBackBtn.addEventListener("click", showHome);
 el.previewDoneBtn.addEventListener("click", showHome);
 
+/* ============ Events: bevestigingsdialog ============ */
+el.confirmOkBtn.addEventListener("click", () => {
+  el.confirmModal.classList.add("hidden");
+  if (_pendingAction) { _pendingAction(); _pendingAction = null; }
+});
+el.confirmCancelBtn.addEventListener("click", () => {
+  el.confirmModal.classList.add("hidden");
+  _pendingAction = null;
+});
+
 /* ============ Events: app dashboard menu ============ */
 el.dashMenuBtn.addEventListener("click", openDashMenu);
 el.dashCloseMenuBtn.addEventListener("click", closeDashMenu);
@@ -576,6 +605,7 @@ el.savePersonBtn.addEventListener("click", () => {
   savePerson(person);
   if (client) {
     client.callServiceData("digital_lifeline", "add_person", {
+      id: String(person.id),
       first_name: person.firstName, last_name: person.lastName,
       birthdate: person.birthdate, street: person.street, housenumber: person.housenumber,
       zipcode: person.zipcode, city: person.city, phone: person.phone,
@@ -606,6 +636,7 @@ el.saveFamilyBtn.addEventListener("click", () => {
   savePerson(person);
   if (client) {
     client.callServiceData("digital_lifeline", "add_person", {
+      id: String(person.id),
       first_name: person.firstName, last_name: person.lastName, gender: person.gender,
       email: person.email, phone: person.phone, relation: person.relation,
       notification_types: notificationTypes, notification_channels: notificationChannels,
@@ -638,6 +669,7 @@ el.saveCaregiverBtn.addEventListener("click", () => {
   savePerson(person);
   if (client) {
     client.callServiceData("digital_lifeline", "add_person", {
+      id: String(person.id),
       first_name: person.firstName, last_name: person.lastName, gender: person.gender,
       email: person.email, phone: person.phone,
       organization: person.organization, caregiver_function: person.caregiverFunction,
