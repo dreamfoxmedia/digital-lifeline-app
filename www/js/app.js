@@ -51,6 +51,9 @@ const el = {
   personPhoto:         document.getElementById("person-photo"),
   personPhotoPreview:  document.getElementById("person-photo-preview"),
   photoIcon:           document.querySelector(".photo-icon"),
+  photoProgressWrap:   document.getElementById("photo-progress-wrap"),
+  photoProgressFill:   document.getElementById("photo-progress-fill"),
+  photoProgressLabel:  document.getElementById("photo-progress-label"),
   personNickname:      document.getElementById("person-nickname"),
   personFirstname:     document.getElementById("person-firstname"),
   personLastname:      document.getElementById("person-lastname"),
@@ -572,14 +575,44 @@ el.dashAddFamilyBtn.addEventListener("click", showAddFamily);
 el.dashAddCaregiverBtn.addEventListener("click", showAddCaregiver);
 
 /* ============ Events: foto upload ============ */
+function setProgress(pct, label) {
+  el.photoProgressFill.style.width = pct + "%";
+  if (label) el.photoProgressLabel.textContent = label;
+}
+
 el.personPhoto.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
+
+  el.photoProgressWrap.classList.remove("hidden");
+  setProgress(10, "Laden…");
+
   const reader = new FileReader();
   reader.onload = ev => {
-    el.personPhotoPreview.src = ev.target.result;
-    el.personPhotoPreview.classList.remove("hidden");
-    el.photoIcon.classList.add("hidden");
+    setProgress(40, "Verkleinen…");
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 600;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+
+      setProgress(65, "Comprimeren…");
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+
+      setProgress(85, "Afronden…");
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+
+      setProgress(100, "Klaar");
+      el.personPhotoPreview.src = dataUrl;
+      el.personPhotoPreview.classList.remove("hidden");
+      el.photoIcon.classList.add("hidden");
+
+      setTimeout(() => el.photoProgressWrap.classList.add("hidden"), 800);
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 });
