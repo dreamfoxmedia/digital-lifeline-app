@@ -126,6 +126,16 @@
       </div>
 
       <label class="field">
+        <span>Geslacht</span>
+        <select id="person-gender">
+          <option value="">Kies...</option>
+          <option value="man">Man</option>
+          <option value="vrouw">Vrouw</option>
+          <option value="niet_opgegeven">Wil ik niet opgeven</option>
+        </select>
+      </label>
+
+      <label class="field">
         <span>Geboortedatum</span>
         <input id="person-birthdate" type="text" inputmode="numeric" autocomplete="off" placeholder="dd-mm-yyyy" />
       </label>
@@ -300,7 +310,7 @@
 
       <div class="brand">
         <span class="brand-dot"></span>
-        <h1>Familielid toevoegen</h1>
+        <h1 id="family-form-title">Familielid toevoegen</h1>
       </div>
 
       <p class="form-section">Persoonlijke gegevens</p>
@@ -311,7 +321,7 @@
           <option value="">Kies...</option>
           <option value="man">Man</option>
           <option value="vrouw">Vrouw</option>
-          <option value="niet_zeggen">Niet zeggen</option>
+          <option value="niet_opgegeven">Wil ik niet opgeven</option>
         </select>
       </label>
 
@@ -389,6 +399,8 @@
 
       <button id="save-family-btn" class="btn-primary">Familielid opslaan</button>
       <p id="family-status" class="status" role="status"></p>
+
+      <button id="family-delete-btn" class="btn-danger-outline hidden">Familielid verwijderen</button>
     </div>
   </section>
 
@@ -410,7 +422,7 @@
           <option value="">Kies...</option>
           <option value="man">Man</option>
           <option value="vrouw">Vrouw</option>
-          <option value="niet_zeggen">Niet zeggen</option>
+          <option value="niet_opgegeven">Wil ik niet opgeven</option>
         </select>
       </label>
 

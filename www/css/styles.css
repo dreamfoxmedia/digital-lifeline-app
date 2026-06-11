@@ -162,7 +162,9 @@ body {
 .back-btn:hover { color: var(--accent); }
 
 /* ===== Persoon toevoegen ===== */
-.add-person-screen {
+.add-person-screen,
+.add-family-screen,
+.add-caregiver-screen {
   display: flex;
   flex-direction: column;
   align-items: center;

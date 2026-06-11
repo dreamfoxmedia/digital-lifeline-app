@@ -63,6 +63,7 @@ const el = {
   photoProgressFill:   document.getElementById("photo-progress-fill"),
   photoProgressLabel:  document.getElementById("photo-progress-label"),
   personNickname:      document.getElementById("person-nickname"),
+  personGender:        document.getElementById("person-gender"),
   personFirstname:     document.getElementById("person-firstname"),
   personLastname:      document.getElementById("person-lastname"),
   personBirthdate:     document.getElementById("person-birthdate"),
@@ -78,6 +79,8 @@ const el = {
   personStatus:        document.getElementById("person-status"),
   // Familielid form
   addFamilyBackBtn:       document.getElementById("add-family-back-btn"),
+  familyFormTitle:        document.getElementById("family-form-title"),
+  familyDeleteBtn:        document.getElementById("family-delete-btn"),
   familyGender:           document.getElementById("family-gender"),
   familyFirstname:        document.getElementById("family-firstname"),
   familyLastname:         document.getElementById("family-lastname"),
@@ -224,6 +227,7 @@ function showAddPerson() {
   el.savePersonBtn.textContent = "Versturen";
   el.personDeleteBtn.classList.add("hidden");
   // reset velden
+  el.personGender.value = "";
   [el.personNickname, el.personFirstname, el.personLastname, el.personBirthdate,
    el.personStreet, el.personHousenumber, el.personZipcode, el.personCity,
    el.personPhone, el.personEmail, el.personMedication, el.personNotes]
@@ -240,6 +244,7 @@ function showEditPerson(person) {
   el.personFormTitle.textContent = "Persoon wijzigen";
   el.savePersonBtn.textContent = "Wijzigingen opslaan";
   el.personDeleteBtn.classList.remove("hidden");
+  el.personGender.value      = person.gender      || "";
   el.personNickname.value    = person.nickname    || "";
   el.personFirstname.value   = person.firstName   || "";
   el.personLastname.value    = person.lastName    || "";
@@ -265,7 +270,38 @@ function showEditPerson(person) {
 }
 
 function showAddFamily() {
+  _editingFamily = null;
+  el.familyFormTitle.textContent = "Familielid toevoegen";
+  el.saveFamilyBtn.textContent = "Familielid opslaan";
+  el.familyDeleteBtn.classList.add("hidden");
+  el.familyGender.value = "";
+  [el.familyFirstname, el.familyLastname, el.familyEmail, el.familyPhone].forEach(f => { f.value = ""; });
+  el.familyRelation.value = "";
+  [el.familyNotifySystem, el.familyNotifyCritical,
+   el.familyChannelSms, el.familyChannelEmail, el.familyChannelWhatsapp].forEach(c => { c.checked = false; });
   closeDashMenu();
+  allScreensHidden();
+  el.addFamilyScreen.classList.remove("hidden");
+}
+
+function showEditFamily(person) {
+  _editingFamily = person;
+  el.familyFormTitle.textContent = "Familielid wijzigen";
+  el.saveFamilyBtn.textContent = "Wijzigingen opslaan";
+  el.familyDeleteBtn.classList.remove("hidden");
+  el.familyGender.value        = person.gender   || "";
+  el.familyFirstname.value     = person.firstName || "";
+  el.familyLastname.value      = person.lastName  || "";
+  el.familyEmail.value         = person.email     || "";
+  el.familyPhone.value         = person.phone     || "";
+  el.familyRelation.value      = person.relation  || "";
+  const types    = person.notificationTypes    || [];
+  const channels = person.notificationChannels || [];
+  el.familyNotifySystem.checked    = types.includes("system");
+  el.familyNotifyCritical.checked  = types.includes("critical");
+  el.familyChannelSms.checked      = channels.includes("sms");
+  el.familyChannelEmail.checked    = channels.includes("email");
+  el.familyChannelWhatsapp.checked = channels.includes("whatsapp");
   allScreensHidden();
   el.addFamilyScreen.classList.remove("hidden");
 }
@@ -403,7 +439,7 @@ function renderPersonsList(persons) {
         <div class="person-item-name">${escapeHtml(personName(p))}</div>
         <div class="person-item-type">${{ monitored: "Bewaakt persoon", family: "Familielid", caregiver: "Hulpverlener" }[p.personType] || p.personType}</div>
       </div>
-      ${isMonitored
+      ${(isMonitored || p.personType === "family")
         ? `<button class="person-item-edit btn-edit-small" title="Wijzigen">Wijzigen</button>`
         : `<button class="person-item-delete" title="Verwijderen" data-id="${escapeHtml(String(p.id))}">🗑</button>`}
     `;
@@ -411,6 +447,11 @@ function renderPersonsList(persons) {
       item.querySelector(".person-item-edit").addEventListener("click", (e) => {
         e.stopPropagation();
         showEditPerson(p);
+      });
+    } else if (p.personType === "family") {
+      item.querySelector(".person-item-edit").addEventListener("click", (e) => {
+        e.stopPropagation();
+        showEditFamily(p);
       });
     } else {
       item.querySelector(".person-item-delete").addEventListener("click", (e) => {
@@ -426,6 +467,7 @@ function renderPersonsList(persons) {
 let _pendingAction = null;
 let _pendingPerson = null;
 let _editingPerson = null;
+let _editingFamily = null;
 
 function askConfirm(message, onConfirm) {
   _pendingAction = onConfirm;
@@ -695,7 +737,18 @@ el.personDeleteBtn.addEventListener("click", () => {
     }
   );
 });
-el.addFamilyBackBtn.addEventListener("click", showHome);
+el.familyDeleteBtn.addEventListener("click", () => {
+  if (!_editingFamily) return;
+  const p = _editingFamily;
+  askConfirm(
+    `Wil je "${personName(p)}" verwijderen? Dit kan niet ongedaan worden gemaakt.`,
+    () => {
+      _editingFamily = null;
+      deletePerson(p.id, personName(p), true);
+    }
+  );
+});
+el.addFamilyBackBtn.addEventListener("click", () => { _editingFamily = null; showHome(); });
 el.addCaregiverBackBtn.addEventListener("click", showHome);
 el.previewBackBtn.addEventListener("click", () => {
   allScreensHidden();
@@ -798,6 +851,7 @@ el.savePersonBtn.addEventListener("click", () => {
     // Wijzig bestaande persoon
     const updated = {
       ..._editingPerson,
+      gender:      el.personGender.value,
       nickname:    el.personNickname.value.trim(),
       firstName,   lastName: el.personLastname.value.trim(),
       birthdate:   el.personBirthdate.value,
@@ -818,6 +872,7 @@ el.savePersonBtn.addEventListener("click", () => {
     if (client) {
       client.callServiceData("digital_lifeline", "update_person", {
         person_id:    String(updated.id),
+        gender:       updated.gender,
         nickname:     updated.nickname,
         first_name:   updated.firstName,
         last_name:    updated.lastName,
@@ -842,6 +897,7 @@ el.savePersonBtn.addEventListener("click", () => {
   // Nieuwe persoon → preview
   _pendingPerson = {
     id: Date.now(), personType: "monitored",
+    gender: el.personGender.value,
     nickname: el.personNickname.value.trim(),
     firstName, lastName: el.personLastname.value.trim(),
     birthdate: el.personBirthdate.value,
@@ -866,6 +922,38 @@ el.saveFamilyBtn.addEventListener("click", () => {
   }
   const notificationTypes    = checkedValues([[el.familyNotifySystem,"system"],[el.familyNotifyCritical,"critical"]]);
   const notificationChannels = checkedValues([[el.familyChannelSms,"sms"],[el.familyChannelEmail,"email"],[el.familyChannelWhatsapp,"whatsapp"]]);
+
+  if (_editingFamily) {
+    const updated = {
+      ..._editingFamily,
+      gender: el.familyGender.value, firstName, lastName: el.familyLastname.value.trim(),
+      email: el.familyEmail.value.trim(), phone: el.familyPhone.value.trim(),
+      relation: el.familyRelation.value, notificationTypes, notificationChannels,
+    };
+    const persons = JSON.parse(store.get("dl_persons") || "[]");
+    const idx = persons.findIndex(p => String(p.id) === String(updated.id));
+    if (idx >= 0) persons[idx] = updated; else persons.push(updated);
+    store.set("dl_persons", JSON.stringify(persons));
+    if (client) {
+      client.callServiceData("digital_lifeline", "update_person", {
+        person_id:            String(updated.id),
+        first_name:           updated.firstName,
+        last_name:            updated.lastName,
+        gender:               updated.gender,
+        email:                updated.email,
+        phone:                updated.phone,
+        relation:             updated.relation,
+        notification_types:   notificationTypes,
+        notification_channels: notificationChannels,
+      }).catch(e => console.warn("update_person:", e.message));
+    }
+    _editingFamily = null;
+    el.familyStatus.textContent = "Wijzigingen opgeslagen.";
+    el.familyStatus.className = "status ok";
+    setTimeout(showHome, 900);
+    return;
+  }
+
   const person = {
     id: Date.now(), personType: "family",
     gender: el.familyGender.value, firstName, lastName: el.familyLastname.value.trim(),
