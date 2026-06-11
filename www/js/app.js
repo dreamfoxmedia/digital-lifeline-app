@@ -54,6 +54,8 @@ const el = {
   previewSavedState:        document.getElementById("preview-saved-state"),
   // Bewaakt persoon form
   addPersonBackBtn:    document.getElementById("add-person-back-btn"),
+  personFormTitle:     document.getElementById("person-form-title"),
+  personDeleteBtn:     document.getElementById("person-delete-btn"),
   personPhoto:         document.getElementById("person-photo"),
   personPhotoPreview:  document.getElementById("person-photo-preview"),
   photoIcon:           document.querySelector(".photo-icon"),
@@ -191,7 +193,8 @@ function showHome() {
   }
   allScreensHidden();
   el.homeScreen.classList.remove("hidden");
-  const hasMonitored  = persons.some(p => p.personType === "monitored");
+  const hasMonitored = persons.some(p => p.personType === "monitored");
+  el.addPersonBtn.classList.toggle("hidden", hasMonitored);
   el.addFamilyBtn.classList.toggle("hidden", !hasMonitored);
   renderPersonsList(persons);
 }
@@ -203,6 +206,47 @@ function showAppDashboard(persons) {
 }
 
 function showAddPerson() {
+  _editingPerson = null;
+  el.personFormTitle.textContent = "Persoon toevoegen";
+  el.savePersonBtn.textContent = "Versturen";
+  el.personDeleteBtn.classList.add("hidden");
+  // reset velden
+  [el.personNickname, el.personFirstname, el.personLastname, el.personBirthdate,
+   el.personStreet, el.personHousenumber, el.personZipcode, el.personCity,
+   el.personPhone, el.personEmail, el.personMedication, el.personNotes]
+    .forEach(f => { if (f) f.value = ""; });
+  el.personPhotoPreview.classList.add("hidden");
+  el.photoIcon.classList.remove("hidden");
+  el.personPhoto.value = "";
+  allScreensHidden();
+  el.addPersonScreen.classList.remove("hidden");
+}
+
+function showEditPerson(person) {
+  _editingPerson = person;
+  el.personFormTitle.textContent = "Persoon wijzigen";
+  el.savePersonBtn.textContent = "Wijzigingen opslaan";
+  el.personDeleteBtn.classList.remove("hidden");
+  el.personNickname.value    = person.nickname    || "";
+  el.personFirstname.value   = person.firstName   || "";
+  el.personLastname.value    = person.lastName    || "";
+  el.personBirthdate.value   = person.birthdate   || "";
+  el.personStreet.value      = person.street      || "";
+  el.personHousenumber.value = person.housenumber || "";
+  el.personZipcode.value     = person.zipcode     || "";
+  el.personCity.value        = person.city        || "";
+  el.personPhone.value       = person.phone       || "";
+  el.personEmail.value       = person.email       || "";
+  el.personMedication.value  = person.medication  || "";
+  el.personNotes.value       = person.notes       || "";
+  if (person.photo) {
+    el.personPhotoPreview.src = person.photo;
+    el.personPhotoPreview.classList.remove("hidden");
+    el.photoIcon.classList.add("hidden");
+  } else {
+    el.personPhotoPreview.classList.add("hidden");
+    el.photoIcon.classList.remove("hidden");
+  }
   allScreensHidden();
   el.addPersonScreen.classList.remove("hidden");
 }
@@ -303,6 +347,7 @@ function renderDashList(container, persons, subFn) {
 function renderPersonsList(persons) {
   el.personsList.innerHTML = "";
   for (const p of persons) {
+    const isMonitored = p.personType === "monitored";
     const item = document.createElement("div");
     item.className = "person-item";
     item.innerHTML = `
@@ -311,12 +356,21 @@ function renderPersonsList(persons) {
         <div class="person-item-name">${escapeHtml(personName(p))}</div>
         <div class="person-item-type">${{ monitored: "Bewaakt persoon", family: "Familielid", caregiver: "Hulpverlener" }[p.personType] || p.personType}</div>
       </div>
-      <button class="person-item-delete" title="Verwijderen" data-id="${escapeHtml(String(p.id))}">🗑</button>
+      ${isMonitored
+        ? `<button class="person-item-edit btn-edit-small" title="Wijzigen">Wijzigen</button>`
+        : `<button class="person-item-delete" title="Verwijderen" data-id="${escapeHtml(String(p.id))}">🗑</button>`}
     `;
-    item.querySelector(".person-item-delete").addEventListener("click", (e) => {
-      e.stopPropagation();
-      deletePerson(p.id, personName(p));
-    });
+    if (isMonitored) {
+      item.querySelector(".person-item-edit").addEventListener("click", (e) => {
+        e.stopPropagation();
+        showEditPerson(p);
+      });
+    } else {
+      item.querySelector(".person-item-delete").addEventListener("click", (e) => {
+        e.stopPropagation();
+        deletePerson(p.id, personName(p));
+      });
+    }
     el.personsList.appendChild(item);
   }
 }
@@ -324,6 +378,7 @@ function renderPersonsList(persons) {
 /* ============ Bevestigingsdialog ============ */
 let _pendingAction = null;
 let _pendingPerson = null;
+let _editingPerson = null;
 
 function askConfirm(message, onConfirm) {
   _pendingAction = onConfirm;
@@ -332,18 +387,21 @@ function askConfirm(message, onConfirm) {
 }
 
 /* ============ Persoon verwijderen ============ */
-function deletePerson(id, name) {
+function doDeletePerson(id) {
+  const persons = JSON.parse(store.get("dl_persons") || "[]");
+  store.set("dl_persons", JSON.stringify(persons.filter(p => String(p.id) !== String(id))));
+  if (client) {
+    client.callServiceData("digital_lifeline", "remove_person", { person_id: String(id) })
+      .catch(e => console.warn("remove_person:", e.message));
+  }
+  showHome();
+}
+
+function deletePerson(id, name, skipConfirm = false) {
+  if (skipConfirm) { doDeletePerson(id); return; }
   askConfirm(
     `Wil je "${name || "deze persoon"}" verwijderen? Dit kan niet ongedaan worden gemaakt.`,
-    () => {
-      const persons = JSON.parse(store.get("dl_persons") || "[]");
-      store.set("dl_persons", JSON.stringify(persons.filter(p => String(p.id) !== String(id))));
-      if (client) {
-        client.callServiceData("digital_lifeline", "remove_person", { person_id: String(id) })
-          .catch(e => console.warn("remove_person:", e.message));
-      }
-      showHome();
-    }
+    () => doDeletePerson(id)
   );
 }
 
@@ -564,7 +622,18 @@ el.search.addEventListener("input", renderHADashboard);
 /* ============ Events: navigatie ============ */
 el.addPersonBtn.addEventListener("click", showAddPerson);
 el.addFamilyBtn.addEventListener("click", showAddFamily);
-el.addPersonBackBtn.addEventListener("click", showHome);
+el.addPersonBackBtn.addEventListener("click", () => { _editingPerson = null; showHome(); });
+el.personDeleteBtn.addEventListener("click", () => {
+  if (!_editingPerson) return;
+  const p = _editingPerson;
+  askConfirm(
+    `Wil je "${personName(p)}" verwijderen? Dit kan niet ongedaan worden gemaakt.`,
+    () => {
+      _editingPerson = null;
+      deletePerson(p.id, personName(p), true);
+    }
+  );
+});
 el.addFamilyBackBtn.addEventListener("click", showHome);
 el.addCaregiverBackBtn.addEventListener("click", showHome);
 el.previewBackBtn.addEventListener("click", () => {
@@ -653,7 +722,7 @@ el.personPhoto.addEventListener("change", e => {
   reader.readAsDataURL(file);
 });
 
-/* ============ Events: bewaakt persoon versturen (→ preview) ============ */
+/* ============ Events: bewaakt persoon opslaan ============ */
 el.savePersonBtn.addEventListener("click", () => {
   const firstName = el.personFirstname.value.trim();
   if (!firstName) {
@@ -663,6 +732,53 @@ el.savePersonBtn.addEventListener("click", () => {
     return;
   }
   el.personStatus.textContent = "";
+
+  if (_editingPerson) {
+    // Wijzig bestaande persoon
+    const updated = {
+      ..._editingPerson,
+      nickname:    el.personNickname.value.trim(),
+      firstName,   lastName: el.personLastname.value.trim(),
+      birthdate:   el.personBirthdate.value,
+      street:      el.personStreet.value.trim(),
+      housenumber: el.personHousenumber.value.trim(),
+      zipcode:     el.personZipcode.value.trim(),
+      city:        el.personCity.value.trim(),
+      phone:       el.personPhone.value.trim(),
+      email:       el.personEmail.value.trim(),
+      medication:  el.personMedication.value.trim(),
+      notes:       el.personNotes.value.trim(),
+      photo:       !el.personPhotoPreview.classList.contains("hidden") ? el.personPhotoPreview.src : null,
+    };
+    const persons = JSON.parse(store.get("dl_persons") || "[]");
+    const idx = persons.findIndex(p => String(p.id) === String(updated.id));
+    if (idx >= 0) persons[idx] = updated; else persons.push(updated);
+    store.set("dl_persons", JSON.stringify(persons));
+    if (client) {
+      client.callServiceData("digital_lifeline", "update_person", {
+        person_id:    String(updated.id),
+        nickname:     updated.nickname,
+        first_name:   updated.firstName,
+        last_name:    updated.lastName,
+        birthdate:    updated.birthdate,
+        street:       updated.street,
+        housenumber:  updated.housenumber,
+        zipcode:      updated.zipcode,
+        city:         updated.city,
+        phone:        updated.phone,
+        email:        updated.email,
+        medication:   updated.medication,
+        notes:        updated.notes,
+      }).catch(e => console.warn("update_person:", e.message));
+    }
+    _editingPerson = null;
+    el.personStatus.textContent = "Wijzigingen opgeslagen.";
+    el.personStatus.className = "status ok";
+    setTimeout(showHome, 900);
+    return;
+  }
+
+  // Nieuwe persoon → preview
   _pendingPerson = {
     id: Date.now(), personType: "monitored",
     nickname: el.personNickname.value.trim(),
