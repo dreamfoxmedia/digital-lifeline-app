@@ -157,9 +157,16 @@
 
       <label class="field">
         <span>Medicijngebruik</span>
-        <textarea id="person-medication" autocomplete="off" rows="4"
+        <textarea id="person-medication" autocomplete="off" rows="3"
                   placeholder="Bijv. Metformine 500mg, bloedverdunners…"></textarea>
-        <small class="field-hint">Vul hier medicijngebruik en andere belangrijke informatie die eventueel wordt meegezonden naar hulpverleners.</small>
+        <small class="field-hint">Vul hier het medicijngebruik in. Dit wordt eventueel meegezonden naar hulpverleners.</small>
+      </label>
+
+      <label class="field">
+        <span>Extra informatie</span>
+        <textarea id="person-notes" autocomplete="off" rows="3"
+                  placeholder="Bijv. slecht ter been, hardhorend, slechtziend, rollator…"></textarea>
+        <small class="field-hint">Aanvullende informatie over beperkingen of bijzonderheden voor hulpverleners.</small>
       </label>
 
       <button id="save-person-btn" class="btn-primary">Persoon opslaan</button>
@@ -218,6 +225,10 @@
         <div class="info-row hidden" id="preview-medication-row">
           <dt>Medicijngebruik</dt>
           <dd id="preview-medication"></dd>
+        </div>
+        <div class="info-row hidden" id="preview-notes-row">
+          <dt>Extra informatie</dt>
+          <dd id="preview-notes"></dd>
         </div>
         <div class="info-row hidden" id="preview-gender-row">
           <dt>Geslacht</dt>

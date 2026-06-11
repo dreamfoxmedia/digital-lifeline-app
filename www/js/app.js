@@ -35,6 +35,8 @@ const el = {
   previewType:              document.getElementById("preview-type"),
   previewMedicationRow:     document.getElementById("preview-medication-row"),
   previewMedication:        document.getElementById("preview-medication"),
+  previewNotesRow:          document.getElementById("preview-notes-row"),
+  previewNotes:             document.getElementById("preview-notes"),
   previewGenderRow:         document.getElementById("preview-gender-row"),
   previewGender:            document.getElementById("preview-gender"),
   previewRelationRow:       document.getElementById("preview-relation-row"),
@@ -65,6 +67,7 @@ const el = {
   personPhone:         document.getElementById("person-phone"),
   personEmail:         document.getElementById("person-email"),
   personMedication:    document.getElementById("person-medication"),
+  personNotes:         document.getElementById("person-notes"),
   savePersonBtn:       document.getElementById("save-person-btn"),
   personStatus:        document.getElementById("person-status"),
   // Familielid form
@@ -368,6 +371,7 @@ function showPersonPreview(person) {
                   .filter(Boolean).join("\n");
     setInfoRow(el.previewAddressRow,    el.previewAddress,    addr);
     setInfoRow(el.previewMedicationRow, el.previewMedication, person.medication);
+    setInfoRow(el.previewNotesRow,      el.previewNotes,      person.notes);
 
   } else if (person.personType === "family") {
     setInfoRow(el.previewGenderRow,         el.previewGender,         GENDER_LABELS[person.gender] || person.gender);
@@ -446,6 +450,7 @@ function syncPersonsFromHA(statesMap) {
       phone:                a.phone              || "",
       email:                a.email              || "",
       medication:           a.medication         || "",
+      notes:                a.notes              || "",
       gender:               a.gender             || "",
       relation:             a.relation           || "",
       organization:         a.organization       || "",
@@ -635,6 +640,7 @@ el.savePersonBtn.addEventListener("click", () => {
     zipcode: el.personZipcode.value.trim(), city: el.personCity.value.trim(),
     phone: el.personPhone.value.trim(), email: el.personEmail.value.trim(),
     medication: el.personMedication.value.trim(),
+    notes: el.personNotes.value.trim(),
     photo: !el.personPhotoPreview.classList.contains("hidden") ? el.personPhotoPreview.src : null,
   };
   savePerson(person);
@@ -645,7 +651,7 @@ el.savePersonBtn.addEventListener("click", () => {
       first_name: person.firstName, last_name: person.lastName,
       birthdate: person.birthdate, street: person.street, housenumber: person.housenumber,
       zipcode: person.zipcode, city: person.city, phone: person.phone,
-      email: person.email, medication: person.medication, person_type: "monitored",
+      email: person.email, medication: person.medication, notes: person.notes, person_type: "monitored",
     }).catch(e => console.warn("add_person:", e.message));
   }
   el.personStatus.textContent = "";
