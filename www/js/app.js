@@ -51,6 +51,7 @@ const el = {
   personPhoto:         document.getElementById("person-photo"),
   personPhotoPreview:  document.getElementById("person-photo-preview"),
   photoIcon:           document.querySelector(".photo-icon"),
+  personNickname:      document.getElementById("person-nickname"),
   personFirstname:     document.getElementById("person-firstname"),
   personLastname:      document.getElementById("person-lastname"),
   personBirthdate:     document.getElementById("person-birthdate"),
@@ -594,6 +595,7 @@ el.savePersonBtn.addEventListener("click", () => {
   }
   const person = {
     id: Date.now(), personType: "monitored",
+    nickname: el.personNickname.value.trim(),
     firstName, lastName: el.personLastname.value.trim(),
     birthdate: el.personBirthdate.value,
     street: el.personStreet.value.trim(), housenumber: el.personHousenumber.value.trim(),
@@ -606,6 +608,7 @@ el.savePersonBtn.addEventListener("click", () => {
   if (client) {
     client.callServiceData("digital_lifeline", "add_person", {
       id: String(person.id),
+      nickname: person.nickname,
       first_name: person.firstName, last_name: person.lastName,
       birthdate: person.birthdate, street: person.street, housenumber: person.housenumber,
       zipcode: person.zipcode, city: person.city, phone: person.phone,
