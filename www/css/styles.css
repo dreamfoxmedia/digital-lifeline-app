@@ -1023,6 +1023,7 @@ input:focus {
   z-index: 400;
   display: flex !important;
   align-items: flex-end;
+  justify-content: center;
 }
 .confirm-modal.hidden { display: none !important; }
 .confirm-sheet {
@@ -1030,6 +1031,7 @@ input:focus {
   border-radius: var(--radius) var(--radius) 0 0;
   padding: 28px 20px max(env(safe-area-inset-bottom), 28px);
   width: 100%;
+  max-width: 480px;
 }
 .confirm-title {
   font-size: 1.1rem;
