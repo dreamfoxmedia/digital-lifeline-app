@@ -12,6 +12,7 @@ const el = {
   addFamilyScreen:      document.getElementById("add-family-screen"),
   addCaregiverScreen:   document.getElementById("add-caregiver-screen"),
   appDashboardScreen:   document.getElementById("app-dashboard-screen"),
+  settingsScreen:       document.getElementById("settings-screen"),
   personPreviewScreen:  document.getElementById("person-preview-screen"),
   connectScreen:        document.getElementById("connect-screen"),
   dashboard:            document.getElementById("dashboard-screen"),
@@ -81,6 +82,7 @@ const el = {
   addFamilyBackBtn:       document.getElementById("add-family-back-btn"),
   familyFormTitle:        document.getElementById("family-form-title"),
   familyDeleteBtn:        document.getElementById("family-delete-btn"),
+  familyNickname:         document.getElementById("family-nickname"),
   familyGender:           document.getElementById("family-gender"),
   familyFirstname:        document.getElementById("family-firstname"),
   familyLastname:         document.getElementById("family-lastname"),
@@ -96,6 +98,8 @@ const el = {
   familyStatus:           document.getElementById("family-status"),
   // Hulpverlener form
   addCaregiverBackBtn:       document.getElementById("add-caregiver-back-btn"),
+  caregiverFormTitle:        document.getElementById("caregiver-form-title"),
+  caregiverDeleteBtn:        document.getElementById("caregiver-delete-btn"),
   caregiverGender:           document.getElementById("caregiver-gender"),
   caregiverFirstname:        document.getElementById("caregiver-firstname"),
   caregiverLastname:         document.getElementById("caregiver-lastname"),
@@ -115,6 +119,23 @@ const el = {
   dashFamilyList:      document.getElementById("dash-family-list"),
   dashCaregiverList:   document.getElementById("dash-caregiver-list"),
   dashMenuBtn:         document.getElementById("dash-menu-btn"),
+  dashHomeBtn:         document.getElementById("dash-home-btn"),
+  dashSettingsBtn:     document.getElementById("dash-settings-btn"),
+  // Instellingen
+  settingsBackBtn:        document.getElementById("settings-back-btn"),
+  settingsEditPersonBtn:  document.getElementById("settings-edit-person-btn"),
+  settingsFamilyBtn:      document.getElementById("settings-family-btn"),
+  settingsCaregiversBtn:  document.getElementById("settings-caregivers-btn"),
+  settingsConnBtn:        document.getElementById("settings-conn-btn"),
+  settingsConnIcon:       document.getElementById("settings-conn-icon"),
+  settingsConnLabel:      document.getElementById("settings-conn-label"),
+  // Personen lijstscherm
+  personsListScreen:       document.getElementById("persons-list-screen"),
+  personsListTitle:        document.getElementById("persons-list-title"),
+  personsListItems:        document.getElementById("persons-list-items"),
+  personsListHomeBtn:      document.getElementById("persons-list-home-btn"),
+  personsListSettingsBtn:  document.getElementById("persons-list-settings-btn"),
+  personsListAddBtn:       document.getElementById("persons-list-add-btn"),
   dashMenuOverlay:     document.getElementById("dash-menu-overlay"),
   dashAddFamilyBtn:    document.getElementById("dash-add-family-btn"),
   dashAddCaregiverBtn: document.getElementById("dash-add-caregiver-btn"),
@@ -168,7 +189,8 @@ function personName(p) {
 }
 function allScreensHidden() {
   [el.homeScreen, el.addPersonScreen, el.addFamilyScreen, el.addCaregiverScreen,
-   el.appDashboardScreen, el.personPreviewScreen, el.connectScreen, el.dashboard]
+   el.appDashboardScreen, el.settingsScreen, el.personsListScreen,
+   el.personPreviewScreen, el.connectScreen, el.dashboard]
     .forEach(s => s.classList.add("hidden"));
 }
 function escapeHtml(str) {
@@ -274,6 +296,7 @@ function showAddFamily() {
   el.familyFormTitle.textContent = "Familielid toevoegen";
   el.saveFamilyBtn.textContent = "Familielid opslaan";
   el.familyDeleteBtn.classList.add("hidden");
+  el.familyNickname.value = "";
   el.familyGender.value = "";
   [el.familyFirstname, el.familyLastname, el.familyEmail, el.familyPhone].forEach(f => { f.value = ""; });
   el.familyRelation.value = "";
@@ -284,11 +307,13 @@ function showAddFamily() {
   el.addFamilyScreen.classList.remove("hidden");
 }
 
-function showEditFamily(person) {
+function showEditFamily(person, source = "dashboard") {
   _editingFamily = person;
+  _editSource = source;
   el.familyFormTitle.textContent = "Familielid wijzigen";
   el.saveFamilyBtn.textContent = "Wijzigingen opslaan";
   el.familyDeleteBtn.classList.remove("hidden");
+  el.familyNickname.value      = person.nickname  || "";
   el.familyGender.value        = person.gender   || "";
   el.familyFirstname.value     = person.firstName || "";
   el.familyLastname.value      = person.lastName  || "";
@@ -307,7 +332,40 @@ function showEditFamily(person) {
 }
 
 function showAddCaregiver() {
+  _editingCaregiver = null;
+  el.caregiverFormTitle.textContent = "Hulpverlener toevoegen";
+  el.saveCaregiverBtn.textContent = "Hulpverlener opslaan";
+  el.caregiverDeleteBtn.classList.add("hidden");
+  el.caregiverGender.value = "";
+  [el.caregiverFirstname, el.caregiverLastname, el.caregiverEmail,
+   el.caregiverPhone, el.caregiverOrganization, el.caregiverFunction].forEach(f => { f.value = ""; });
+  [el.caregiverNotifySystem, el.caregiverNotifyCritical,
+   el.caregiverChannelSms, el.caregiverChannelEmail, el.caregiverChannelWhatsapp].forEach(c => { c.checked = false; });
   closeDashMenu();
+  allScreensHidden();
+  el.addCaregiverScreen.classList.remove("hidden");
+}
+
+function showEditCaregiver(person, source = "dashboard") {
+  _editingCaregiver = person;
+  _editSource = source;
+  el.caregiverFormTitle.textContent = "Hulpverlener wijzigen";
+  el.saveCaregiverBtn.textContent = "Wijzigingen opslaan";
+  el.caregiverDeleteBtn.classList.remove("hidden");
+  el.caregiverGender.value        = person.gender           || "";
+  el.caregiverFirstname.value     = person.firstName        || "";
+  el.caregiverLastname.value      = person.lastName         || "";
+  el.caregiverEmail.value         = person.email            || "";
+  el.caregiverPhone.value         = person.phone            || "";
+  el.caregiverOrganization.value  = person.organization     || "";
+  el.caregiverFunction.value      = person.caregiverFunction || "";
+  const types    = person.notificationTypes    || [];
+  const channels = person.notificationChannels || [];
+  el.caregiverNotifySystem.checked    = types.includes("system");
+  el.caregiverNotifyCritical.checked  = types.includes("critical");
+  el.caregiverChannelSms.checked      = channels.includes("sms");
+  el.caregiverChannelEmail.checked    = channels.includes("email");
+  el.caregiverChannelWhatsapp.checked = channels.includes("whatsapp");
   allScreensHidden();
   el.addCaregiverScreen.classList.remove("hidden");
 }
@@ -330,6 +388,67 @@ function updateConnStatusBtn() {
     el.connStatusIcon.textContent = "🔗";
     el.connStatusLabel.textContent = "Geen verbinding ingesteld";
   }
+}
+
+function updateSettingsConnBtn() {
+  const url = store.get("ha_url") || "";
+  const connected = client != null;
+  if (connected) {
+    el.settingsConnIcon.textContent = "🟢";
+    el.settingsConnLabel.textContent = "Verbonden met " + (url.replace(/^https?:\/\//, "") || "Home Assistant");
+  } else if (url) {
+    el.settingsConnIcon.textContent = "🔴";
+    el.settingsConnLabel.textContent = "Niet verbonden";
+  } else {
+    el.settingsConnIcon.textContent = "🔗";
+    el.settingsConnLabel.textContent = "Geen verbinding ingesteld";
+  }
+}
+
+function showSettings() {
+  const persons = JSON.parse(store.get("dl_persons") || "[]");
+  const hasFamily     = persons.some(p => p.personType === "family");
+  const hasCaregivers = persons.some(p => p.personType === "caregiver");
+  el.settingsFamilyBtn.classList.toggle("hidden", !hasFamily);
+  el.settingsCaregiversBtn.classList.toggle("hidden", !hasCaregivers);
+  allScreensHidden();
+  el.settingsScreen.classList.remove("hidden");
+  updateSettingsConnBtn();
+}
+
+function goBackAfterEdit() {
+  if (_editSource === "personslist") showPersonsListScreen(_personsListType);
+  else showAppDashboard(JSON.parse(store.get("dl_persons") || "[]"));
+}
+
+function showPersonsListScreen(type) {
+  _personsListType = type;
+  const persons = JSON.parse(store.get("dl_persons") || "[]");
+  const filtered = persons.filter(p => p.personType === type);
+  el.personsListTitle.textContent = type === "family" ? "Familieleden" : "Hulpverleners";
+  el.personsListItems.innerHTML = "";
+  for (const p of filtered) {
+    const item = document.createElement("div");
+    item.className = "person-item";
+    const sub = type === "family"
+      ? (RELATION_LABELS[p.relation] || p.relation || "")
+      : ([p.caregiverFunction, p.organization].filter(Boolean).join(" · ") || "");
+    item.innerHTML = `
+      <span class="person-item-icon">${TYPE_ICONS[p.personType] || "👤"}</span>
+      <div class="person-item-info">
+        <div class="person-item-name">${escapeHtml(personName(p))}</div>
+        ${sub ? `<div class="person-item-type">${escapeHtml(sub)}</div>` : ""}
+      </div>
+      <button class="person-item-edit btn-edit-small">Wijzigen</button>
+    `;
+    item.querySelector(".person-item-edit").addEventListener("click", () => {
+      if (type === "family") showEditFamily(p, "personslist");
+      else showEditCaregiver(p, "personslist");
+    });
+    el.personsListItems.appendChild(item);
+  }
+  allScreensHidden();
+  el.personsListScreen.classList.remove("hidden");
 }
 
 function openConnSheet() {
@@ -372,7 +491,7 @@ function renderAppDashboard(persons) {
 
   // Bewaakt persoon kaart
   if (monitored) {
-    const sensorId = `sensor.dl_${(personName(monitored)).toLowerCase().replace(/\s+/g, "_")}`;
+    const sensorId = `sensor.digitallifeline_${(personName(monitored)).toLowerCase().replace(/\s+/g, "_")}`;
     const haState  = states.get(sensorId);
     const connected = haState != null;
 
@@ -464,10 +583,13 @@ function renderPersonsList(persons) {
 }
 
 /* ============ Bevestigingsdialog ============ */
-let _pendingAction = null;
-let _pendingPerson = null;
-let _editingPerson = null;
-let _editingFamily = null;
+let _pendingAction   = null;
+let _pendingPerson   = null;
+let _editingPerson   = null;
+let _editingFamily   = null;
+let _editingCaregiver  = null;
+let _personsListType   = "family";
+let _editSource        = "dashboard";
 
 function askConfirm(message, onConfirm) {
   _pendingAction = onConfirm;
@@ -588,7 +710,7 @@ async function doConnect(url, token, opts = {}) {
 function syncPersonsFromHA(statesMap) {
   const synced = [];
   for (const [entityId, state] of statesMap) {
-    if (!entityId.startsWith("sensor.dl_")) continue;
+    if (!entityId.startsWith("sensor.digitallifeline_")) continue;
     const a = state.attributes || {};
     if (!a.id) continue;
     synced.push({
@@ -748,8 +870,8 @@ el.familyDeleteBtn.addEventListener("click", () => {
     }
   );
 });
-el.addFamilyBackBtn.addEventListener("click", () => { _editingFamily = null; showHome(); });
-el.addCaregiverBackBtn.addEventListener("click", showHome);
+el.addFamilyBackBtn.addEventListener("click", () => { const src = _editSource; _editingFamily = null; if (src === "personslist") showPersonsListScreen("family"); else showHome(); });
+el.addCaregiverBackBtn.addEventListener("click", () => { const src = _editSource; _editingCaregiver = null; if (src === "personslist") showPersonsListScreen("caregiver"); else showAppDashboard(JSON.parse(store.get("dl_persons") || "[]")); });
 el.previewBackBtn.addEventListener("click", () => {
   allScreensHidden();
   el.addPersonScreen.classList.remove("hidden");
@@ -788,10 +910,39 @@ el.confirmCancelBtn.addEventListener("click", () => {
 
 /* ============ Events: app dashboard menu ============ */
 el.dashMenuBtn.addEventListener("click", openDashMenu);
+el.dashHomeBtn.addEventListener("click", () => showAppDashboard(JSON.parse(store.get("dl_persons") || "[]")));
+el.dashSettingsBtn.addEventListener("click", showSettings);
 el.dashCloseMenuBtn.addEventListener("click", closeDashMenu);
 el.dashMenuOverlay.addEventListener("click", e => { if (e.target === el.dashMenuOverlay) closeDashMenu(); });
 el.dashAddFamilyBtn.addEventListener("click", showAddFamily);
 el.dashAddCaregiverBtn.addEventListener("click", showAddCaregiver);
+
+/* ============ Events: instellingen ============ */
+el.settingsBackBtn.addEventListener("click", () => { showAppDashboard(JSON.parse(store.get("dl_persons") || "[]")); });
+el.settingsEditPersonBtn.addEventListener("click", () => {
+  const persons = JSON.parse(store.get("dl_persons") || "[]");
+  const monitored = persons.find(p => p.personType === "monitored");
+  if (monitored) showEditPerson(monitored);
+});
+el.settingsFamilyBtn.addEventListener("click", () => showPersonsListScreen("family"));
+el.settingsCaregiversBtn.addEventListener("click", () => showPersonsListScreen("caregiver"));
+el.settingsConnBtn.addEventListener("click", openConnSheet);
+
+/* ============ Events: personen lijstscherm ============ */
+el.personsListHomeBtn.addEventListener("click", () => showAppDashboard(JSON.parse(store.get("dl_persons") || "[]")));
+el.personsListSettingsBtn.addEventListener("click", showSettings);
+el.personsListAddBtn.addEventListener("click", () => {
+  if (_personsListType === "family") showAddFamily();
+  else showAddCaregiver();
+});
+el.caregiverDeleteBtn.addEventListener("click", () => {
+  if (!_editingCaregiver) return;
+  const p = _editingCaregiver;
+  askConfirm(
+    `Wil je "${personName(p)}" verwijderen? Dit kan niet ongedaan worden gemaakt.`,
+    () => { _editingCaregiver = null; deletePerson(p.id, personName(p), true); }
+  );
+});
 
 /* ============ Events: foto upload ============ */
 function setProgress(pct, label) {
@@ -926,6 +1077,7 @@ el.saveFamilyBtn.addEventListener("click", () => {
   if (_editingFamily) {
     const updated = {
       ..._editingFamily,
+      nickname: el.familyNickname.value.trim(),
       gender: el.familyGender.value, firstName, lastName: el.familyLastname.value.trim(),
       email: el.familyEmail.value.trim(), phone: el.familyPhone.value.trim(),
       relation: el.familyRelation.value, notificationTypes, notificationChannels,
@@ -950,12 +1102,13 @@ el.saveFamilyBtn.addEventListener("click", () => {
     _editingFamily = null;
     el.familyStatus.textContent = "Wijzigingen opgeslagen.";
     el.familyStatus.className = "status ok";
-    setTimeout(showHome, 900);
+    setTimeout(goBackAfterEdit, 900);
     return;
   }
 
   const person = {
     id: Date.now(), personType: "family",
+    nickname: el.familyNickname.value.trim(),
     gender: el.familyGender.value, firstName, lastName: el.familyLastname.value.trim(),
     email: el.familyEmail.value.trim(), phone: el.familyPhone.value.trim(),
     relation: el.familyRelation.value, notificationTypes, notificationChannels,
@@ -985,6 +1138,41 @@ el.saveCaregiverBtn.addEventListener("click", () => {
   }
   const notificationTypes    = checkedValues([[el.caregiverNotifySystem,"system"],[el.caregiverNotifyCritical,"critical"]]);
   const notificationChannels = checkedValues([[el.caregiverChannelSms,"sms"],[el.caregiverChannelEmail,"email"],[el.caregiverChannelWhatsapp,"whatsapp"]]);
+
+  if (_editingCaregiver) {
+    const updated = {
+      ..._editingCaregiver,
+      gender: el.caregiverGender.value, firstName, lastName: el.caregiverLastname.value.trim(),
+      email: el.caregiverEmail.value.trim(), phone: el.caregiverPhone.value.trim(),
+      organization: el.caregiverOrganization.value.trim(),
+      caregiverFunction: el.caregiverFunction.value.trim(),
+      notificationTypes, notificationChannels,
+    };
+    const persons = JSON.parse(store.get("dl_persons") || "[]");
+    const idx = persons.findIndex(p => String(p.id) === String(updated.id));
+    if (idx >= 0) persons[idx] = updated; else persons.push(updated);
+    store.set("dl_persons", JSON.stringify(persons));
+    if (client) {
+      client.callServiceData("digital_lifeline", "update_person", {
+        person_id:             String(updated.id),
+        gender:                updated.gender,
+        first_name:            updated.firstName,
+        last_name:             updated.lastName,
+        email:                 updated.email,
+        phone:                 updated.phone,
+        organization:          updated.organization,
+        caregiver_function:    updated.caregiverFunction,
+        notification_types:    notificationTypes,
+        notification_channels: notificationChannels,
+      }).catch(e => console.warn("update_person:", e.message));
+    }
+    _editingCaregiver = null;
+    el.caregiverStatus.textContent = "Wijzigingen opgeslagen.";
+    el.caregiverStatus.className = "status ok";
+    setTimeout(goBackAfterEdit, 900);
+    return;
+  }
+
   const person = {
     id: Date.now(), personType: "caregiver",
     gender: el.caregiverGender.value, firstName, lastName: el.caregiverLastname.value.trim(),

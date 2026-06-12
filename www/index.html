@@ -51,6 +51,8 @@
           <span class="option-chevron">›</span>
         </button>
 
+        <div id="persons-list" class="persons-list"></div>
+
         <a href="https://help.digitallifeline.nl" target="_blank" rel="noopener noreferrer" class="option-card">
           <span class="option-icon">💬</span>
           <div class="option-body">
@@ -69,8 +71,6 @@
           <span class="option-chevron">›</span>
         </button>
       </nav>
-
-      <div id="persons-list" class="persons-list"></div>
     </div>
 
     <footer class="foot home-foot">
@@ -313,6 +313,12 @@
         <h1 id="family-form-title">Familielid toevoegen</h1>
       </div>
 
+      <label class="field">
+        <span>Bijnaam / roepnaam</span>
+        <input id="family-nickname" type="text" autocomplete="off" placeholder="bijv. Tante Els of Broer Kees" />
+        <small class="field-hint">Zo herken je dit familielid snel terug in de app</small>
+      </label>
+
       <p class="form-section">Persoonlijke gegevens</p>
 
       <label class="field">
@@ -411,7 +417,7 @@
 
       <div class="brand">
         <span class="brand-dot"></span>
-        <h1>Hulpverlener toevoegen</h1>
+        <h1 id="caregiver-form-title">Hulpverlener toevoegen</h1>
       </div>
 
       <p class="form-section">Persoonlijke gegevens</p>
@@ -497,29 +503,133 @@
 
       <button id="save-caregiver-btn" class="btn-primary">Hulpverlener opslaan</button>
       <p id="caregiver-status" class="status" role="status"></p>
+
+      <button id="caregiver-delete-btn" class="btn-danger-outline hidden">Hulpverlener verwijderen</button>
     </div>
   </section>
 
   <!-- ===== App dashboard ===== -->
   <section id="app-dashboard-screen" class="screen app-dashboard-screen hidden">
-    <header class="dash-header">
-      <div class="brand">
-        <span class="brand-dot small"></span>
-        <h1>Digital Lifeline</h1>
+    <div class="dash-inner">
+      <header class="dash-header">
+        <div class="brand">
+          <span class="brand-dot small"></span>
+          <h1>Digital Lifeline</h1>
+        </div>
+        <div class="dash-header-actions">
+          <button id="dash-home-btn" class="dash-settings-btn" title="Dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </button>
+          <button id="dash-settings-btn" class="dash-settings-btn" title="Instellingen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+          <button id="dash-menu-btn" class="dash-menu-btn" title="Toevoegen">+</button>
+        </div>
+      </header>
+
+      <div id="dash-monitored-card" class="dash-monitored-card"></div>
+
+      <div class="dash-section">
+        <h3 class="dash-section-title">Familie</h3>
+        <div id="dash-family-list"></div>
       </div>
-      <button id="dash-menu-btn" class="dash-menu-btn" title="Toevoegen">+</button>
-    </header>
 
-    <div id="dash-monitored-card" class="dash-monitored-card"></div>
-
-    <div class="dash-section">
-      <h3 class="dash-section-title">Familie</h3>
-      <div id="dash-family-list"></div>
+      <div class="dash-section">
+        <h3 class="dash-section-title">Hulpverleners</h3>
+        <div id="dash-caregiver-list"></div>
+      </div>
     </div>
+  </section>
 
-    <div class="dash-section">
-      <h3 class="dash-section-title">Hulpverleners</h3>
-      <div id="dash-caregiver-list"></div>
+  <!-- ===== Instellingen ===== -->
+  <section id="settings-screen" class="screen home-screen hidden">
+    <div class="home-inner">
+      <button id="settings-back-btn" class="back-btn">‹ Terug</button>
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Instellingen</h1>
+      </div>
+
+      <nav class="home-options">
+        <button id="settings-edit-person-btn" class="option-card">
+          <span class="option-icon">🫀</span>
+          <div class="option-body">
+            <strong>Bewaakt persoon wijzigen</strong>
+            <span>Pas de gegevens van de bewaakt persoon aan.</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <button id="settings-family-btn" class="option-card hidden">
+          <span class="option-icon">👨‍👩‍👧</span>
+          <div class="option-body">
+            <strong>Familieleden</strong>
+            <span>Bekijk en wijzig toegevoegde familieleden.</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <button id="settings-caregivers-btn" class="option-card hidden">
+          <span class="option-icon">🏥</span>
+          <div class="option-body">
+            <strong>Hulpverleners</strong>
+            <span>Bekijk en wijzig toegevoegde hulpverleners.</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <button id="settings-conn-btn" class="option-card">
+          <span class="option-icon" id="settings-conn-icon">🔗</span>
+          <div class="option-body">
+            <strong>Connectie</strong>
+            <span id="settings-conn-label">Controleren…</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </button>
+
+        <a href="https://help.digitallifeline.nl" target="_blank" rel="noopener noreferrer" class="option-card">
+          <span class="option-icon">💬</span>
+          <div class="option-body">
+            <strong>Hulp</strong>
+            <span>help.digitallifeline.nl</span>
+          </div>
+          <span class="option-chevron">›</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ===== Personen lijstscherm ===== -->
+  <section id="persons-list-screen" class="screen app-dashboard-screen hidden">
+    <div class="dash-inner">
+      <header class="dash-header">
+        <div class="brand">
+          <span class="brand-dot small"></span>
+          <h1 id="persons-list-title">Familieleden</h1>
+        </div>
+        <div class="dash-header-actions">
+          <button id="persons-list-home-btn" class="dash-settings-btn" title="Dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </button>
+          <button id="persons-list-settings-btn" class="dash-settings-btn" title="Instellingen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+          <button id="persons-list-add-btn" class="dash-menu-btn" title="Toevoegen">+</button>
+        </div>
+      </header>
+      <div id="persons-list-items" class="persons-list"></div>
     </div>
   </section>
 
