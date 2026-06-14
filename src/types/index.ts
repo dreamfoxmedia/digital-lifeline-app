@@ -1,0 +1,63 @@
+export type AuthMode = 'session' | 'apiKey'
+
+export interface AuthState {
+  mode: AuthMode | null
+  apiKey: string | null
+  accessToken: string | null
+  userId: string | null
+}
+
+export interface Profile {
+  user_id: string
+  email: string
+  login_name: string
+  full_name: string
+  status: string
+  phone?: string
+  relation?: string
+  notify_emergency?: boolean
+  notify_categories?: string[]
+}
+
+export interface MeResponse {
+  profile: Profile
+  roles: string[]
+}
+
+export interface MonitoredPerson {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  notes?: string
+}
+
+export interface Household {
+  id: string
+  name: string
+}
+
+export type Severity = 'info' | 'warning' | 'emergency'
+
+export interface CategoryStatus {
+  category: string
+  status: string
+  status_info: string
+  severity: Severity
+  observed_at: string
+  updated_at: string
+}
+
+export interface CategoriesResponse {
+  household: Household
+  monitored_person: MonitoredPerson
+  categories: CategoryStatus[]
+}
+
+export interface ProfileFormData {
+  full_name: string
+  phone: string
+  relation: string
+  notify_emergency: boolean
+  notify_categories: string[]
+}

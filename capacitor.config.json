@@ -1,9 +1,8 @@
 {
-  "appId": "com.example.huisbeheer",
-  "appName": "Huisbeheer",
-  "webDir": "www",
+  "appId": "nl.digitallifeline.app",
+  "appName": "Digital Lifeline",
+  "webDir": "dist",
   "server": {
-    "androidScheme": "https",
-    "cleartext": true
+    "androidScheme": "https"
   }
 }

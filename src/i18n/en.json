@@ -1,0 +1,73 @@
+{
+  "login": {
+    "title": "Sign in",
+    "tab_email": "Email",
+    "tab_apikey": "API key",
+    "email": "Email address",
+    "password": "Password",
+    "login_btn": "Sign in",
+    "apikey_label": "API key",
+    "apikey_placeholder": "Paste your API key here",
+    "apikey_save": "Connect",
+    "error_invalid": "Invalid email address or password",
+    "error_generic": "Something went wrong. Please try again."
+  },
+  "onboarding": {
+    "title": "Complete your profile",
+    "subtitle": "Please fill in your details to get started",
+    "full_name": "Full name",
+    "phone": "Phone number (optional)",
+    "relation": "Relation to monitored person",
+    "relation_placeholder": "Choose a relation",
+    "relation_partner": "Partner",
+    "relation_child": "Child",
+    "relation_parent": "Parent",
+    "relation_family": "Family",
+    "relation_caregiver": "Caregiver",
+    "relation_other": "Other",
+    "notify_emergency": "Receive emergency notifications",
+    "notify_categories": "Notification categories",
+    "save": "Save and continue",
+    "saving": "Saving..."
+  },
+  "status": {
+    "title": "Overview",
+    "last_seen": "Last seen",
+    "just_now": "Just now",
+    "minutes_ago_one": "{{count}} min ago",
+    "minutes_ago_other": "{{count}} min ago",
+    "hours_ago_one": "{{count}} hour ago",
+    "hours_ago_other": "{{count}} hours ago",
+    "days_ago_one": "{{count}} day ago",
+    "days_ago_other": "{{count}} days ago",
+    "emergency_title": "EMERGENCY",
+    "emergency_dismiss": "Dismiss",
+    "loading": "Loading...",
+    "error": "Could not load data",
+    "retry": "Try again"
+  },
+  "settings": {
+    "title": "Settings",
+    "section_profile": "Profile",
+    "section_notifications": "Notifications",
+    "push_label": "Allow push notifications",
+    "logout": "Log out",
+    "remove_apikey": "Remove API key",
+    "saved": "Changes saved",
+    "save": "Save"
+  },
+  "categories": {
+    "beweging": "Movement",
+    "slaap": "Sleep",
+    "noodknop": "Emergency button",
+    "valdetectie": "Fall detection",
+    "rookmelder": "Smoke detector",
+    "medicatie": "Medication",
+    "activiteit": "Activity"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "unknown": "Unknown"
+  }
+}

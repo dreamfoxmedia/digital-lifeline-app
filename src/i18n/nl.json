@@ -1,0 +1,73 @@
+{
+  "login": {
+    "title": "Inloggen",
+    "tab_email": "E-mail",
+    "tab_apikey": "API-sleutel",
+    "email": "E-mailadres",
+    "password": "Wachtwoord",
+    "login_btn": "Inloggen",
+    "apikey_label": "API-sleutel",
+    "apikey_placeholder": "Plak hier uw API-sleutel",
+    "apikey_save": "Verbinden",
+    "error_invalid": "Ongeldig e-mailadres of wachtwoord",
+    "error_generic": "Er is iets misgegaan. Probeer het opnieuw."
+  },
+  "onboarding": {
+    "title": "Profiel aanvullen",
+    "subtitle": "Vul uw gegevens in om aan de slag te gaan",
+    "full_name": "Volledige naam",
+    "phone": "Telefoonnummer (optioneel)",
+    "relation": "Relatie tot bewaakte persoon",
+    "relation_placeholder": "Kies een relatie",
+    "relation_partner": "Partner",
+    "relation_child": "Kind",
+    "relation_parent": "Ouder",
+    "relation_family": "Familie",
+    "relation_caregiver": "Hulpverlener",
+    "relation_other": "Overig",
+    "notify_emergency": "Noodmeldingen ontvangen",
+    "notify_categories": "Meldingscategorieën",
+    "save": "Opslaan en doorgaan",
+    "saving": "Opslaan..."
+  },
+  "status": {
+    "title": "Overzicht",
+    "last_seen": "Laatst gezien",
+    "just_now": "Zojuist",
+    "minutes_ago_one": "{{count}} min geleden",
+    "minutes_ago_other": "{{count}} min geleden",
+    "hours_ago_one": "{{count}} uur geleden",
+    "hours_ago_other": "{{count}} uur geleden",
+    "days_ago_one": "{{count}} dag geleden",
+    "days_ago_other": "{{count}} dagen geleden",
+    "emergency_title": "NOODMELDING",
+    "emergency_dismiss": "Sluiten",
+    "loading": "Laden...",
+    "error": "Kon gegevens niet laden",
+    "retry": "Opnieuw proberen"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "section_profile": "Profiel",
+    "section_notifications": "Meldingen",
+    "push_label": "Push-meldingen toestaan",
+    "logout": "Uitloggen",
+    "remove_apikey": "API-sleutel wissen",
+    "saved": "Wijzigingen opgeslagen",
+    "save": "Opslaan"
+  },
+  "categories": {
+    "beweging": "Beweging",
+    "slaap": "Slaap",
+    "noodknop": "Noodknop",
+    "valdetectie": "Valdetectie",
+    "rookmelder": "Rookmelder",
+    "medicatie": "Medicatie",
+    "activiteit": "Activiteit"
+  },
+  "common": {
+    "back": "Terug",
+    "cancel": "Annuleren",
+    "unknown": "Onbekend"
+  }
+}

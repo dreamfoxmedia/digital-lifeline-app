@@ -1,0 +1,166 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
+import { Preferences } from '@capacitor/preferences'
+import { apiClient } from '../lib/apiClient'
+import { useAuth } from '../context/AuthContext'
+import ProfileForm from '../components/ProfileForm'
+import type { MeResponse, ProfileFormData } from '../types'
+
+export default function SettingsScreen() {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { signOut, mode } = useAuth()
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [errors] = useState<Partial<Record<keyof ProfileFormData, string>>>({})
+
+  const meQuery = useQuery<MeResponse>({
+    queryKey: ['me'],
+    queryFn: () => apiClient.get('/api/mobile/me'),
+  })
+
+  const profile = meQuery.data?.profile
+
+  const [formData, setFormData] = useState<ProfileFormData>({
+    full_name: '',
+    phone: '',
+    relation: '',
+    notify_emergency: true,
+    notify_categories: [],
+  })
+
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name ?? '',
+        phone: profile.phone ?? '',
+        relation: profile.relation ?? '',
+        notify_emergency: profile.notify_emergency ?? true,
+        notify_categories: profile.notify_categories ?? [],
+      })
+    }
+  }, [profile])
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    setApiError(null)
+    setSaving(true)
+    try {
+      await apiClient.patch('/api/mobile/me', formData)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch (err) {
+      setApiError(err instanceof Error ? err.message : 'Onbekende fout')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handlePushToggle() {
+    try {
+      const { PushNotifications } = await import('@capacitor/push-notifications')
+      const result = await PushNotifications.requestPermissions()
+      if (result.receive === 'granted') {
+        await PushNotifications.register()
+        PushNotifications.addListener('registration', async (token) => {
+          await apiClient.post('/api/mobile/push/register', {
+            platform: /iphone|ipad/i.test(navigator.userAgent) ? 'ios' : 'android',
+            token: token.value,
+          })
+        })
+      }
+    } catch (err) {
+      console.error('Push registratie mislukt:', err)
+    }
+  }
+
+  async function handleRemoveApiKey() {
+    await Preferences.remove({ key: 'apiKey' })
+    await signOut()
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f13] flex flex-col">
+      {/* Header */}
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-4 bg-[#0f0f13] flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
+          aria-label={t('common.back')}
+        >
+          <span className="text-white text-base">←</span>
+        </button>
+        <h1 className="text-white font-bold text-lg">{t('settings.title')}</h1>
+      </div>
+
+      <form onSubmit={handleSave} className="flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
+        {/* Profiel sectie */}
+        <div className="px-4 pt-6">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {t('settings.section_profile')}
+          </p>
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl p-4">
+            <ProfileForm data={formData} onChange={setFormData} errors={errors} />
+          </div>
+        </div>
+
+        {/* Meldingen sectie */}
+        <div className="px-4 pt-6">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {t('settings.section_notifications')}
+          </p>
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
+            <button
+              type="button"
+              onClick={handlePushToggle}
+              className="w-full flex items-center justify-between px-4 py-4 active:bg-gray-50 dark:active:bg-gray-800"
+            >
+              <span className="text-gray-900 dark:text-white font-medium">{t('settings.push_label')}</span>
+              <span className="text-[#FFB454]">→</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Opslaan */}
+        {apiError && (
+          <p className="mx-4 mt-4 text-red-500 text-sm text-center">{apiError}</p>
+        )}
+        {saved && (
+          <p className="mx-4 mt-4 text-green-500 text-sm text-center font-medium">{t('settings.saved')}</p>
+        )}
+        <div className="px-4 mt-6">
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-4 rounded-xl bg-[#FFB454] text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform"
+          >
+            {saving ? '...' : t('settings.save')}
+          </button>
+        </div>
+
+        {/* Uitloggen / API-sleutel wissen */}
+        <div className="px-4 mt-4 space-y-3">
+          {mode === 'apiKey' && (
+            <button
+              type="button"
+              onClick={handleRemoveApiKey}
+              className="w-full py-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-medium text-base active:bg-gray-50 dark:active:bg-gray-800 transition-colors"
+            >
+              {t('settings.remove_apikey')}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={signOut}
+            className="w-full py-4 rounded-xl border border-red-200 dark:border-red-900 text-red-500 font-medium text-base active:bg-red-50 dark:active:bg-red-900/20 transition-colors"
+          >
+            {t('settings.logout')}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
