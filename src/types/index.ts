@@ -69,9 +69,8 @@ export interface CategoriesResponse {
 export interface EventItem {
   id: string
   time: string
-  icon: string
-  description: string
   category: string
+  description: string
 }
 
 export interface ProfileFormData {

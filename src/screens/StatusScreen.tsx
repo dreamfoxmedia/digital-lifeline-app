@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/apiClient'
@@ -53,6 +53,7 @@ export default function StatusScreen() {
   const queryClient = useQueryClient()
   const now = useClock()
   const [emergency, setEmergency] = useState<CategoryStatus | null>(null)
+  const eventsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const meQuery = useQuery<MeResponse>({
     queryKey: ['me'],
@@ -92,7 +93,10 @@ export default function StatusScreen() {
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'category_events', filter: `household_id=eq.${householdId}` },
         (payload) => {
-          queryClient.invalidateQueries({ queryKey: ['events'] })
+          if (eventsDebounce.current) clearTimeout(eventsDebounce.current)
+          eventsDebounce.current = setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ['events'] })
+          }, 1000)
           const row = payload.new as CategoryStatus
           if (row.severity === 'emergency') setEmergency(row)
         }
