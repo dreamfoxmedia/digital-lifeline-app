@@ -60,15 +60,9 @@ export default function OnboardingScreen() {
 
     setSaving(true)
     try {
-      // TODO: PATCH /api/mobile/me — endpoint nog niet beschikbaar, tijdelijk lokaal gestubd
       await apiClient.patch('/api/mobile/me', result.data)
       navigate('/', { replace: true })
     } catch (err) {
-      // Tijdelijke stub: als endpoint 404 is, toch doorgaan
-      if (err instanceof Error && err.message.includes('404')) {
-        navigate('/', { replace: true })
-        return
-      }
       setApiError(err instanceof Error ? err.message : 'Onbekende fout')
     } finally {
       setSaving(false)
