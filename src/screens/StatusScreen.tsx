@@ -1,20 +1,57 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/apiClient'
 import { supabase } from '../lib/supabase'
-import ProfileCard from '../components/ProfileCard'
-import CategoryCard from '../components/CategoryCard'
+import CategoryTile from '../components/CategoryTile'
 import EmergencyAlert from '../components/EmergencyAlert'
-import type { CategoriesResponse, MeResponse, CategoryStatus } from '../types'
+import type { CategoriesResponse, MeResponse, CategoryStatus, EventItem } from '../types'
 
 const REFETCH_INTERVAL = 5 * 60 * 1000
 
+function useClock() {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000)
+    return () => clearInterval(id)
+  }, [])
+  return now
+}
+
+function formatDate(d: Date) {
+  const date = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+  const time = new Intl.DateTimeFormat('nl-NL', { hour: '2-digit', minute: '2-digit' }).format(d)
+  return `${date} · ${time}`
+}
+
+function initials(name: string) {
+  return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
+}
+
+function overallStatus(cats: CategoryStatus[]) {
+  if (cats.some(c => c.severity === 'emergency')) {
+    return { label: 'Noodmelding', detail: 'Directe aandacht vereist', bg: 'bg-red-50', text: 'text-red-700', ring: 'bg-red-100 text-red-600' }
+  }
+  if (cats.some(c => c.severity === 'warning')) {
+    return { label: 'Let op', detail: 'Iets vraagt aandacht', bg: 'bg-orange-50', text: 'text-orange-700', ring: 'bg-orange-100 text-orange-600' }
+  }
+  return { label: 'Geen zorgen', detail: 'Normaal dagritme vandaag', bg: 'bg-teal-50', text: 'text-teal-700', ring: 'bg-teal-100 text-teal-600' }
+}
+
+const EVENT_ICONS: Record<string, string> = {
+  beweging: '☕',
+  voordeur: '🚪',
+  slaap: '🌙',
+  activiteit: '☀️',
+  medicatie: '💊',
+  valdetectie: '⚠️',
+  noodknop: '🆘',
+}
+
 export default function StatusScreen() {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const now = useClock()
   const [emergency, setEmergency] = useState<CategoryStatus | null>(null)
 
   const meQuery = useQuery<MeResponse>({
@@ -28,7 +65,12 @@ export default function StatusScreen() {
     refetchInterval: REFETCH_INTERVAL,
   })
 
-  // Doorsturen naar onboarding als viewer ontbreekt of profiel onvolledig is
+  const eventsQuery = useQuery<EventItem[]>({
+    queryKey: ['events'],
+    queryFn: () => apiClient.get('/api/mobile/events'),
+    retry: false,
+  })
+
   useEffect(() => {
     if (!meQuery.data) return
     const { viewer } = meQuery.data
@@ -37,22 +79,20 @@ export default function StatusScreen() {
     }
   }, [meQuery.data, navigate])
 
-  // Realtime Supabase subscription
   useEffect(() => {
     const householdId = catQuery.data?.household?.id
     if (!householdId) return
 
     const channel = supabase
       .channel(`status:${householdId}`)
-      .on(
-        'postgres_changes',
+      .on('postgres_changes',
         { event: '*', schema: 'public', table: 'category_status', filter: `household_id=eq.${householdId}` },
         () => { queryClient.invalidateQueries({ queryKey: ['categories'] }) }
       )
-      .on(
-        'postgres_changes',
+      .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'category_events', filter: `household_id=eq.${householdId}` },
         (payload) => {
+          queryClient.invalidateQueries({ queryKey: ['events'] })
           const row = payload.new as CategoryStatus
           if (row.severity === 'emergency') setEmergency(row)
         }
@@ -64,87 +104,120 @@ export default function StatusScreen() {
 
   const refresh = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['categories'] })
+    queryClient.invalidateQueries({ queryKey: ['events'] })
   }, [queryClient])
 
-  const loading = catQuery.isLoading || meQuery.isLoading
-  const error = catQuery.error || meQuery.error
+  const data = catQuery.data
+  const status = data ? overallStatus(data.categories) : null
+  const person = data?.monitored_person
+  const events = eventsQuery.data ?? []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f13] flex flex-col">
-      {/* Noodmelding overlay */}
+    <div className="min-h-screen bg-[#ede9e3]">
       {emergency && (
-        <EmergencyAlert
-          category={emergency.category}
-          onDismiss={() => setEmergency(null)}
-        />
+        <EmergencyAlert category={emergency.category} onDismiss={() => setEmergency(null)} />
       )}
 
-      {/* Header */}
-      <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-4 bg-[#0f0f13] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#FFB454] flex items-center justify-center">
-            <svg viewBox="0 0 256 256" className="w-3.5 h-3.5" fill="none" stroke="white" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20,128 L72,128 L88,76 L108,180 L128,96 L148,128 L236,128" />
-            </svg>
-          </div>
-          <h1 className="text-white font-bold text-lg">{t('status.title')}</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={refresh}
-            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
-            aria-label="Vernieuwen"
-          >
-            <span className="text-white text-base">↻</span>
-          </button>
-          <button
-            onClick={() => navigate('/settings')}
-            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
-            aria-label="Instellingen"
-          >
-            <span className="text-white text-base">⚙️</span>
-          </button>
-        </div>
-      </div>
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
-        {loading && (
-          <div className="flex items-center justify-center pt-20">
-            <p className="text-gray-400">{t('status.loading')}</p>
-          </div>
-        )}
+        {/* Hoofdkaart */}
+        <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
 
-        {error && !loading && (
-          <div className="flex flex-col items-center justify-center pt-20 gap-4">
-            <p className="text-gray-400">{t('status.error')}</p>
-            <button
-              onClick={refresh}
-              className="px-6 py-2 rounded-xl bg-[#FFB454] text-white font-medium"
-            >
-              {t('status.retry')}
-            </button>
-          </div>
-        )}
-
-        {catQuery.data && !loading && (
-          <>
-            {/* Profielkaart */}
-            <div className="pt-4">
-              <ProfileCard
-                person={catQuery.data.monitored_person}
-                household={catQuery.data.household}
-              />
+          {/* Datum + knoppen */}
+          <div className="px-5 pt-5 flex items-center justify-between">
+            <span className="text-gray-400 text-sm capitalize">{formatDate(now)}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={refresh}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
+                aria-label="Vernieuwen"
+              >
+                ↻
+              </button>
+              <button
+                onClick={() => navigate('/settings')}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
+                aria-label="Instellingen"
+              >
+                🔔
+              </button>
             </div>
+          </div>
 
-            {/* Categorie-tegels */}
-            <div className="flex flex-col gap-3 pt-2">
-              {catQuery.data.categories.map(item => (
-                <CategoryCard key={item.category} item={item} />
-              ))}
+          {/* Persoon */}
+          {person && (
+            <div className="px-5 py-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-semibold text-base">{initials(person.name)}</span>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 text-lg leading-tight">{person.name}</p>
+                <p className="text-gray-400 text-sm">{data?.household.name}{status ? ` · ${status.label.toLowerCase()}` : ''}</p>
+              </div>
             </div>
-          </>
-        )}
+          )}
+
+          {/* Statusbanner */}
+          {status && (
+            <div className={`mx-5 mb-5 ${status.bg} rounded-2xl px-4 py-3 flex items-center gap-3`}>
+              <div className={`w-8 h-8 rounded-full ${status.ring} flex items-center justify-center text-sm flex-shrink-0`}>
+                ✓
+              </div>
+              <div>
+                <p className={`${status.text} font-semibold text-base leading-tight`}>{status.label}</p>
+                <p className={`${status.text} text-sm opacity-80`}>{status.detail}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Laadstatus */}
+          {catQuery.isLoading && (
+            <div className="px-5 pb-6 text-center text-gray-400">Laden...</div>
+          )}
+
+          {/* NU — categorie raster */}
+          {data && data.categories.length > 0 && (
+            <div className="px-5 mb-6">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Nu</p>
+              <div className="grid grid-cols-2 gap-3">
+                {data.categories.map(item => (
+                  <CategoryTile key={item.category} item={item} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* VANDAAG — activiteitenlijst */}
+          {events.length > 0 && (
+            <div className="px-5 pb-6">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Vandaag</p>
+              <div className="flex flex-col">
+                {events.map((ev, i) => (
+                  <div key={ev.id}>
+                    <div className="flex items-center gap-4 py-3">
+                      <span className="text-gray-400 text-sm w-12 flex-shrink-0 tabular-nums">{ev.time}</span>
+                      <span className="text-base flex-shrink-0">{EVENT_ICONS[ev.category] ?? '📌'}</span>
+                      <span className="text-gray-800 text-sm">{ev.description}</span>
+                    </div>
+                    {i < events.length - 1 && (
+                      <div className="h-px bg-gray-100 ml-16" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        {/* Tandwiel onderaan */}
+        <button
+          onClick={() => navigate('/settings')}
+          className="mt-4 w-full flex items-center justify-center gap-2 text-gray-400 text-sm py-2 active:text-gray-600"
+        >
+          <span>⚙️</span> Instellingen
+        </button>
+
       </div>
     </div>
   )

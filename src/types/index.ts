@@ -66,6 +66,14 @@ export interface CategoriesResponse {
   categories: CategoryStatus[]
 }
 
+export interface EventItem {
+  id: string
+  time: string
+  icon: string
+  description: string
+  category: string
+}
+
 export interface ProfileFormData {
   full_name: string
   display_name: string
