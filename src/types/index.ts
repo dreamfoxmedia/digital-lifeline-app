@@ -19,8 +19,20 @@ export interface Profile {
   notify_categories?: string[]
 }
 
+export interface Viewer {
+  id: string
+  household_id: string
+  display_name: string
+  phone?: string
+  relation?: string
+  notify_emergency: boolean
+  notify_categories: string[]
+  profile_completed: boolean
+}
+
 export interface MeResponse {
   profile: Profile
+  viewer: Viewer | null
   roles: string[]
 }
 
@@ -56,6 +68,7 @@ export interface CategoriesResponse {
 
 export interface ProfileFormData {
   full_name: string
+  display_name: string
   phone: string
   relation: string
   notify_emergency: boolean

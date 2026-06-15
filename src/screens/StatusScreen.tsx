@@ -28,12 +28,13 @@ export default function StatusScreen() {
     refetchInterval: REFETCH_INTERVAL,
   })
 
-  // Doorsturen naar onboarding als profiel onvolledig is
+  // Doorsturen naar onboarding als viewer ontbreekt of profiel onvolledig is
   useEffect(() => {
-    const profile = meQuery.data?.profile
-    if (!profile) return
-    const needsOnboarding = !profile.full_name || profile.notify_emergency === undefined
-    if (needsOnboarding) navigate('/onboarding', { replace: true })
+    if (!meQuery.data) return
+    const { viewer } = meQuery.data
+    if (viewer === null || viewer.profile_completed === false) {
+      navigate('/onboarding', { replace: true })
+    }
   }, [meQuery.data, navigate])
 
   // Realtime Supabase subscription

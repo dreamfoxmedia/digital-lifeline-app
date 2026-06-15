@@ -11,6 +11,10 @@ const schema = z.object({
     .string()
     .min(2, 'Naam moet minimaal 2 tekens bevatten')
     .max(100, 'Naam mag maximaal 100 tekens bevatten'),
+  display_name: z
+    .string()
+    .min(1, 'Weergavenaam is verplicht')
+    .max(100, 'Weergavenaam mag maximaal 100 tekens bevatten'),
   phone: z
     .string()
     .regex(/^\+?[1-9]\d{6,14}$/, 'Ongeldig telefoonnummer (gebruik bijv. +31612345678)')
@@ -18,11 +22,12 @@ const schema = z.object({
     .optional(),
   relation: z.string().optional(),
   notify_emergency: z.boolean(),
-  notify_categories: z.array(z.string()),
+  notify_categories: z.array(z.string()).max(20),
 })
 
 const defaultData: ProfileFormData = {
   full_name: '',
+  display_name: '',
   phone: '',
   relation: '',
   notify_emergency: true,

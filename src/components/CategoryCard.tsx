@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import type { CategoryStatus, Severity } from '../types'
 
 const ICONS: Record<string, string> = {
@@ -23,7 +24,7 @@ const BORDER_STYLES: Record<Severity, string> = {
   emergency: 'border-red-300 dark:border-red-700',
 }
 
-function relativeTime(iso: string, t: (key: string, opts?: object) => string): string {
+function relativeTime(iso: string, t: TFunction): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
   if (diff < 60) return t('status.just_now')
   if (diff < 3600) return t('status.minutes_ago_one', { count: Math.floor(diff / 60) })

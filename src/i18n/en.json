@@ -16,6 +16,8 @@
     "title": "Complete your profile",
     "subtitle": "Please fill in your details to get started",
     "full_name": "Full name",
+    "display_name": "Display name",
+    "display_name_placeholder": "E.g. Dad, Grandpa Jan, Sister Rose",
     "phone": "Phone number (optional)",
     "relation": "Relation to monitored person",
     "relation_placeholder": "Choose a relation",

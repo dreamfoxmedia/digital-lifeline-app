@@ -16,6 +16,8 @@
     "title": "Profiel aanvullen",
     "subtitle": "Vul uw gegevens in om aan de slag te gaan",
     "full_name": "Volledige naam",
+    "display_name": "Weergavenaam",
+    "display_name_placeholder": "Bijv. Papa, Opa Jan, Zus Roos",
     "phone": "Telefoonnummer (optioneel)",
     "relation": "Relatie tot bewaakte persoon",
     "relation_placeholder": "Kies een relatie",

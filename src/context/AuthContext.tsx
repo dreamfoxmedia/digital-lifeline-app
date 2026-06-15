@@ -24,7 +24,7 @@ type Action =
 
 const initial: AuthState = { mode: null, apiKey: null, accessToken: null, userId: null }
 
-function reducer(state: AuthState, action: Action): AuthState {
+function reducer(_state: AuthState, action: Action): AuthState {
   switch (action.type) {
     case 'SET_SESSION':
       return { mode: 'session', accessToken: action.accessToken, userId: action.userId, apiKey: null }

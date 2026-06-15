@@ -40,6 +40,21 @@ export default function ProfileForm({ data, onChange, errors }: Props) {
         {errors.full_name && <p className="text-red-500 text-sm mt-1">{errors.full_name}</p>}
       </div>
 
+      {/* Weergavenaam */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          {t('onboarding.display_name')} <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={data.display_name}
+          onChange={e => set('display_name', e.target.value)}
+          placeholder={t('onboarding.display_name_placeholder')}
+          className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-[#FFB454]"
+        />
+        {errors.display_name && <p className="text-red-500 text-sm mt-1">{errors.display_name}</p>}
+      </div>
+
       {/* Telefoonnummer */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">

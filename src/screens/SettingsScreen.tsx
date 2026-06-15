@@ -23,9 +23,11 @@ export default function SettingsScreen() {
   })
 
   const profile = meQuery.data?.profile
+  const viewer = meQuery.data?.viewer
 
   const [formData, setFormData] = useState<ProfileFormData>({
     full_name: '',
+    display_name: '',
     phone: '',
     relation: '',
     notify_emergency: true,
@@ -33,16 +35,17 @@ export default function SettingsScreen() {
   })
 
   useEffect(() => {
-    if (profile) {
+    if (profile && viewer) {
       setFormData({
         full_name: profile.full_name ?? '',
-        phone: profile.phone ?? '',
-        relation: profile.relation ?? '',
-        notify_emergency: profile.notify_emergency ?? true,
-        notify_categories: profile.notify_categories ?? [],
+        display_name: viewer.display_name ?? '',
+        phone: viewer.phone ?? '',
+        relation: viewer.relation ?? '',
+        notify_emergency: viewer.notify_emergency ?? true,
+        notify_categories: viewer.notify_categories ?? [],
       })
     }
-  }, [profile])
+  }, [profile, viewer])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
