@@ -54,15 +54,15 @@ export type Severity = 'info' | 'warning' | 'emergency'
 export interface CategoryStatus {
   category: string
   status: string
-  status_info: string
+  status_info: unknown
   severity: Severity
   observed_at: string
   updated_at: string
 }
 
 export interface CategoriesResponse {
-  household: Household
-  monitored_person: MonitoredPerson
+  household: Household | null
+  monitored_person: MonitoredPerson | null
   categories: CategoryStatus[]
 }
 

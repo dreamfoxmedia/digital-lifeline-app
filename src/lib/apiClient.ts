@@ -1,7 +1,9 @@
 import { Preferences } from '@capacitor/preferences'
 import { supabase } from './supabase'
 
-const BASE_URL = 'https://mijn.digitallifeline.nl'
+// In dev gebruikt Vite de proxy (/api → mijn.digitallifeline.nl) zodat CORS niet blokkeert.
+// In productie (Capacitor) is er geen proxy en gebruiken we de volledige URL.
+const BASE_URL = import.meta.env.DEV ? '' : 'https://mijn.digitallifeline.nl'
 
 let onUnauthorized: (() => void) | null = null
 

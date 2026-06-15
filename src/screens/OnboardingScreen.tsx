@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { apiClient } from '../lib/apiClient'
 import ProfileForm from '../components/ProfileForm'
@@ -37,6 +38,7 @@ const defaultData: ProfileFormData = {
 export default function OnboardingScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [data, setData] = useState<ProfileFormData>(defaultData)
   const [errors, setErrors] = useState<Partial<Record<keyof ProfileFormData, string>>>({})
   const [saving, setSaving] = useState(false)
@@ -61,6 +63,7 @@ export default function OnboardingScreen() {
     setSaving(true)
     try {
       await apiClient.patch('/api/mobile/me', result.data)
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
       navigate('/', { replace: true })
     } catch (err) {
       setApiError(err instanceof Error ? err.message : 'Onbekende fout')

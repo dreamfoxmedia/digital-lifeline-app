@@ -50,7 +50,7 @@ export default function CategoryCard({ item }: Props) {
         {/* Naam + status */}
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 dark:text-white text-base">{label}</p>
-          <p className="text-gray-500 dark:text-gray-400 text-sm truncate">{item.status_info || item.status}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm truncate">{typeof item.status_info === 'string' ? item.status_info : item.status}</p>
         </div>
 
         {/* Severity badge */}

@@ -1,5 +1,16 @@
 import type { CategoryStatus } from '../types'
 
+function displayValue(info: unknown, fallback: string): string {
+  if (info === null || info === undefined || info === '') return fallback
+  if (typeof info === 'string') return info
+  if (typeof info === 'object') {
+    const obj = info as Record<string, unknown>
+    const v = obj.text ?? obj.label ?? obj.value ?? obj.state ?? obj.description
+    if (typeof v === 'string' && v) return v
+  }
+  return fallback
+}
+
 const ICONS: Record<string, string> = {
   aanwezigheid: '🚶',
   beweging: '⚡',
@@ -33,7 +44,7 @@ export default function CategoryTile({ item }: Props) {
       <span className="text-xl">{icon}</span>
       <p className="text-gray-400 text-sm leading-tight">{item.category.charAt(0).toUpperCase() + item.category.slice(1)}</p>
       <p className={`font-bold text-base leading-snug ${valueColor}`}>
-        {item.status_info || item.status}
+        {displayValue(item.status_info, item.status)}
       </p>
     </div>
   )

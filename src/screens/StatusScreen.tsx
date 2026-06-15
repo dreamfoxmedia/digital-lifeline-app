@@ -156,7 +156,7 @@ export default function StatusScreen() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 text-lg leading-tight">{person.name}</p>
-                <p className="text-gray-400 text-sm">{data?.household.name}{status ? ` · ${status.label.toLowerCase()}` : ''}</p>
+                <p className="text-gray-400 text-sm">{data?.household?.name}{status ? ` · ${status.label.toLowerCase()}` : ''}</p>
               </div>
             </div>
           )}
@@ -175,8 +175,39 @@ export default function StatusScreen() {
           )}
 
           {/* Laadstatus */}
-          {catQuery.isLoading && (
+          {(catQuery.isLoading || meQuery.isLoading) && (
             <div className="px-5 pb-6 text-center text-gray-400">Laden...</div>
+          )}
+
+          {/* Foutmelding */}
+          {(catQuery.error || meQuery.error) && !catQuery.isLoading && !meQuery.isLoading && (
+            <div className="mx-5 mb-5 bg-red-50 rounded-2xl p-4">
+              <p className="text-red-700 font-semibold text-sm mb-1">Kon gegevens niet laden</p>
+              <p className="text-red-500 text-xs font-mono break-all">
+                {(catQuery.error as Error)?.message || (meQuery.error as Error)?.message}
+              </p>
+              <button
+                onClick={refresh}
+                className="mt-3 px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium"
+              >
+                Opnieuw proberen
+              </button>
+            </div>
+          )}
+
+          {/* Lege staat — nog geen huishouden of sensordata */}
+          {data && !data.household && !catQuery.isLoading && (
+            <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
+              <p className="text-gray-500 font-medium text-sm mb-1">Nog niet gekoppeld</p>
+              <p className="text-gray-400 text-xs">Je account is nog niet aan een huishouden gekoppeld. Neem contact op met de beheerder.</p>
+            </div>
+          )}
+
+          {data && data.household && data.categories.length === 0 && !catQuery.isLoading && (
+            <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
+              <p className="text-gray-500 font-medium text-sm mb-1">Geen sensordata</p>
+              <p className="text-gray-400 text-xs">Er zijn nog geen categoriestatus gegevens beschikbaar.</p>
+            </div>
           )}
 
           {/* NU — categorie raster */}
