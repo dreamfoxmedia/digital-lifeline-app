@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import brandIcon from '../assets/brand-icon.png'
 import { useAuth } from '../context/AuthContext'
 
 export default function LoginScreen() {
@@ -29,11 +30,7 @@ export default function LoginScreen() {
 
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FFB454] mb-4">
-            <svg viewBox="0 0 256 256" className="w-8 h-8" fill="none" stroke="white" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20,128 L72,128 L88,76 L108,180 L128,96 L148,128 L236,128" />
-            </svg>
-          </div>
+          <img src={brandIcon} alt="Digital Lifeline" className="w-16 h-16 rounded-2xl shadow-md mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Digital Lifeline</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">{t('login.title')}</p>
         </div>
@@ -50,7 +47,7 @@ export default function LoginScreen() {
               onChange={e => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-[#FFB454]"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-teal"
             />
           </div>
           <div>
@@ -63,7 +60,7 @@ export default function LoginScreen() {
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-[#FFB454]"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-teal"
             />
           </div>
 
@@ -72,7 +69,7 @@ export default function LoginScreen() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#FFB454] text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform mt-2"
+            className="w-full py-3.5 rounded-xl bg-brand text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform mt-2"
           >
             {loading ? '...' : t('login.login_btn')}
           </button>

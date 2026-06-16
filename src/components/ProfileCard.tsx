@@ -18,7 +18,7 @@ export default function ProfileCard({ person, household }: Props) {
     <div className="mx-4 mb-4 p-5 rounded-2xl bg-[#1a1a24] dark:bg-[#1a1a24] shadow-lg">
       <div className="flex items-center gap-4">
         {/* Avatar */}
-        <div className="w-14 h-14 rounded-full bg-[#FFB454] flex items-center justify-center flex-shrink-0">
+        <div className="w-14 h-14 rounded-full bg-brand-teal flex items-center justify-center flex-shrink-0">
           <span className="text-white font-bold text-xl">{initials(person.name)}</span>
         </div>
 
@@ -36,7 +36,7 @@ export default function ProfileCard({ person, household }: Props) {
       {person.phone && (
         <a
           href={`tel:${person.phone}`}
-          className="mt-4 flex items-center gap-2 text-[#FFB454] text-sm font-medium"
+          className="mt-4 flex items-center gap-2 text-brand-teal text-sm font-medium"
         >
           <span>📞</span>
           <span>{person.phone}</span>

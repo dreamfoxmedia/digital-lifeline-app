@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Preferences } from '@capacitor/preferences'
+import brandIcon from '../assets/brand-icon.png'
 import i18n from '../i18n'
 
 function FlagNL() {
@@ -59,11 +60,7 @@ export default function LanguageScreen({ onDone }: Props) {
   return (
     <div className="min-h-screen bg-[#ede9e3] flex flex-col items-center justify-center px-6 pb-[env(safe-area-inset-bottom)]">
       <div className="mb-10 flex flex-col items-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#FFB454] flex items-center justify-center mb-4 shadow-md">
-          <svg viewBox="0 0 256 256" className="w-8 h-8" fill="none" stroke="white" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20,128 L72,128 L88,76 L108,180 L128,96 L148,128 L236,128" />
-          </svg>
-        </div>
+        <img src={brandIcon} alt="Digital Lifeline" className="w-16 h-16 rounded-2xl shadow-md mb-4" />
         <h1 className="text-2xl font-bold text-gray-900">Digital Lifeline</h1>
       </div>
 

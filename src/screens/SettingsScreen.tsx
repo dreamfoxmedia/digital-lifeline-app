@@ -122,7 +122,7 @@ export default function SettingsScreen() {
               className="w-full flex items-center justify-between px-4 py-4 active:bg-gray-50 dark:active:bg-gray-800"
             >
               <span className="text-gray-900 dark:text-white font-medium">{t('settings.push_label')}</span>
-              <span className="text-[#FFB454]">→</span>
+              <span className="text-brand-teal">→</span>
             </button>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function SettingsScreen() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-4 rounded-xl bg-[#FFB454] text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform"
+            className="w-full py-4 rounded-xl bg-brand text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform"
           >
             {saving ? '...' : t('settings.save')}
           </button>

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { apiClient } from '../lib/apiClient'
+import brandIcon from '../assets/brand-icon.png'
 import ProfileForm from '../components/ProfileForm'
 import type { ProfileFormData } from '../types'
 
@@ -77,11 +78,7 @@ export default function OnboardingScreen() {
       {/* Header */}
       <div className="px-6 pt-[calc(env(safe-area-inset-top)+24px)] pb-6 bg-white dark:bg-[#0f0f13] border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-8 h-8 rounded-lg bg-[#FFB454] flex items-center justify-center">
-            <svg viewBox="0 0 256 256" className="w-4 h-4" fill="none" stroke="white" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20,128 L72,128 L88,76 L108,180 L128,96 L148,128 L236,128" />
-            </svg>
-          </div>
+          <img src={brandIcon} alt="Digital Lifeline" className="w-8 h-8 rounded-lg" />
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('onboarding.title')}</h1>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 ml-11">{t('onboarding.subtitle')}</p>
@@ -98,7 +95,7 @@ export default function OnboardingScreen() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full mt-8 py-4 rounded-xl bg-[#FFB454] text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform"
+          className="w-full mt-8 py-4 rounded-xl bg-brand text-white font-semibold text-base disabled:opacity-60 active:scale-95 transition-transform"
         >
           {saving ? t('onboarding.saving') : t('onboarding.save')}
         </button>

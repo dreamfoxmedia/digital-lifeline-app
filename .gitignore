@@ -12,3 +12,7 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Dev server logs
+vite-dev-out.log
+vite-dev-err.log
