@@ -1,9 +1,11 @@
 import { Preferences } from '@capacitor/preferences'
 import { supabase } from './supabase'
 
-// In dev gebruikt Vite de proxy (/api → mijn.digitallifeline.nl) zodat CORS niet blokkeert.
-// In productie (Capacitor) is er geen proxy en gebruiken we de volledige URL.
-const BASE_URL = import.meta.env.DEV ? '' : 'https://mijn.digitallifeline.nl'
+async function getBaseUrl(): Promise<string> {
+  if (import.meta.env.DEV) return ''
+  const { value } = await Preferences.get({ key: 'serverUrl' })
+  return value ?? 'https://mijn.digitallifeline.nl'
+}
 
 let onUnauthorized: (() => void) | null = null
 
@@ -28,8 +30,8 @@ async function getHeaders(): Promise<Record<string, string>> {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const headers = await getHeaders()
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const [headers, baseUrl] = await Promise.all([getHeaders(), getBaseUrl()])
+  const res = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: { ...headers, ...(options?.headers ?? {}) },
   })
