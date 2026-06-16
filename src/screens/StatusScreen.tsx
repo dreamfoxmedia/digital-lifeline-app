@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/apiClient'
 import { supabase } from '../lib/supabase'
@@ -8,6 +10,8 @@ import EmergencyAlert from '../components/EmergencyAlert'
 import type { CategoriesResponse, MeResponse, CategoryStatus, EventItem } from '../types'
 
 const REFETCH_INTERVAL = 5 * 60 * 1000
+
+const DATE_LOCALES: Record<string, string> = { nl: 'nl-NL', en: 'en-GB' }
 
 function useClock() {
   const [now, setNow] = useState(new Date())
@@ -18,9 +22,10 @@ function useClock() {
   return now
 }
 
-function formatDate(d: Date) {
-  const date = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
-  const time = new Intl.DateTimeFormat('nl-NL', { hour: '2-digit', minute: '2-digit' }).format(d)
+function formatDate(d: Date, language: string) {
+  const locale = DATE_LOCALES[language] ?? 'nl-NL'
+  const date = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+  const time = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(d)
   return `${date} · ${time}`
 }
 
@@ -28,14 +33,14 @@ function initials(name: string) {
   return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
 }
 
-function overallStatus(cats: CategoryStatus[]) {
+function overallStatus(cats: CategoryStatus[], t: TFunction) {
   if (cats.some(c => c.severity === 'emergency')) {
-    return { label: 'Noodmelding', detail: 'Directe aandacht vereist', bg: 'bg-red-50', text: 'text-red-700', ring: 'bg-red-100 text-red-600' }
+    return { label: t('status.emergency_label'), detail: t('status.emergency_detail'), bg: 'bg-red-50', text: 'text-red-700', ring: 'bg-red-100 text-red-600' }
   }
   if (cats.some(c => c.severity === 'warning')) {
-    return { label: 'Let op', detail: 'Iets vraagt aandacht', bg: 'bg-orange-50', text: 'text-orange-700', ring: 'bg-orange-100 text-orange-600' }
+    return { label: t('status.warning_label'), detail: t('status.warning_detail'), bg: 'bg-orange-50', text: 'text-orange-700', ring: 'bg-orange-100 text-orange-600' }
   }
-  return { label: 'Geen zorgen', detail: 'Normaal dagritme vandaag', bg: 'bg-teal-50', text: 'text-teal-700', ring: 'bg-teal-100 text-teal-600' }
+  return { label: t('status.ok_label'), detail: t('status.ok_detail'), bg: 'bg-teal-50', text: 'text-teal-700', ring: 'bg-teal-100 text-teal-600' }
 }
 
 const EVENT_ICONS: Record<string, string> = {
@@ -50,6 +55,7 @@ const EVENT_ICONS: Record<string, string> = {
 
 export default function StatusScreen() {
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const now = useClock()
   const [emergency, setEmergency] = useState<CategoryStatus | null>(null)
@@ -112,7 +118,7 @@ export default function StatusScreen() {
   }, [queryClient])
 
   const data = catQuery.data
-  const status = data ? overallStatus(data.categories) : null
+  const status = data ? overallStatus(data.categories, t) : null
   const person = data?.monitored_person
   const events = eventsQuery.data ?? []
 
@@ -129,19 +135,19 @@ export default function StatusScreen() {
 
           {/* Datum + knoppen */}
           <div className="px-5 pt-5 flex items-center justify-between">
-            <span className="text-gray-400 text-sm capitalize">{formatDate(now)}</span>
+            <span className="text-gray-400 text-sm capitalize">{formatDate(now, i18n.language)}</span>
             <div className="flex items-center gap-2">
               <button
                 onClick={refresh}
                 className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
-                aria-label="Vernieuwen"
+                aria-label={t('status.refresh')}
               >
                 ↻
               </button>
               <button
                 onClick={() => navigate('/settings')}
                 className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
-                aria-label="Instellingen"
+                aria-label={t('status.settings_btn')}
               >
                 🔔
               </button>
@@ -176,13 +182,13 @@ export default function StatusScreen() {
 
           {/* Laadstatus */}
           {(catQuery.isLoading || meQuery.isLoading) && (
-            <div className="px-5 pb-6 text-center text-gray-400">Laden...</div>
+            <div className="px-5 pb-6 text-center text-gray-400">{t('status.loading')}</div>
           )}
 
           {/* Foutmelding */}
           {(catQuery.error || meQuery.error) && !catQuery.isLoading && !meQuery.isLoading && (
             <div className="mx-5 mb-5 bg-red-50 rounded-2xl p-4">
-              <p className="text-red-700 font-semibold text-sm mb-1">Kon gegevens niet laden</p>
+              <p className="text-red-700 font-semibold text-sm mb-1">{t('status.error')}</p>
               <p className="text-red-500 text-xs font-mono break-all">
                 {(catQuery.error as Error)?.message || (meQuery.error as Error)?.message}
               </p>
@@ -190,7 +196,7 @@ export default function StatusScreen() {
                 onClick={refresh}
                 className="mt-3 px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium"
               >
-                Opnieuw proberen
+                {t('status.retry')}
               </button>
             </div>
           )}
@@ -198,22 +204,22 @@ export default function StatusScreen() {
           {/* Lege staat — nog geen huishouden of sensordata */}
           {data && !data.household && !catQuery.isLoading && (
             <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
-              <p className="text-gray-500 font-medium text-sm mb-1">Nog niet gekoppeld</p>
-              <p className="text-gray-400 text-xs">Je account is nog niet aan een huishouden gekoppeld. Neem contact op met de beheerder.</p>
+              <p className="text-gray-500 font-medium text-sm mb-1">{t('status.not_linked_title')}</p>
+              <p className="text-gray-400 text-xs">{t('status.not_linked_detail')}</p>
             </div>
           )}
 
           {data && data.household && data.categories.length === 0 && !catQuery.isLoading && (
             <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
-              <p className="text-gray-500 font-medium text-sm mb-1">Geen sensordata</p>
-              <p className="text-gray-400 text-xs">Er zijn nog geen categoriestatus gegevens beschikbaar.</p>
+              <p className="text-gray-500 font-medium text-sm mb-1">{t('status.no_data_title')}</p>
+              <p className="text-gray-400 text-xs">{t('status.no_data_detail')}</p>
             </div>
           )}
 
           {/* NU — categorie raster */}
           {data && data.categories.length > 0 && (
             <div className="px-5 mb-6">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Nu</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">{t('status.now_section')}</p>
               <div className="grid grid-cols-2 gap-3">
                 {data.categories.map(item => (
                   <CategoryTile key={item.category} item={item} />
@@ -225,7 +231,7 @@ export default function StatusScreen() {
           {/* VANDAAG — activiteitenlijst */}
           {events.length > 0 && (
             <div className="px-5 pb-6">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Vandaag</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">{t('status.today_section')}</p>
               <div className="flex flex-col">
                 {events.map((ev, i) => (
                   <div key={ev.id}>
@@ -250,7 +256,7 @@ export default function StatusScreen() {
           onClick={() => navigate('/settings')}
           className="mt-4 w-full flex items-center justify-center gap-2 text-gray-400 text-sm py-2 active:text-gray-600"
         >
-          <span>⚙️</span> Instellingen
+          <span>⚙️</span> {t('status.settings_btn')}
         </button>
 
       </div>

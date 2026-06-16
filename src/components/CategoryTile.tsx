@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { CategoryStatus } from '../types'
 
 function displayValue(info: unknown, fallback: string): string {
@@ -36,13 +37,16 @@ interface Props {
 }
 
 export default function CategoryTile({ item }: Props) {
+  const { t } = useTranslation()
   const icon = ICONS[item.category.toLowerCase()] ?? '📊'
   const valueColor = SEVERITY_VALUE_COLOR[item.severity] ?? 'text-gray-900'
+  const fallbackLabel = item.category.charAt(0).toUpperCase() + item.category.slice(1)
+  const label = t(`categories.${item.category.toLowerCase()}`, { defaultValue: fallbackLabel })
 
   return (
     <div className="bg-stone-50 rounded-2xl p-4 flex flex-col gap-2 min-h-[100px]">
       <span className="text-xl">{icon}</span>
-      <p className="text-gray-400 text-sm leading-tight">{item.category.charAt(0).toUpperCase() + item.category.slice(1)}</p>
+      <p className="text-gray-400 text-sm leading-tight">{label}</p>
       <p className={`font-bold text-base leading-snug ${valueColor}`}>
         {displayValue(item.status_info, item.status)}
       </p>

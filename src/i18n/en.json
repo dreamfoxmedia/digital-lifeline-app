@@ -46,7 +46,21 @@
     "emergency_dismiss": "Dismiss",
     "loading": "Loading...",
     "error": "Could not load data",
-    "retry": "Try again"
+    "retry": "Try again",
+    "now_section": "Now",
+    "today_section": "Today",
+    "refresh": "Refresh",
+    "settings_btn": "Settings",
+    "not_linked_title": "Not linked yet",
+    "not_linked_detail": "Your account is not yet linked to a household. Please contact your administrator.",
+    "no_data_title": "No sensor data",
+    "no_data_detail": "No category status data is available yet.",
+    "emergency_label": "Emergency",
+    "emergency_detail": "Immediate attention required",
+    "warning_label": "Attention",
+    "warning_detail": "Something needs attention",
+    "ok_label": "All good",
+    "ok_detail": "Normal routine today"
   },
   "settings": {
     "title": "Settings",
@@ -65,7 +79,11 @@
     "valdetectie": "Fall detection",
     "rookmelder": "Smoke detector",
     "medicatie": "Medication",
-    "activiteit": "Activity"
+    "activiteit": "Activity",
+    "aanwezigheid": "Presence",
+    "voordeur": "Front door",
+    "temperatuur": "Temperature",
+    "woonkamer": "Living room"
   },
   "common": {
     "back": "Back",

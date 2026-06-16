@@ -46,7 +46,21 @@
     "emergency_dismiss": "Sluiten",
     "loading": "Laden...",
     "error": "Kon gegevens niet laden",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "now_section": "Nu",
+    "today_section": "Vandaag",
+    "refresh": "Vernieuwen",
+    "settings_btn": "Instellingen",
+    "not_linked_title": "Nog niet gekoppeld",
+    "not_linked_detail": "Je account is nog niet aan een huishouden gekoppeld. Neem contact op met de beheerder.",
+    "no_data_title": "Geen sensordata",
+    "no_data_detail": "Er zijn nog geen categoriestatusgegevens beschikbaar.",
+    "emergency_label": "Noodmelding",
+    "emergency_detail": "Directe aandacht vereist",
+    "warning_label": "Let op",
+    "warning_detail": "Iets vraagt aandacht",
+    "ok_label": "Geen zorgen",
+    "ok_detail": "Normaal dagritme vandaag"
   },
   "settings": {
     "title": "Instellingen",
@@ -65,7 +79,11 @@
     "valdetectie": "Valdetectie",
     "rookmelder": "Rookmelder",
     "medicatie": "Medicatie",
-    "activiteit": "Activiteit"
+    "activiteit": "Activiteit",
+    "aanwezigheid": "Aanwezigheid",
+    "voordeur": "Voordeur",
+    "temperatuur": "Temperatuur",
+    "woonkamer": "Woonkamer"
   },
   "common": {
     "back": "Terug",
