@@ -70,7 +70,7 @@ export interface EventItem {
   id: string
   time: string
   category: string
-  description: string
+  description: string | null
 }
 
 export interface ProfileFormData {

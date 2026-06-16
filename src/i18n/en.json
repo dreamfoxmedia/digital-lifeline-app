@@ -72,6 +72,14 @@
     "saved": "Changes saved",
     "save": "Save"
   },
+  "events": {
+    "beweging": "Movement detected",
+    "voordeur": "Activity at the front door",
+    "slaap": "Sleep activity",
+    "keuken": "Activity in the kitchen",
+    "badkamer": "Activity in the bathroom",
+    "default": "Event: {{category}}"
+  },
   "categories": {
     "beweging": "Movement",
     "slaap": "Sleep",

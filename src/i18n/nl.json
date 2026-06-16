@@ -72,6 +72,14 @@
     "saved": "Wijzigingen opgeslagen",
     "save": "Opslaan"
   },
+  "events": {
+    "beweging": "Beweging gedetecteerd",
+    "voordeur": "Activiteit bij de voordeur",
+    "slaap": "Slaap-activiteit",
+    "keuken": "Activiteit in de keuken",
+    "badkamer": "Activiteit in de badkamer",
+    "default": "Gebeurtenis: {{category}}"
+  },
   "categories": {
     "beweging": "Beweging",
     "slaap": "Slaap",

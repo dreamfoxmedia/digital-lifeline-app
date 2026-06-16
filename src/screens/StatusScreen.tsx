@@ -29,6 +29,11 @@ function formatDate(d: Date, language: string) {
   return `${date} · ${time}`
 }
 
+function eventDescription(ev: EventItem, t: TFunction) {
+  if (ev.description) return ev.description
+  return t(`events.${ev.category}`, { defaultValue: t('events.default', { category: ev.category }) })
+}
+
 function initials(name: string) {
   return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
 }
@@ -238,7 +243,7 @@ export default function StatusScreen() {
                     <div className="flex items-center gap-4 py-3">
                       <span className="text-gray-400 text-sm w-12 flex-shrink-0 tabular-nums">{ev.time}</span>
                       <span className="text-base flex-shrink-0">{EVENT_ICONS[ev.category] ?? '📌'}</span>
-                      <span className="text-gray-800 text-sm">{ev.description}</span>
+                      <span className="text-gray-800 text-sm">{eventDescription(ev, t)}</span>
                     </div>
                     {i < events.length - 1 && (
                       <div className="h-px bg-gray-100 ml-16" />
