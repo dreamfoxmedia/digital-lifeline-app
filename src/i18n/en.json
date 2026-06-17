@@ -93,6 +93,15 @@
     "temperatuur": "Temperature",
     "woonkamer": "Living room"
   },
+  "monitored": {
+    "greeting": "Hello",
+    "button": "Press here if you need help",
+    "instruction": "Press the button if something is wrong. Your caregiver will be notified immediately.",
+    "sending": "Sending...",
+    "sent": "Help is on the way!",
+    "sent_detail": "Your caregiver has been notified and will be there as soon as possible.",
+    "reset": "Reset"
+  },
   "common": {
     "back": "Back",
     "cancel": "Cancel",

@@ -10,6 +10,7 @@ import LoginScreen from './screens/LoginScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
 import StatusScreen from './screens/StatusScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import MonitoredPersonScreen from './screens/MonitoredPersonScreen'
 
 type AppState = 'loading' | 'language' | 'ready'
 
@@ -23,6 +24,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<StatusScreen />} />
       <Route path="/onboarding" element={<OnboardingScreen />} />
+      <Route path="/monitored" element={<MonitoredPersonScreen />} />
       <Route path="/settings" element={<SettingsScreen />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

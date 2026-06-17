@@ -93,6 +93,15 @@
     "temperatuur": "Temperatuur",
     "woonkamer": "Woonkamer"
   },
+  "monitored": {
+    "greeting": "Goededag",
+    "button": "Druk hier als je hulp nodig hebt",
+    "instruction": "Druk op de knop als er iets mis is. Je mantelzorger wordt direct gewaarschuwd.",
+    "sending": "Verzenden...",
+    "sent": "Hulp onderweg!",
+    "sent_detail": "Je mantelzorger is gewaarschuwd en komt zo snel mogelijk.",
+    "reset": "Opnieuw"
+  },
   "common": {
     "back": "Terug",
     "cancel": "Annuleren",
