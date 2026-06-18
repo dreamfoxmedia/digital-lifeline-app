@@ -15,8 +15,14 @@ import MonitoredPersonScreen from './screens/MonitoredPersonScreen'
 type AppState = 'loading' | 'language' | 'ready'
 
 function AppRoutes() {
-  const { mode, signOut } = useAuth()
+  const { mode, initializing, signOut } = useAuth()
   setUnauthorizedHandler(signOut)
+
+  if (initializing) return (
+    <div className="min-h-screen bg-[#ede9e3] flex items-center justify-center">
+      <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
+    </div>
+  )
 
   if (mode === null) return <LoginScreen />
 

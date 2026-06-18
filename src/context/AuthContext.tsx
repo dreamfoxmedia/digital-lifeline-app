@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useState,
   type ReactNode,
 } from 'react'
 import { Preferences } from '@capacitor/preferences'
@@ -10,6 +11,7 @@ import { supabase } from '../lib/supabase'
 import type { AuthState } from '../types'
 
 interface AuthContextValue extends AuthState {
+  initializing: boolean
   signInWithPassword: (email: string, password: string) => Promise<void>
   signInWithApiKey: (key: string) => Promise<void>
   signOut: () => Promise<void>
@@ -37,6 +39,7 @@ function reducer(_state: AuthState, action: Action): AuthState {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initial)
+  const [initializing, setInitializing] = useState(true)
 
   useEffect(() => {
     async function restore() {
@@ -44,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (mode === 'apiKey') {
         const { value: key } = await Preferences.get({ key: 'apiKey' })
         if (key) dispatch({ type: 'SET_API_KEY', apiKey: key })
+        setInitializing(false)
         return
       }
       const { data } = await supabase.auth.getSession()
@@ -54,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           userId: data.session.user.id,
         })
       }
+      setInitializing(false)
     }
     restore()
 
@@ -94,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, signInWithPassword, signInWithApiKey, signOut }}>
+    <AuthContext.Provider value={{ ...state, initializing, signInWithPassword, signInWithApiKey, signOut }}>
       {children}
     </AuthContext.Provider>
   )
