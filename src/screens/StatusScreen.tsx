@@ -85,10 +85,20 @@ export default function StatusScreen() {
 
   useEffect(() => {
     if (!meQuery.data) return
-    const { viewer, roles } = meQuery.data
+    const { viewer, roles, registration } = meQuery.data
     if (roles.includes('bewaakt_persoon')) {
       navigate('/monitored', { replace: true })
       return
+    }
+    if (registration) {
+      if (!registration.onboarding_phase_1_completed) {
+        navigate('/registration', { replace: true })
+        return
+      }
+      if (!registration.account_activated) {
+        navigate('/pending', { replace: true })
+        return
+      }
     }
     if (viewer === null || viewer.profile_completed === false) {
       navigate('/onboarding', { replace: true })
