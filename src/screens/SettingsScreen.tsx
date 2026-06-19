@@ -31,6 +31,7 @@ export default function SettingsScreen() {
     phone: '',
     relation: '',
     notify_emergency: true,
+    notify_whatsapp: false,
     notify_categories: [],
   })
 
@@ -42,6 +43,7 @@ export default function SettingsScreen() {
         phone: viewer.phone ?? '',
         relation: viewer.relation ?? '',
         notify_emergency: viewer.notify_emergency ?? true,
+        notify_whatsapp: viewer.notify_whatsapp ?? false,
         notify_categories: viewer.notify_categories ?? [],
       })
     }

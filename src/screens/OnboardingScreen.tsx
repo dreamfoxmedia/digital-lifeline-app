@@ -33,6 +33,7 @@ const defaultData: ProfileFormData = {
   phone: '',
   relation: '',
   notify_emergency: true,
+  notify_whatsapp: false,
   notify_categories: [],
 }
 

@@ -28,6 +28,7 @@
     "relation_caregiver": "Hulpverlener",
     "relation_other": "Overig",
     "notify_emergency": "Noodmeldingen ontvangen",
+    "notify_whatsapp": "Meldingen via WhatsApp",
     "notify_categories": "Meldingscategorieën",
     "save": "Opslaan en doorgaan",
     "saving": "Opslaan..."

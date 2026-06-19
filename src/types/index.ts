@@ -26,6 +26,7 @@ export interface Viewer {
   phone?: string
   relation?: string
   notify_emergency: boolean
+  notify_whatsapp: boolean
   notify_categories: string[]
   profile_completed: boolean
 }
@@ -79,5 +80,6 @@ export interface ProfileFormData {
   phone: string
   relation: string
   notify_emergency: boolean
+  notify_whatsapp: boolean
   notify_categories: string[]
 }

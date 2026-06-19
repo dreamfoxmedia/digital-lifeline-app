@@ -28,6 +28,7 @@
     "relation_caregiver": "Caregiver",
     "relation_other": "Other",
     "notify_emergency": "Receive emergency notifications",
+    "notify_whatsapp": "Notifications via WhatsApp",
     "notify_categories": "Notification categories",
     "save": "Save and continue",
     "saving": "Saving..."

@@ -103,6 +103,22 @@ export default function ProfileForm({ data, onChange, errors }: Props) {
         </button>
       </div>
 
+      {/* WhatsApp toggle */}
+      <div className="flex items-center justify-between py-2">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t('onboarding.notify_whatsapp')}
+        </span>
+        <button
+          type="button"
+          onClick={() => set('notify_whatsapp', !data.notify_whatsapp)}
+          className={`relative w-12 h-6 rounded-full transition-colors ${data.notify_whatsapp ? 'bg-brand-teal' : 'bg-gray-300 dark:bg-gray-600'}`}
+        >
+          <span
+            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${data.notify_whatsapp ? 'translate-x-6' : 'translate-x-0.5'}`}
+          />
+        </button>
+      </div>
+
       {/* Meldingscategorieën */}
       <div>
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
