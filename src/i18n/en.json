@@ -105,6 +105,17 @@
     "sent_detail": "Your caregiver has been notified and will be there as soon as possible.",
     "reset": "Reset"
   },
+  "phone_verify": {
+    "send": "Send code",
+    "resend": "Resend code",
+    "confirm": "Confirm",
+    "change": "Change",
+    "verified": "Phone number verified",
+    "current": "Current: {{phone}}",
+    "sent_hint": "We sent an SMS code to {{phone}}. Enter it below.",
+    "error_generic": "Something went wrong. Please try again.",
+    "error_invalid": "Invalid or expired code. Please try again."
+  },
   "common": {
     "back": "Back",
     "cancel": "Cancel",

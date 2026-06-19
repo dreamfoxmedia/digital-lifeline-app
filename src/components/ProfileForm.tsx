@@ -8,9 +8,10 @@ interface Props {
   data: ProfileFormData
   onChange: (data: ProfileFormData) => void
   errors: Partial<Record<keyof ProfileFormData, string>>
+  showPhone?: boolean
 }
 
-export default function ProfileForm({ data, onChange, errors }: Props) {
+export default function ProfileForm({ data, onChange, errors, showPhone = true }: Props) {
   const { t } = useTranslation()
 
   function set<K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) {
@@ -56,19 +57,21 @@ export default function ProfileForm({ data, onChange, errors }: Props) {
       </div>
 
       {/* Telefoonnummer */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-          {t('onboarding.phone')}
-        </label>
-        <input
-          type="tel"
-          value={data.phone}
-          onChange={e => set('phone', e.target.value)}
-          placeholder="+31612345678"
-          className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-teal"
-        />
-        {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-      </div>
+      {showPhone && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            {t('onboarding.phone')}
+          </label>
+          <input
+            type="tel"
+            value={data.phone}
+            onChange={e => set('phone', e.target.value)}
+            placeholder="+31612345678"
+            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white text-base focus:outline-none focus:ring-2 focus:ring-brand-teal"
+          />
+          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+        </div>
+      )}
 
       {/* Relatie */}
       <div>

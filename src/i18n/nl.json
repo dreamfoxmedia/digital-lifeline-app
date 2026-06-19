@@ -105,6 +105,17 @@
     "sent_detail": "Je mantelzorger is gewaarschuwd en komt zo snel mogelijk.",
     "reset": "Opnieuw"
   },
+  "phone_verify": {
+    "send": "Stuur code",
+    "resend": "Opnieuw versturen",
+    "confirm": "Bevestigen",
+    "change": "Wijzigen",
+    "verified": "Telefoonnummer bevestigd",
+    "current": "Huidig: {{phone}}",
+    "sent_hint": "We hebben een sms-code gestuurd naar {{phone}}. Vul de code hieronder in.",
+    "error_generic": "Er is iets misgegaan. Probeer het opnieuw.",
+    "error_invalid": "Ongeldige of verlopen code. Probeer het opnieuw."
+  },
   "common": {
     "back": "Terug",
     "cancel": "Annuleren",

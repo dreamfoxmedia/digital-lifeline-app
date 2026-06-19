@@ -6,6 +6,7 @@ import { Preferences } from '@capacitor/preferences'
 import { apiClient } from '../lib/apiClient'
 import { useAuth } from '../context/AuthContext'
 import ProfileForm from '../components/ProfileForm'
+import PhoneVerifySection from '../components/PhoneVerifySection'
 import type { MeResponse, ProfileFormData } from '../types'
 
 export default function SettingsScreen() {
@@ -108,8 +109,9 @@ export default function SettingsScreen() {
           <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
             {t('settings.section_profile')}
           </p>
-          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl p-4">
-            <ProfileForm data={formData} onChange={setFormData} errors={errors} />
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl p-4 space-y-5">
+            <ProfileForm data={formData} onChange={setFormData} errors={errors} showPhone={false} />
+            <PhoneVerifySection currentPhone={viewer?.phone ?? ''} />
           </div>
         </div>
 
