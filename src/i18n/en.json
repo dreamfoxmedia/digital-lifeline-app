@@ -69,10 +69,8 @@
     "section_notifications": "Notifications",
     "push_label": "Allow push notifications",
     "logout": "Log out",
-    "logout_all": "Log out of all devices",
-    "logout_all_title": "Log out of all devices",
-    "logout_all_detail": "You will be logged out on this device and all other devices where you are signed in.",
-    "logout_all_confirm": "Log out",
+    "logout_this_device": "This device only",
+    "logout_all_devices": "All devices",
     "remove_apikey": "Remove API key",
     "saved": "Changes saved",
     "save": "Save"
