@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { logScreenView } from './lib/analytics'
 import { Preferences } from '@capacitor/preferences'
 import brandIcon from './assets/brand-icon.png'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -14,6 +15,12 @@ import MonitoredPersonScreen from './screens/MonitoredPersonScreen'
 
 type AppState = 'loading' | 'language' | 'ready'
 
+function ScreenTracker() {
+  const location = useLocation()
+  useEffect(() => { logScreenView(location.pathname) }, [location.pathname])
+  return null
+}
+
 function AppRoutes() {
   const { mode, initializing, signOut } = useAuth()
   setUnauthorizedHandler(signOut)
@@ -27,13 +34,16 @@ function AppRoutes() {
   if (mode === null) return <LoginScreen />
 
   return (
-    <Routes>
+    <>
+      <ScreenTracker />
+      <Routes>
       <Route path="/" element={<StatusScreen />} />
       <Route path="/onboarding" element={<OnboardingScreen />} />
       <Route path="/monitored" element={<MonitoredPersonScreen />} />
       <Route path="/settings" element={<SettingsScreen />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   )
 }
 
