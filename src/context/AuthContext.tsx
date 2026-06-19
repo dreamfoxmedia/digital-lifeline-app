@@ -15,6 +15,7 @@ interface AuthContextValue extends AuthState {
   signInWithPassword: (email: string, password: string) => Promise<void>
   signInWithApiKey: (key: string) => Promise<void>
   signOut: () => Promise<void>
+  signOutAll: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -98,8 +99,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR' })
   }
 
+  async function signOutAll() {
+    await supabase.auth.signOut({ scope: 'global' })
+    await Preferences.remove({ key: 'authMode' })
+    await Preferences.remove({ key: 'apiKey' })
+    dispatch({ type: 'CLEAR' })
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, initializing, signInWithPassword, signInWithApiKey, signOut }}>
+    <AuthContext.Provider value={{ ...state, initializing, signInWithPassword, signInWithApiKey, signOut, signOutAll }}>
       {children}
     </AuthContext.Provider>
   )

@@ -69,6 +69,10 @@
     "section_notifications": "Meldingen",
     "push_label": "Push-meldingen toestaan",
     "logout": "Uitloggen",
+    "logout_all": "Uitloggen op alle apparaten",
+    "logout_all_title": "Uitloggen op alle apparaten",
+    "logout_all_detail": "Je wordt uitgelogd op dit apparaat én alle andere apparaten waarop je bent ingelogd.",
+    "logout_all_confirm": "Uitloggen",
     "remove_apikey": "API-sleutel wissen",
     "saved": "Wijzigingen opgeslagen",
     "save": "Opslaan"

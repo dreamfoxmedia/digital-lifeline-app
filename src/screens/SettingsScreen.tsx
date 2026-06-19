@@ -11,10 +11,11 @@ import type { MeResponse, ProfileFormData } from '../types'
 export default function SettingsScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { signOut, mode } = useAuth()
+  const { signOut, signOutAll, mode } = useAuth()
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [confirmSignOutAll, setConfirmSignOutAll] = useState(false)
   const [errors] = useState<Partial<Record<keyof ProfileFormData, string>>>({})
 
   const meQuery = useQuery<MeResponse>({
@@ -164,7 +165,42 @@ export default function SettingsScreen() {
           >
             {t('settings.logout')}
           </button>
+          {mode === 'session' && (
+            <button
+              type="button"
+              onClick={() => setConfirmSignOutAll(true)}
+              className="w-full py-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-medium text-base active:bg-gray-50 dark:active:bg-gray-800 transition-colors"
+            >
+              {t('settings.logout_all')}
+            </button>
+          )}
         </div>
+
+        {/* Bevestigingsdialoog uitloggen alle apparaten */}
+        {confirmSignOutAll && (
+          <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50 px-4 pb-8">
+            <div className="bg-white dark:bg-[#1a1a24] rounded-2xl w-full max-w-sm p-6">
+              <p className="font-bold text-gray-900 dark:text-white text-base mb-2">{t('settings.logout_all_title')}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{t('settings.logout_all_detail')}</p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmSignOutAll(false)}
+                  className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-medium text-sm"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={signOutAll}
+                  className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium text-sm active:bg-red-600"
+                >
+                  {t('settings.logout_all_confirm')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   )
