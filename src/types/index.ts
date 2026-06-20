@@ -33,6 +33,8 @@ export interface RegistrationRecord {
   phone_verified: boolean
   phone_verified_at: string | null
   preferred_notification_channels: string[]
+  notify_email_levels: string[] | null
+  notify_push_levels: string[] | null
 }
 
 export interface AuthState {

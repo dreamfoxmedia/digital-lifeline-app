@@ -73,7 +73,10 @@
     "logout_all_devices": "All devices",
     "remove_apikey": "Remove API key",
     "saved": "Changes saved",
-    "save": "Save"
+    "save": "Save",
+    "notif_screen_title": "Notifications",
+    "notif_row_label": "Notifications",
+    "notif_row_sub": "Email, push, SMS, WhatsApp and Telegram"
   },
   "events": {
     "beweging": "Movement detected",
@@ -218,7 +221,26 @@
     "pending_step_disclaimer": "Terms accepted",
     "pending_step_profile": "Personal details",
     "pending_step_email": "Email address confirmed",
-    "pending_step_phone": "Phone number"
+    "pending_step_phone": "Phone number",
+    "notif_title": "Notification preferences",
+    "notif_intro": "Choose which situations you want to be notified about and through which channel.",
+    "notif_free_section": "Free notifications",
+    "notif_email_channel": "Email",
+    "notif_push_channel": "Mobile push notifications",
+    "notif_push_disabled": "Add a phone number to enable push notifications.",
+    "notif_paid_section": "Notifications that may involve costs",
+    "notif_sms_desc": "Receive an SMS message for each notification.",
+    "notif_whatsapp_desc": "Receive a WhatsApp message for each notification.",
+    "notif_telegram_desc": "Receive a Telegram message for each notification.",
+    "notif_paid_phone_hint": "SMS and WhatsApp are only available after adding a phone number.",
+    "notif_footer": "You can always change these preferences later in Settings & notifications.",
+    "notif_level_minor": "Unusual pattern",
+    "notif_level_minor_desc": "For small changes that may need attention, but are not immediately concerning.",
+    "notif_level_warning": "Notable pattern",
+    "notif_level_warning_desc": "For clear deviations where a family member or caregiver should probably check in.",
+    "notif_level_emergency": "Immediate attention needed",
+    "notif_level_emergency_desc": "For notifications that need to be seen quickly, for example when someone indicates they need help.",
+    "notif_next": "Next"
   },
   "phone_verify": {
     "send": "Send code",

@@ -73,7 +73,10 @@
     "logout_all_devices": "Alle apparaten",
     "remove_apikey": "API-sleutel wissen",
     "saved": "Wijzigingen opgeslagen",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "notif_screen_title": "Meldingen",
+    "notif_row_label": "Meldingen",
+    "notif_row_sub": "E-mail, push, sms, WhatsApp en Telegram"
   },
   "events": {
     "beweging": "Beweging gedetecteerd",
@@ -218,7 +221,26 @@
     "pending_step_disclaimer": "Akkoord met voorwaarden",
     "pending_step_profile": "Persoonlijke gegevens",
     "pending_step_email": "E-mailadres bevestigd",
-    "pending_step_phone": "Telefoonnummer"
+    "pending_step_phone": "Telefoonnummer",
+    "notif_title": "Meldingsvoorkeuren",
+    "notif_intro": "Kies voor welke situaties je een melding wilt ontvangen en via welk kanaal.",
+    "notif_free_section": "Gratis meldingen",
+    "notif_email_channel": "E-mail",
+    "notif_push_channel": "Mobiele pushmeldingen",
+    "notif_push_disabled": "Voeg een telefoonnummer toe om pushmeldingen in te schakelen.",
+    "notif_paid_section": "Meldingen waar eventueel kosten aan verbonden zijn",
+    "notif_sms_desc": "Ontvang een sms-bericht bij een melding.",
+    "notif_whatsapp_desc": "Ontvang een WhatsApp-bericht bij een melding.",
+    "notif_telegram_desc": "Ontvang een Telegram-bericht bij een melding.",
+    "notif_paid_phone_hint": "SMS en WhatsApp zijn alleen beschikbaar als je een telefoonnummer hebt toegevoegd.",
+    "notif_footer": "Bij instellingen en meldingen kun je dit later altijd aanpassen.",
+    "notif_level_minor": "Afwijkend patroon",
+    "notif_level_minor_desc": "Voor kleine veranderingen die aandacht kunnen vragen, maar niet direct zorgelijk zijn.",
+    "notif_level_warning": "Opvallend patroon",
+    "notif_level_warning_desc": "Voor duidelijke afwijkingen waarbij een familielid of zorgverlener beter even kan controleren.",
+    "notif_level_emergency": "Directe aandacht gevraagd",
+    "notif_level_emergency_desc": "Voor meldingen die snel bekeken moeten worden, bijvoorbeeld wanneer iemand zelf aangeeft hulp nodig te hebben.",
+    "notif_next": "Volgende"
   },
   "phone_verify": {
     "send": "Stuur code",

@@ -9,7 +9,8 @@ import Step2PersonalData from './steps/Step2PersonalData'
 import Step3Review from './steps/Step3Review'
 import Step4EmailVerify from './steps/Step4EmailVerify'
 import Step5Phone from './steps/Step5Phone'
-import Step6Pending from './steps/Step6Pending'
+import Step6Notifications from './steps/Step6Notifications'
+import Step7Pending from './steps/Step6Pending'
 import type { MeResponse } from '../../types'
 
 export interface WizardData {
@@ -22,6 +23,11 @@ export interface WizardData {
   dateOfBirth: string
   phoneVerified: boolean
   phoneSkipped: boolean
+  notifyEmailLevels: string[]
+  notifyPushLevels: string[]
+  notifySms: boolean
+  notifyWhatsapp: boolean
+  notifyTelegram: boolean
 }
 
 const DEFAULT_DATA: WizardData = {
@@ -34,9 +40,14 @@ const DEFAULT_DATA: WizardData = {
   dateOfBirth: '',
   phoneVerified: false,
   phoneSkipped: false,
+  notifyEmailLevels: ['warning', 'emergency'],
+  notifyPushLevels: ['emergency'],
+  notifySms: false,
+  notifyWhatsapp: false,
+  notifyTelegram: false,
 }
 
-const TOTAL_STEPS = 6
+const TOTAL_STEPS = 7
 
 function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<WizardData> {
   return {
@@ -49,6 +60,11 @@ function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<Wi
     dateOfBirth: reg.date_of_birth ?? '',
     phoneVerified: reg.phone_verified,
     phoneSkipped: !reg.phone_verified && reg.onboarding_current_step > 5,
+    notifyEmailLevels: reg.notify_email_levels ?? ['warning', 'emergency'],
+    notifyPushLevels: reg.notify_push_levels ?? ['emergency'],
+    notifySms: reg.preferred_notification_channels?.includes('sms') ?? false,
+    notifyWhatsapp: reg.preferred_notification_channels?.includes('whatsapp') ?? false,
+    notifyTelegram: reg.preferred_notification_channels?.includes('telegram') ?? false,
   }
 }
 
@@ -173,15 +189,31 @@ export default function RegistrationFlow() {
     } catch {}
   }
 
-  // Step 6 final save
-  async function handleStep6Done() {
+  // Step 6 notification preferences → step 7
+  async function handleStep6NotifDone() {
+    const channels: string[] = []
+    if (data.phoneVerified && data.notifySms) channels.push('sms')
+    if (data.phoneVerified && data.notifyWhatsapp) channels.push('whatsapp')
+    if (data.notifyTelegram) channels.push('telegram')
+    try {
+      await save({
+        notify_email_levels: data.notifyEmailLevels,
+        notify_push_levels: data.phoneVerified ? data.notifyPushLevels : [],
+        preferred_notification_channels: channels,
+      }, 7)
+      setStep(7)
+    } catch {}
+  }
+
+  // Step 7 final save
+  async function handleStep7Done() {
     try {
       await save({
         onboarding_phase_1_completed: true,
         onboarding_completed: false,
         account_activated: false,
-        registration_status: 'partially_completed',
-      }, 6)
+        registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
+      }, 7)
       navigate('/pending', { replace: true })
     } catch {}
   }
@@ -238,10 +270,23 @@ export default function RegistrationFlow() {
           />
         )}
         {step === 6 && (
-          <Step6Pending
+          <Step6Notifications
+            phoneVerified={data.phoneVerified}
+            emailLevels={data.notifyEmailLevels}
+            pushLevels={data.notifyPushLevels}
+            notifySms={data.notifySms}
+            notifyWhatsapp={data.notifyWhatsapp}
+            notifyTelegram={data.notifyTelegram}
+            saving={saving}
+            onChange={merge}
+            onNext={handleStep6NotifDone}
+          />
+        )}
+        {step === 7 && (
+          <Step7Pending
             phoneVerified={data.phoneVerified}
             saving={saving}
-            onDone={handleStep6Done}
+            onDone={handleStep7Done}
           />
         )}
       </div>

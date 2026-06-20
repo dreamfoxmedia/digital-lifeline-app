@@ -66,24 +66,6 @@ export default function SettingsScreen() {
     }
   }
 
-  async function handlePushToggle() {
-    try {
-      const { PushNotifications } = await import('@capacitor/push-notifications')
-      const result = await PushNotifications.requestPermissions()
-      if (result.receive === 'granted') {
-        await PushNotifications.register()
-        PushNotifications.addListener('registration', async (token) => {
-          await apiClient.post('/api/mobile/push/register', {
-            platform: /iphone|ipad/i.test(navigator.userAgent) ? 'ios' : 'android',
-            token: token.value,
-          })
-        })
-      }
-    } catch (err) {
-      console.error('Push registratie mislukt:', err)
-    }
-  }
-
   async function handleRemoveApiKey() {
     await Preferences.remove({ key: 'apiKey' })
     await signOut()
@@ -123,11 +105,14 @@ export default function SettingsScreen() {
           <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
             <button
               type="button"
-              onClick={handlePushToggle}
+              onClick={() => navigate('/notifications')}
               className="w-full flex items-center justify-between px-4 py-4 active:bg-gray-50 dark:active:bg-gray-800"
             >
-              <span className="text-gray-900 dark:text-white font-medium">{t('settings.push_label')}</span>
-              <span className="text-brand-teal">→</span>
+              <div>
+                <p className="text-gray-900 dark:text-white font-medium text-left">{t('settings.notif_row_label')}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 text-left mt-0.5">{t('settings.notif_row_sub')}</p>
+              </div>
+              <span className="text-gray-400 text-lg ml-3">→</span>
             </button>
           </div>
         </div>
