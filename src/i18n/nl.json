@@ -10,7 +10,10 @@
     "apikey_placeholder": "Plak hier uw API-sleutel",
     "apikey_save": "Verbinden",
     "error_invalid": "Ongeldig e-mailadres of wachtwoord",
-    "error_generic": "Er is iets misgegaan. Probeer het opnieuw."
+    "error_generic": "Er is iets misgegaan. Probeer het opnieuw.",
+    "error_server": "De server is momenteel niet bereikbaar. Controleer de status op",
+    "status_url": "status.digitallifeline.nl",
+    "status_link": "https://status.digitallifeline.nl"
   },
   "onboarding": {
     "title": "Profiel aanvullen",

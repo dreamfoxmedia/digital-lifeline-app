@@ -10,7 +10,10 @@
     "apikey_placeholder": "Paste your API key here",
     "apikey_save": "Connect",
     "error_invalid": "Invalid email address or password",
-    "error_generic": "Something went wrong. Please try again."
+    "error_generic": "Something went wrong. Please try again.",
+    "error_server": "The server is currently unavailable. Check the status at",
+    "status_url": "status.digilifeline.com",
+    "status_link": "https://status.digilifeline.com"
   },
   "onboarding": {
     "title": "Complete your profile",

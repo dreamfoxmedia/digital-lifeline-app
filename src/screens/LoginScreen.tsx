@@ -9,7 +9,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<'invalid' | 'server' | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -17,8 +17,9 @@ export default function LoginScreen() {
     setLoading(true)
     try {
       await signInWithPassword(email, password)
-    } catch {
-      setError(t('login.error_invalid'))
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ''
+      setError(msg === 'server_unavailable' ? 'server' : 'invalid')
     } finally {
       setLoading(false)
     }
@@ -64,7 +65,24 @@ export default function LoginScreen() {
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error === 'invalid' && (
+            <p className="text-red-500 text-sm">{t('login.error_invalid')}</p>
+          )}
+          {error === 'server' && (
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-xl px-4 py-3">
+              <p className="text-red-600 dark:text-red-400 text-sm leading-relaxed">
+                {t('login.error_server')}{' '}
+                <a
+                  href={t('login.status_link')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium"
+                >
+                  {t('login.status_url')}
+                </a>
+              </p>
+            </div>
+          )}
 
           <button
             type="submit"

@@ -77,7 +77,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signInWithPassword(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw new Error(error.message)
+    if (error) {
+      const isServerError =
+        error.message.toLowerCase().includes('failed to fetch') ||
+        error.message.toLowerCase().includes('networkerror') ||
+        error.message.toLowerCase().includes('fetch') ||
+        (typeof (error as { status?: number }).status === 'number' &&
+          ((error as { status?: number }).status === 0 ||
+           ((error as { status?: number }).status ?? 0) >= 500))
+      throw new Error(isServerError ? 'server_unavailable' : 'invalid_credentials')
+    }
     await Preferences.set({ key: 'authMode', value: 'session' })
     dispatch({
       type: 'SET_SESSION',
