@@ -5,6 +5,7 @@ import { Preferences } from '@capacitor/preferences'
 import brandIcon from './assets/brand-icon.png'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { setUnauthorizedHandler } from './lib/apiClient'
+import { supabase } from './lib/supabase'
 import i18n from './i18n'
 import LanguageScreen from './screens/LanguageScreen'
 import LoginScreen from './screens/LoginScreen'
@@ -59,14 +60,19 @@ export default function App() {
   const [appState, setAppState] = useState<AppState>('loading')
 
   useEffect(() => {
-    Preferences.get({ key: 'language' }).then(({ value }) => {
-      if (value) {
-        i18n.changeLanguage(value)
+    async function init() {
+      const [{ value: lang }, { data: { session } }] = await Promise.all([
+        Preferences.get({ key: 'language' }),
+        supabase.auth.getSession(),
+      ])
+      if (lang) i18n.changeLanguage(lang)
+      if (lang && session) {
         setAppState('ready')
       } else {
         setAppState('language')
       }
-    })
+    }
+    init()
   }, [])
 
   if (appState === 'loading') {
