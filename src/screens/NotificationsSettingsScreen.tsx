@@ -195,7 +195,7 @@ export default function NotificationsSettingsScreen() {
     try {
       await apiClient.patch('/api/mobile/registration', {
         notify_email_levels: state.emailLevels,
-        notify_push_levels: phoneVerified ? state.pushLevels : [],
+        notify_push_levels: state.pushLevels,
         preferred_notification_channels: channels,
       })
       queryClient.invalidateQueries({ queryKey: ['me'] })
@@ -241,14 +241,9 @@ export default function NotificationsSettingsScreen() {
               />
 
               <SubHeader label={t('reg.notif_push_channel')} />
-              {!phoneVerified && (
-                <p className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1 leading-relaxed">
-                  {t('reg.notif_push_disabled')}
-                </p>
-              )}
               <LevelRows
                 selected={state.pushLevels}
-                disabled={!phoneVerified}
+                disabled={false}
                 onToggle={key => set({ pushLevels: toggle(state.pushLevels, key) })}
               />
             </div>

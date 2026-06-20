@@ -198,7 +198,7 @@ export default function RegistrationFlow() {
     try {
       await save({
         notify_email_levels: data.notifyEmailLevels,
-        notify_push_levels: data.phoneVerified ? data.notifyPushLevels : [],
+        notify_push_levels: data.notifyPushLevels,
         preferred_notification_channels: channels,
       }, 7)
       setStep(7)

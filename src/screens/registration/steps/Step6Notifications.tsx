@@ -178,15 +178,10 @@ export default function Step6Notifications({
         />
 
         <SubHeader label={t('reg.notif_push_channel')} />
-        {!phoneVerified && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1 leading-relaxed">
-            {t('reg.notif_push_disabled')}
-          </p>
-        )}
         <LevelRows
           levels={LEVELS}
           selected={pushLevels}
-          disabled={!phoneVerified}
+          disabled={false}
           onToggle={key => onChange({ notifyPushLevels: toggle(pushLevels, key) })}
         />
       </div>
