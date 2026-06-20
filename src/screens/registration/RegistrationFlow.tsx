@@ -99,9 +99,11 @@ export default function RegistrationFlow() {
     setInitialized(true)
   }, [meQuery.data, initialized])
 
+  const viewerType = meQuery.data?.viewer?.person_type
   const role: 'family' | 'caregiver' | null =
     meQuery.data?.roles.includes('caregiver') ? 'caregiver' :
     meQuery.data?.roles.includes('family') ? 'family' :
+    (viewerType === 'family' || viewerType === 'caregiver') ? viewerType :
     (meQuery.data?.registration?.role ?? null)
 
   function merge(updates: Partial<WizardData>) {

@@ -67,6 +67,7 @@ export interface Viewer {
   notify_whatsapp: boolean
   notify_categories: string[]
   profile_completed: boolean
+  person_type?: 'family' | 'caregiver' | 'monitored' | null
 }
 
 export interface MeResponse {
