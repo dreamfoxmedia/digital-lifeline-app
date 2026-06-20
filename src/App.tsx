@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { logScreenView } from './lib/analytics'
 import { Preferences } from '@capacitor/preferences'
+import { App as CapApp } from '@capacitor/app'
 import brandIcon from './assets/brand-icon.png'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { setUnauthorizedHandler } from './lib/apiClient'
@@ -26,6 +27,19 @@ function ScreenTracker() {
   return null
 }
 
+function BackButtonHandler() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  useEffect(() => {
+    const handler = CapApp.addListener('backButton', () => {
+      if (location.pathname === '/') return
+      navigate(-1)
+    })
+    return () => { handler.then((h: { remove: () => void }) => h.remove()) }
+  }, [location.pathname, navigate])
+  return null
+}
+
 function AppRoutes() {
   const { mode, initializing, signOut } = useAuth()
   setUnauthorizedHandler(signOut)
@@ -41,6 +55,7 @@ function AppRoutes() {
   return (
     <>
       <ScreenTracker />
+      <BackButtonHandler />
       <Routes>
       <Route path="/" element={<StatusScreen />} />
       <Route path="/registration" element={<RegistrationFlow />} />

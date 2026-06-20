@@ -85,8 +85,7 @@ export default function RegistrationFlow() {
   const [step, setStep] = useState(1)
   const [data, setData] = useState<WizardData>(DEFAULT_DATA)
   const [initialized, setInitialized] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [saveError, setSaveError] = useState<string | null>(null)
+  const saving = false
 
   useEffect(() => {
     if (initialized || !meQuery.data) return
@@ -111,8 +110,6 @@ export default function RegistrationFlow() {
   }
 
   async function save(payload: object, nextStep: number) {
-    setSaveError(null)
-    setSaving(true)
     try {
       await apiClient.patch('/api/mobile/registration', {
         ...payload,
@@ -120,10 +117,9 @@ export default function RegistrationFlow() {
       })
       queryClient.invalidateQueries({ queryKey: ['me'] })
     } catch (e) {
-      setSaveError(e instanceof Error ? e.message : 'Er is iets misgegaan.')
       throw e
     } finally {
-      setSaving(false)
+      // intentionally empty
     }
   }
 
@@ -142,7 +138,6 @@ export default function RegistrationFlow() {
 
   // Step 2 → step 3 (just advance, no save yet)
   function handleStep2Next() {
-    setSaveError(null)
     setStep(3)
   }
 
@@ -296,12 +291,6 @@ export default function RegistrationFlow() {
         )}
       </div>
 
-      {saveError && (
-        <div className="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-t-2 border-red-400 dark:border-red-600 max-h-28 overflow-y-auto">
-          <p className="text-red-700 dark:text-red-300 text-sm font-semibold mb-1">Opslaan mislukt (wordt opnieuw geprobeerd)</p>
-          <p className="text-red-600 dark:text-red-400 text-xs break-all">{saveError}</p>
-        </div>
-      )}
     </div>
   )
 }
