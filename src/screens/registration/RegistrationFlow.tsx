@@ -10,7 +10,8 @@ import Step3Review from './steps/Step3Review'
 import Step4EmailVerify from './steps/Step4EmailVerify'
 import Step5Phone from './steps/Step5Phone'
 import Step6Notifications from './steps/Step6Notifications'
-import Step7Pending from './steps/Step6Pending'
+import Step7Privacy from './steps/Step7Privacy'
+import Step8Pending from './steps/Step6Pending'
 import type { MeResponse } from '../../types'
 
 export interface WizardData {
@@ -28,6 +29,7 @@ export interface WizardData {
   notifySms: boolean
   notifyWhatsapp: boolean
   notifyTelegram: boolean
+  dataShielded: boolean
 }
 
 const DEFAULT_DATA: WizardData = {
@@ -45,9 +47,10 @@ const DEFAULT_DATA: WizardData = {
   notifySms: false,
   notifyWhatsapp: false,
   notifyTelegram: false,
+  dataShielded: false,
 }
 
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 8
 
 function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<WizardData> {
   return {
@@ -65,6 +68,7 @@ function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<Wi
     notifySms: reg.preferred_notification_channels?.includes('sms') ?? false,
     notifyWhatsapp: reg.preferred_notification_channels?.includes('whatsapp') ?? false,
     notifyTelegram: reg.preferred_notification_channels?.includes('telegram') ?? false,
+    dataShielded: reg.profile_shielded ?? false,
   }
 }
 
@@ -205,14 +209,22 @@ export default function RegistrationFlow() {
     } catch {}
   }
 
-  // Step 7 final save
-  async function handleStep7Done() {
+  // Step 7 privacy → step 8
+  async function handleStep7PrivacyDone() {
+    try {
+      await save({ profile_shielded: data.dataShielded }, 8)
+      setStep(8)
+    } catch {}
+  }
+
+  // Step 8 final save
+  async function handleStep8Done() {
     try {
       await save({
         onboarding_phase_1_completed: true,
         onboarding_completed: true,
         registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
-      }, 7)
+      }, 8)
       navigate('/welcome', { replace: true })
     } catch {}
   }
@@ -282,10 +294,18 @@ export default function RegistrationFlow() {
           />
         )}
         {step === 7 && (
-          <Step7Pending
+          <Step7Privacy
+            dataShielded={data.dataShielded}
+            saving={saving}
+            onChange={merge}
+            onNext={handleStep7PrivacyDone}
+          />
+        )}
+        {step === 8 && (
+          <Step8Pending
             phoneVerified={data.phoneVerified}
             saving={saving}
-            onDone={handleStep7Done}
+            onDone={handleStep8Done}
           />
         )}
       </div>

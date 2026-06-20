@@ -35,6 +35,7 @@ export interface RegistrationRecord {
   preferred_notification_channels: string[]
   notify_email_levels: string[] | null
   notify_push_levels: string[] | null
+  profile_shielded: boolean | null
 }
 
 export interface AuthState {

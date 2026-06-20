@@ -240,7 +240,15 @@
     "notif_level_warning_desc": "Voor duidelijke afwijkingen waarbij een familielid of zorgverlener beter even kan controleren.",
     "notif_level_emergency": "Directe aandacht gevraagd",
     "notif_level_emergency_desc": "Voor meldingen die snel bekeken moeten worden, bijvoorbeeld wanneer iemand zelf aangeeft hulp nodig te hebben.",
-    "notif_next": "Volgende"
+    "notif_next": "Volgende",
+    "privacy_title": "Jouw gegevens en privacy",
+    "privacy_intro": "De beheerder heeft je account aangemaakt op basis van je naam en e-mailadres. Hieronder lees je hoe je persoonlijke gegevens worden opgeslagen en wie ze kan inzien.",
+    "privacy_body": "De gegevens die je in de vorige stappen hebt ingevoerd, worden via een beveiligde verbinding opgeslagen in de beveiligde portal. Normaal gesproken kan de beheerder deze gegevens inzien om je zo goed mogelijk te ondersteunen. Met de optie hieronder kun je ervoor kiezen om je persoonlijke gegevens af te schermen — de beheerder ziet dan alleen je naam en e-mailadres.",
+    "privacy_name_note": "Je naam en e-mailadres zijn altijd zichtbaar voor de beheerder. Deze gegevens had de beheerder al bij het aanmaken van je account.",
+    "privacy_toggle_label": "Mijn gegevens afschermen",
+    "privacy_toggle_sub": "De beheerder kan dan alleen je naam en e-mailadres inzien.",
+    "privacy_shield_active": "Je persoonlijke gegevens zijn afgeschermd. De beheerder ziet alleen je naam en e-mailadres.",
+    "privacy_next": "Doorgaan"
   },
   "welcome": {
     "title": "Welkom bij Digital Lifeline!",

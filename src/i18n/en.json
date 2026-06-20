@@ -240,7 +240,15 @@
     "notif_level_warning_desc": "For clear deviations where a family member or caregiver should probably check in.",
     "notif_level_emergency": "Immediate attention needed",
     "notif_level_emergency_desc": "For notifications that need to be seen quickly, for example when someone indicates they need help.",
-    "notif_next": "Next"
+    "notif_next": "Next",
+    "privacy_title": "Your data and privacy",
+    "privacy_intro": "The administrator created your account based on your name and email address. Below you can read how your personal data is stored and who can view it.",
+    "privacy_body": "The information you entered in the previous steps is stored via a secure connection in the secure portal. Normally, the administrator can view this information to support you as best as possible. With the option below, you can choose to shield your personal data — the administrator will then only see your name and email address.",
+    "privacy_name_note": "Your name and email address are always visible to the administrator, as they were used when creating your account.",
+    "privacy_toggle_label": "Shield my data from the administrator",
+    "privacy_toggle_sub": "The administrator will only be able to see your name and email address.",
+    "privacy_shield_active": "Your personal data is shielded. The administrator can only see your name and email address.",
+    "privacy_next": "Continue"
   },
   "welcome": {
     "title": "Welcome to Digital Lifeline!",
