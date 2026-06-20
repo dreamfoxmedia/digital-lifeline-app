@@ -242,6 +242,18 @@
     "notif_level_emergency_desc": "Voor meldingen die snel bekeken moeten worden, bijvoorbeeld wanneer iemand zelf aangeeft hulp nodig te hebben.",
     "notif_next": "Volgende"
   },
+  "welcome": {
+    "title": "Welkom bij Digital Lifeline!",
+    "setup_done": "De belangrijkste instellingen zijn ingesteld.",
+    "more_settings": "Bij instellingen zijn nog meer opties beschikbaar om Digital Lifeline verder naar jouw wensen in te richten.",
+    "our_effort": "Wij hebben ons best gedaan om dit systeem zo goed mogelijk te bouwen.",
+    "share": "Ben je tevreden? Deel het met de hele wereld — want dat is van groot belang voor ons.",
+    "enjoy": "Veel plezier met Digital Lifeline!",
+    "help_text": "Voor hulp kun je altijd terecht op",
+    "help_url": "help.digitallifeline.nl",
+    "help_link": "https://help.digitallifeline.nl",
+    "continue": "Doorgaan"
+  },
   "phone_verify": {
     "send": "Stuur code",
     "resend": "Opnieuw versturen",

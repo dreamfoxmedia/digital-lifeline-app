@@ -242,6 +242,18 @@
     "notif_level_emergency_desc": "For notifications that need to be seen quickly, for example when someone indicates they need help.",
     "notif_next": "Next"
   },
+  "welcome": {
+    "title": "Welcome to Digital Lifeline!",
+    "setup_done": "The most important settings have been configured.",
+    "more_settings": "More options are available in Settings to further customize Digital Lifeline to your preferences.",
+    "our_effort": "We've done our best to build this system as well as possible.",
+    "share": "Happy with it? Share it with the world — it means a lot to us.",
+    "enjoy": "Enjoy Digital Lifeline!",
+    "help_text": "For help, you can always visit",
+    "help_url": "help.digilifeline.com",
+    "help_link": "https://help.digilifeline.com",
+    "continue": "Continue"
+  },
   "phone_verify": {
     "send": "Send code",
     "resend": "Resend code",

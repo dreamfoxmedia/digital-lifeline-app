@@ -15,6 +15,7 @@ import MonitoredPersonScreen from './screens/MonitoredPersonScreen'
 import RegistrationFlow from './screens/registration/RegistrationFlow'
 import RegistrationPendingScreen from './screens/RegistrationPendingScreen'
 import NotificationsSettingsScreen from './screens/NotificationsSettingsScreen'
+import WelcomeScreen from './screens/WelcomeScreen'
 
 type AppState = 'loading' | 'language' | 'ready'
 
@@ -44,6 +45,7 @@ function AppRoutes() {
       <Route path="/registration" element={<RegistrationFlow />} />
       <Route path="/pending" element={<RegistrationPendingScreen />} />
       <Route path="/notifications" element={<NotificationsSettingsScreen />} />
+      <Route path="/welcome" element={<WelcomeScreen />} />
       <Route path="/onboarding" element={<OnboardingScreen />} />
       <Route path="/monitored" element={<MonitoredPersonScreen />} />
       <Route path="/settings" element={<SettingsScreen />} />

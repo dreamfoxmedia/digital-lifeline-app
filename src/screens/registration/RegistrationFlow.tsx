@@ -210,11 +210,10 @@ export default function RegistrationFlow() {
     try {
       await save({
         onboarding_phase_1_completed: true,
-        onboarding_completed: false,
-        account_activated: false,
+        onboarding_completed: true,
         registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
       }, 7)
-      navigate('/pending', { replace: true })
+      navigate('/welcome', { replace: true })
     } catch {}
   }
 
