@@ -142,56 +142,47 @@ export default function RegistrationFlow() {
 
   // Step 2 → step 3 (just advance, no save yet)
   function handleStep2Next() {
+    setSaveError(null)
     setStep(3)
   }
 
   // Step 3 confirm → save profile + advance
   async function handleStep3Confirm() {
-    try {
-      await save({
-        salutation: data.salutation || null,
-        first_name: data.firstName,
-        last_name: data.lastName,
-        display_name: data.displayName,
-        relationship_to_monitored_person: data.relationship || null,
-        relationship_description: data.relationship === 'other' ? data.relationshipDescription : null,
-        date_of_birth: data.dateOfBirth || null,
-        registration_status: 'profile_completed',
-      }, 4)
-      setStep(4)
-    } catch {}
+    save({
+      salutation: data.salutation || null,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      display_name: data.displayName,
+      relationship_to_monitored_person: data.relationship || null,
+      relationship_description: data.relationship === 'other' ? data.relationshipDescription : null,
+      date_of_birth: data.dateOfBirth || null,
+      registration_status: 'profile_completed',
+    }, 4).catch(() => {})
+    setStep(4)
   }
 
   // Step 4 email verified
   async function handleStep4Done() {
-    try {
-      await save({ registration_status: 'email_verified' }, 5)
-      setStep(5)
-    } catch {}
+    save({ registration_status: 'email_verified' }, 5).catch(() => {})
+    setStep(5)
   }
 
   // Step 5 phone verified
   async function handleStep5Verified(phoneE164: string) {
     merge({ phoneVerified: true, phoneSkipped: false })
-    try {
-      await save({
-        phone_number_e164: phoneE164,
-        phone_verified: true,
-        registration_status: 'phone_verified',
-      }, 6)
-      setStep(6)
-    } catch {}
+    save({
+      phone_number_e164: phoneE164,
+      phone_verified: true,
+      registration_status: 'phone_verified',
+    }, 6).catch(() => {})
+    setStep(6)
   }
 
   // Step 5 skip phone
   async function handleStep5Skip() {
     merge({ phoneSkipped: true, phoneVerified: false })
-    try {
-      await save({
-        registration_status: 'partially_completed',
-      }, 6)
-      setStep(6)
-    } catch {}
+    save({ registration_status: 'partially_completed' }, 6).catch(() => {})
+    setStep(6)
   }
 
   // Step 6 notification preferences → step 7
@@ -200,34 +191,28 @@ export default function RegistrationFlow() {
     if (data.phoneVerified && data.notifySms) channels.push('sms')
     if (data.phoneVerified && data.notifyWhatsapp) channels.push('whatsapp')
     if (data.notifyTelegram) channels.push('telegram')
-    try {
-      await save({
-        notify_email_levels: data.notifyEmailLevels,
-        notify_push_levels: data.notifyPushLevels,
-        preferred_notification_channels: channels,
-      }, 7)
-      setStep(7)
-    } catch {}
+    save({
+      notify_email_levels: data.notifyEmailLevels,
+      notify_push_levels: data.notifyPushLevels,
+      preferred_notification_channels: channels,
+    }, 7).catch(() => {})
+    setStep(7)
   }
 
   // Step 7 privacy → step 8
   async function handleStep7PrivacyDone() {
-    try {
-      await save({ profile_shielded: data.dataShielded }, 8)
-      setStep(8)
-    } catch {}
+    save({ profile_shielded: data.dataShielded }, 8).catch(() => {})
+    setStep(8)
   }
 
   // Step 8 final save
   async function handleStep8Done() {
-    try {
-      await save({
-        onboarding_phase_1_completed: true,
-        onboarding_completed: true,
-        registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
-      }, 8)
-      navigate('/welcome', { replace: true })
-    } catch {}
+    save({
+      onboarding_phase_1_completed: true,
+      onboarding_completed: true,
+      registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
+    }, 8).catch(() => {})
+    navigate('/welcome', { replace: true })
   }
 
   if (meQuery.isLoading || !initialized) {
@@ -312,9 +297,9 @@ export default function RegistrationFlow() {
       </div>
 
       {saveError && (
-        <div className="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-t-2 border-red-400 dark:border-red-600">
-          <p className="text-red-700 dark:text-red-300 text-sm font-semibold mb-0.5">Opslaan mislukt</p>
-          <p className="text-red-600 dark:text-red-400 text-xs">{saveError}</p>
+        <div className="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-t-2 border-red-400 dark:border-red-600 max-h-28 overflow-y-auto">
+          <p className="text-red-700 dark:text-red-300 text-sm font-semibold mb-1">Opslaan mislukt (wordt opnieuw geprobeerd)</p>
+          <p className="text-red-600 dark:text-red-400 text-xs break-all">{saveError}</p>
         </div>
       )}
     </div>
