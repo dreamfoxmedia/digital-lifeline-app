@@ -99,9 +99,10 @@ export default function RegistrationFlow() {
     setInitialized(true)
   }, [meQuery.data, initialized])
 
-  const role =
+  const role: 'family' | 'caregiver' | null =
     meQuery.data?.roles.includes('caregiver') ? 'caregiver' :
-    meQuery.data?.roles.includes('family') ? 'family' : null
+    meQuery.data?.roles.includes('family') ? 'family' :
+    (meQuery.data?.registration?.role ?? null)
 
   function merge(updates: Partial<WizardData>) {
     setData(prev => ({ ...prev, ...updates }))
@@ -126,13 +127,11 @@ export default function RegistrationFlow() {
 
   // Step 1 handlers
   async function handleStep1Accept() {
-    try {
-      await save({
-        monitoring_disclaimer_accepted: true,
-        monitoring_disclaimer_version: '1.0',
-      }, 2)
-      setStep(2)
-    } catch {}
+    save({
+      monitoring_disclaimer_accepted: true,
+      monitoring_disclaimer_version: '1.0',
+    }, 2).catch(() => {})
+    setStep(2)
   }
 
   function handleStep1Decline() {
@@ -311,8 +310,9 @@ export default function RegistrationFlow() {
       </div>
 
       {saveError && (
-        <div className="px-6 py-3 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800">
-          <p className="text-red-600 dark:text-red-400 text-sm">{saveError}</p>
+        <div className="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-t-2 border-red-400 dark:border-red-600">
+          <p className="text-red-700 dark:text-red-300 text-sm font-semibold mb-0.5">Opslaan mislukt</p>
+          <p className="text-red-600 dark:text-red-400 text-xs">{saveError}</p>
         </div>
       )}
     </div>
