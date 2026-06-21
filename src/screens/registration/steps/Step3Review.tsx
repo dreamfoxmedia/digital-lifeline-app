@@ -34,14 +34,6 @@ function formatDob(dob: string, language: string): string {
 export default function Step3Review({ data, saving, onBack, onConfirm }: Props) {
   const { t, i18n } = useTranslation()
 
-  const salutationLabel = data.salutation === 'de_heer'
-    ? t('reg.step2_salutation_sir')
-    : data.salutation === 'mevrouw'
-      ? t('reg.step2_salutation_madam')
-      : data.salutation === 'geen_voorkeur'
-        ? t('reg.step2_salutation_none')
-        : ''
-
   const relationshipLabel = data.relationship
     ? data.relationship === 'other'
       ? `${t('reg.rel_other')}${data.relationshipDescription ? ` – ${data.relationshipDescription}` : ''}`
@@ -60,9 +52,9 @@ export default function Step3Review({ data, saving, onBack, onConfirm }: Props) 
       </div>
 
       <div className="bg-white dark:bg-[#1a1a24] rounded-2xl px-4">
-        <Row label={t('reg.step3_salutation')} value={salutationLabel} />
         <Row label={t('reg.step3_name')} value={`${data.firstName} ${data.lastName}`.trim()} />
         <Row label={t('reg.step3_display_name')} value={data.displayName} />
+        <Row label={t('reg.step3_gender')} value={data.gender ? t(`reg.gender_${data.gender}`) : ''} />
         <Row label={t('reg.step3_relationship')} value={relationshipLabel} />
         <Row label={t('reg.step3_dob')} value={formatDob(data.dateOfBirth, i18n.language)} />
       </div>

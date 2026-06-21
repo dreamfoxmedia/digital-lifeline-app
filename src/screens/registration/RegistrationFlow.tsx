@@ -15,7 +15,7 @@ import Step8Pending from './steps/Step6Pending'
 import type { MeResponse } from '../../types'
 
 export interface WizardData {
-  salutation: string
+  gender: string
   firstName: string
   lastName: string
   displayName: string
@@ -33,7 +33,7 @@ export interface WizardData {
 }
 
 const DEFAULT_DATA: WizardData = {
-  salutation: '',
+  gender: '',
   firstName: '',
   lastName: '',
   displayName: '',
@@ -54,7 +54,7 @@ const TOTAL_STEPS = 8
 
 function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<WizardData> {
   return {
-    salutation: reg.salutation ?? '',
+    gender: reg.gender ?? '',
     firstName: reg.first_name ?? '',
     lastName: reg.last_name ?? '',
     displayName: reg.display_name ?? '',
@@ -151,7 +151,7 @@ export default function RegistrationFlow() {
   async function handleStep3Confirm() {
     try {
       await save({
-        salutation: data.salutation || null,
+        gender: data.gender || null,
         first_name: data.firstName,
         last_name: data.lastName,
         display_name: data.displayName,

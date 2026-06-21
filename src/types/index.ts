@@ -18,7 +18,7 @@ export interface RegistrationRecord {
   monitoring_disclaimer_accepted: boolean
   monitoring_disclaimer_accepted_at: string | null
   monitoring_disclaimer_version: string | null
-  salutation: string | null
+  gender: string | null
   first_name: string | null
   last_name: string | null
   display_name: string | null

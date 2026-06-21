@@ -85,20 +85,20 @@ export default function Step2PersonalData({ data, saving, onChange, onNext }: Pr
         </p>
       </div>
 
-      {/* Aanspreekvorm */}
+      {/* Geslacht */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-          {t('reg.step2_salutation')}
+          {t('reg.step2_gender')}
         </label>
         <select
-          value={data.salutation}
-          onChange={e => set('salutation', e.target.value)}
+          value={data.gender}
+          onChange={e => set('gender', e.target.value)}
           className={inputCls()}
         >
-          <option value="">{t('reg.step2_salutation_placeholder')}</option>
-          <option value="de_heer">{t('reg.step2_salutation_sir')}</option>
-          <option value="mevrouw">{t('reg.step2_salutation_madam')}</option>
-          <option value="geen_voorkeur">{t('reg.step2_salutation_none')}</option>
+          <option value="">{t('reg.step2_gender_placeholder')}</option>
+          <option value="man">{t('reg.gender_man')}</option>
+          <option value="vrouw">{t('reg.gender_vrouw')}</option>
+          <option value="niet_opgegeven">{t('reg.gender_niet_opgegeven')}</option>
         </select>
       </div>
 
