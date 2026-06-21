@@ -60,6 +60,7 @@ export interface Viewer {
   notify_email_levels?: string[] | null
   notify_push_levels?: string[] | null
   profile_shielded?: boolean | null
+  avatar_url?: string | null
 }
 
 export interface MeResponse {

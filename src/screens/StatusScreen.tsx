@@ -149,10 +149,11 @@ export default function StatusScreen() {
           {/* Header: avatar + naam + datum */}
           <div className="px-5 pt-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-teal/20 dark:bg-brand-teal/30 flex items-center justify-center flex-shrink-0">
-                <span className="text-brand-teal font-semibold text-sm">
-                  {initials(meQuery.data?.viewer?.display_name ?? '')}
-                </span>
+              <div className="w-10 h-10 rounded-full bg-brand-teal/20 dark:bg-brand-teal/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {meQuery.data?.viewer?.avatar_url
+                  ? <img src={meQuery.data.viewer.avatar_url} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-brand-teal font-semibold text-sm">{initials(meQuery.data?.viewer?.display_name ?? '')}</span>
+                }
               </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
