@@ -179,12 +179,10 @@ export default function RegistrationFlow() {
   }
 
   // Step 5 skip phone
-  async function handleStep5Skip() {
+  function handleStep5Skip() {
     merge({ phoneSkipped: true, phoneVerified: false })
-    try {
-      await save({ registration_status: 'partially_completed' }, 6)
-      setStep(6)
-    } catch {}
+    save({ registration_status: 'partially_completed' }, 6).catch(() => {})
+    setStep(6)
   }
 
   // Step 6 notification preferences → step 7

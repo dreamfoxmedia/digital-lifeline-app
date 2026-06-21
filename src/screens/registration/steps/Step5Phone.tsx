@@ -38,7 +38,7 @@ type Stage = 'choice' | 'input' | 'code'
 
 interface Props {
   onVerified: (phoneE164: string) => Promise<void>
-  onSkip: () => Promise<void>
+  onSkip: () => void
 }
 
 export default function Step5Phone({ onVerified, onSkip }: Props) {
