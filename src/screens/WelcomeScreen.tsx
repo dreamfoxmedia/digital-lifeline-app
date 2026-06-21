@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQueryClient } from '@tanstack/react-query'
 import brandIcon from '../assets/brand-icon.png'
 
 export default function WelcomeScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   return (
     <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex flex-col px-6 pt-[calc(env(safe-area-inset-top)+32px)] pb-[calc(env(safe-area-inset-bottom)+32px)]">
@@ -66,7 +68,10 @@ export default function WelcomeScreen() {
       <div className="mt-6">
         <button
           type="button"
-          onClick={() => navigate('/', { replace: true })}
+          onClick={async () => {
+            await queryClient.refetchQueries({ queryKey: ['me'] })
+            navigate('/', { replace: true })
+          }}
           className="w-full py-4 rounded-xl bg-brand-teal text-white font-semibold text-base active:scale-[0.98] transition-transform"
         >
           {t('welcome.continue')}

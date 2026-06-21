@@ -85,7 +85,7 @@ export default function RegistrationFlow() {
   const [step, setStep] = useState(1)
   const [data, setData] = useState<WizardData>(DEFAULT_DATA)
   const [initialized, setInitialized] = useState(false)
-  const saving = false
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (initialized || !meQuery.data) return
@@ -110,16 +110,15 @@ export default function RegistrationFlow() {
   }
 
   async function save(payload: object, nextStep: number) {
+    setSaving(true)
     try {
       await apiClient.patch('/api/mobile/registration', {
         ...payload,
         onboarding_current_step: nextStep,
       })
       queryClient.invalidateQueries({ queryKey: ['me'] })
-    } catch (e) {
-      throw e
     } finally {
-      // intentionally empty
+      setSaving(false)
     }
   }
 
@@ -143,41 +142,49 @@ export default function RegistrationFlow() {
 
   // Step 3 confirm → save profile + advance
   async function handleStep3Confirm() {
-    save({
-      salutation: data.salutation || null,
-      first_name: data.firstName,
-      last_name: data.lastName,
-      display_name: data.displayName,
-      relationship_to_monitored_person: data.relationship || null,
-      relationship_description: data.relationship === 'other' ? data.relationshipDescription : null,
-      date_of_birth: data.dateOfBirth || null,
-      registration_status: 'profile_completed',
-    }, 4).catch(() => {})
-    setStep(4)
+    try {
+      await save({
+        salutation: data.salutation || null,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        display_name: data.displayName,
+        relationship_to_monitored_person: data.relationship || null,
+        relationship_description: data.relationship === 'other' ? data.relationshipDescription : null,
+        date_of_birth: data.dateOfBirth || null,
+        registration_status: 'profile_completed',
+      }, 4)
+      setStep(4)
+    } catch {}
   }
 
   // Step 4 email verified
   async function handleStep4Done() {
-    save({ registration_status: 'email_verified' }, 5).catch(() => {})
-    setStep(5)
+    try {
+      await save({ registration_status: 'email_verified' }, 5)
+      setStep(5)
+    } catch {}
   }
 
   // Step 5 phone verified
   async function handleStep5Verified(phoneE164: string) {
     merge({ phoneVerified: true, phoneSkipped: false })
-    save({
-      phone_number_e164: phoneE164,
-      phone_verified: true,
-      registration_status: 'phone_verified',
-    }, 6).catch(() => {})
-    setStep(6)
+    try {
+      await save({
+        phone_number_e164: phoneE164,
+        phone_verified: true,
+        registration_status: 'phone_verified',
+      }, 6)
+      setStep(6)
+    } catch {}
   }
 
   // Step 5 skip phone
   async function handleStep5Skip() {
     merge({ phoneSkipped: true, phoneVerified: false })
-    save({ registration_status: 'partially_completed' }, 6).catch(() => {})
-    setStep(6)
+    try {
+      await save({ registration_status: 'partially_completed' }, 6)
+      setStep(6)
+    } catch {}
   }
 
   // Step 6 notification preferences → step 7
@@ -186,27 +193,33 @@ export default function RegistrationFlow() {
     if (data.phoneVerified && data.notifySms) channels.push('sms')
     if (data.phoneVerified && data.notifyWhatsapp) channels.push('whatsapp')
     if (data.notifyTelegram) channels.push('telegram')
-    save({
-      notify_email_levels: data.notifyEmailLevels,
-      notify_push_levels: data.notifyPushLevels,
-      preferred_notification_channels: channels,
-    }, 7).catch(() => {})
-    setStep(7)
+    try {
+      await save({
+        notify_email_levels: data.notifyEmailLevels,
+        notify_push_levels: data.notifyPushLevels,
+        preferred_notification_channels: channels,
+      }, 7)
+      setStep(7)
+    } catch {}
   }
 
   // Step 7 privacy → step 8
   async function handleStep7PrivacyDone() {
-    save({ profile_shielded: data.dataShielded }, 8).catch(() => {})
-    setStep(8)
+    try {
+      await save({ profile_shielded: data.dataShielded }, 8)
+      setStep(8)
+    } catch {}
   }
 
-  // Step 8 final save
+  // Step 8 final save — blocking, zodat onboarding_phase_1_completed zeker is opgeslagen
   async function handleStep8Done() {
-    save({
-      onboarding_phase_1_completed: true,
-      onboarding_completed: true,
-      registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
-    }, 8).catch(() => {})
+    try {
+      await save({
+        onboarding_phase_1_completed: true,
+        onboarding_completed: true,
+        registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
+      }, 8)
+    } catch {}
     navigate('/welcome', { replace: true })
   }
 
