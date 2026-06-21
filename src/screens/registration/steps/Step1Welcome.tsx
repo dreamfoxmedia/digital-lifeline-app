@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 interface Props {
   role: 'family' | 'caregiver' | null
   saving: boolean
-  onAccept: () => Promise<void>
+  onAccept: () => void
   onDecline: () => void
 }
 

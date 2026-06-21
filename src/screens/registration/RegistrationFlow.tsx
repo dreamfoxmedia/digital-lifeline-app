@@ -122,12 +122,19 @@ export default function RegistrationFlow() {
     }
   }
 
+  function saveBackground(payload: object, nextStep: number) {
+    apiClient.patch('/api/mobile/registration', {
+      ...payload,
+      onboarding_current_step: nextStep,
+    }).catch(() => {})
+  }
+
   // Step 1 handlers
-  async function handleStep1Accept() {
-    save({
+  function handleStep1Accept() {
+    saveBackground({
       monitoring_disclaimer_accepted: true,
       monitoring_disclaimer_version: '1.0',
-    }, 2).catch(() => {})
+    }, 2)
     setStep(2)
   }
 
@@ -181,7 +188,7 @@ export default function RegistrationFlow() {
   // Step 5 skip phone
   function handleStep5Skip() {
     merge({ phoneSkipped: true, phoneVerified: false })
-    save({ registration_status: 'partially_completed' }, 6).catch(() => {})
+    saveBackground({ registration_status: 'partially_completed' }, 6)
     setStep(6)
   }
 
