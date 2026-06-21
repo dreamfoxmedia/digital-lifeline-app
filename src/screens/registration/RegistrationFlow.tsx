@@ -251,7 +251,7 @@ export default function RegistrationFlow() {
         )}
         {step === 4 && (
           <Step4EmailVerify
-            prefillEmail={meQuery.data?.profile.email ?? ''}
+            prefillEmail={meQuery.data?.profile?.email ?? ''}
             onVerified={handleStep4Done}
           />
         )}
