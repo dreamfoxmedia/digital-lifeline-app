@@ -94,7 +94,7 @@ export default function StatusScreen() {
       navigate('/registration', { replace: true })
       return
     }
-    if (viewer === null || viewer.profile_completed === false) {
+    if ((viewer === null || viewer.profile_completed === false) && !registration?.onboarding_phase_1_completed) {
       navigate('/onboarding', { replace: true })
     }
   }, [meQuery.data, navigate])
