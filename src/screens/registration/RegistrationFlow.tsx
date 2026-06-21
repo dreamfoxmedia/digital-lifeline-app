@@ -93,7 +93,14 @@ export default function RegistrationFlow() {
     if (viewerData) {
       const startStep = Math.max(1, viewerData.onboarding_current_step ?? 1)
       setStep(startStep)
-      setData(prev => ({ ...prev, ...mapFromServer(viewerData) }))
+      const mapped = mapFromServer(viewerData)
+      // Prefill voornaam/achternaam vanuit profielnaam als ze nog leeg zijn
+      if (!mapped.firstName && !mapped.lastName && meQuery.data.profile?.full_name) {
+        const parts = meQuery.data.profile.full_name.trim().split(/\s+/)
+        mapped.firstName = parts[0] ?? ''
+        mapped.lastName = parts.length > 1 ? parts.slice(1).join(' ') : ''
+      }
+      setData(prev => ({ ...prev, ...mapped }))
     }
     setInitialized(true)
   }, [meQuery.data, initialized])

@@ -136,7 +136,7 @@ export default function StatusScreen() {
   const events = eventsQuery.data ?? []
 
   return (
-    <div className="min-h-screen bg-[#ede9e3]">
+    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13]">
       {emergency && (
         <EmergencyAlert category={emergency.category} onDismiss={() => setEmergency(null)} />
       )}
@@ -144,22 +144,36 @@ export default function StatusScreen() {
       <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
 
         {/* Hoofdkaart */}
-        <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1a24] rounded-3xl shadow-sm overflow-hidden">
 
-          {/* Datum + knoppen */}
+          {/* Header: avatar + naam + datum */}
           <div className="px-5 pt-5 flex items-center justify-between">
-            <span className="text-gray-400 text-sm capitalize">{formatDate(now, i18n.language)}</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-teal/20 dark:bg-brand-teal/30 flex items-center justify-center flex-shrink-0">
+                <span className="text-brand-teal font-semibold text-sm">
+                  {initials(meQuery.data?.viewer?.display_name ?? '')}
+                </span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
+                  {meQuery.data?.viewer?.display_name ?? ''}
+                </p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs capitalize">
+                  {formatDate(now, i18n.language)}
+                </p>
+              </div>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={refresh}
-                className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center text-gray-400 dark:text-gray-500 active:text-gray-600"
                 aria-label={t('status.refresh')}
               >
                 ↻
               </button>
               <button
                 onClick={() => navigate('/settings')}
-                className="w-8 h-8 flex items-center justify-center text-gray-400 active:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center text-gray-400 dark:text-gray-500 active:text-gray-600"
                 aria-label={t('status.settings_btn')}
               >
                 🔔
@@ -170,12 +184,12 @@ export default function StatusScreen() {
           {/* Persoon */}
           {person && (
             <div className="px-5 py-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-semibold text-base">{initials(person.name)}</span>
+              <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 dark:text-blue-400 font-semibold text-base">{initials(person.name)}</span>
               </div>
               <div>
-                <p className="font-bold text-gray-900 text-lg leading-tight">{person.name}</p>
-                <p className="text-gray-400 text-sm">{data?.household?.name}{status ? ` · ${status.label.toLowerCase()}` : ''}</p>
+                <p className="font-bold text-gray-900 dark:text-white text-lg leading-tight">{person.name}</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm">{data?.household?.name}{status ? ` · ${status.label.toLowerCase()}` : ''}</p>
               </div>
             </div>
           )}
@@ -216,16 +230,16 @@ export default function StatusScreen() {
 
           {/* Lege staat — nog geen huishouden of sensordata */}
           {data && !data.household && !catQuery.isLoading && (
-            <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
-              <p className="text-gray-500 font-medium text-sm mb-1">{t('status.not_linked_title')}</p>
-              <p className="text-gray-400 text-xs">{t('status.not_linked_detail')}</p>
+            <div className="mx-5 mb-6 bg-stone-50 dark:bg-[#252530] rounded-2xl px-4 py-5 text-center">
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-sm mb-1">{t('status.not_linked_title')}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">{t('status.not_linked_detail')}</p>
             </div>
           )}
 
           {data && data.household && data.categories.length === 0 && !catQuery.isLoading && (
-            <div className="mx-5 mb-6 bg-stone-50 rounded-2xl px-4 py-5 text-center">
-              <p className="text-gray-500 font-medium text-sm mb-1">{t('status.no_data_title')}</p>
-              <p className="text-gray-400 text-xs">{t('status.no_data_detail')}</p>
+            <div className="mx-5 mb-6 bg-stone-50 dark:bg-[#252530] rounded-2xl px-4 py-5 text-center">
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-sm mb-1">{t('status.no_data_title')}</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">{t('status.no_data_detail')}</p>
             </div>
           )}
 
@@ -251,10 +265,10 @@ export default function StatusScreen() {
                     <div className="flex items-center gap-4 py-3">
                       <span className="text-gray-400 text-sm w-12 flex-shrink-0 tabular-nums">{ev.time}</span>
                       <span className="text-base flex-shrink-0">{EVENT_ICONS[ev.category] ?? '📌'}</span>
-                      <span className="text-gray-800 text-sm">{eventDescription(ev, t)}</span>
+                      <span className="text-gray-800 dark:text-gray-200 text-sm">{eventDescription(ev, t)}</span>
                     </div>
                     {i < events.length - 1 && (
-                      <div className="h-px bg-gray-100 ml-16" />
+                      <div className="h-px bg-gray-100 dark:bg-gray-800 ml-16" />
                     )}
                   </div>
                 ))}
@@ -267,7 +281,7 @@ export default function StatusScreen() {
         {/* Tandwiel onderaan */}
         <button
           onClick={() => navigate('/settings')}
-          className="mt-4 w-full flex items-center justify-center gap-2 text-gray-400 text-sm py-2 active:text-gray-600"
+          className="mt-4 w-full flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500 text-sm py-2 active:text-gray-600"
         >
           <span>⚙️</span> {t('status.settings_btn')}
         </button>

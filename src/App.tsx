@@ -8,6 +8,20 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { setUnauthorizedHandler } from './lib/apiClient'
 import { supabase } from './lib/supabase'
 import i18n from './i18n'
+
+function applyTheme(dark: boolean) {
+  document.documentElement.classList.toggle('dark', dark)
+}
+
+function useSystemTheme() {
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    applyTheme(mq.matches)
+    const handler = (e: MediaQueryListEvent) => applyTheme(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+}
 import LanguageScreen from './screens/LanguageScreen'
 import LoginScreen from './screens/LoginScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
@@ -45,7 +59,7 @@ function AppRoutes() {
   setUnauthorizedHandler(signOut)
 
   if (initializing) return (
-    <div className="min-h-screen bg-[#ede9e3] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex items-center justify-center">
       <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
     </div>
   )
@@ -72,6 +86,7 @@ function AppRoutes() {
 }
 
 export default function App() {
+  useSystemTheme()
   const [appState, setAppState] = useState<AppState>('loading')
 
   useEffect(() => {
@@ -92,7 +107,7 @@ export default function App() {
 
   if (appState === 'loading') {
     return (
-      <div className="min-h-screen bg-[#ede9e3] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex items-center justify-center">
         <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
       </div>
     )
