@@ -52,7 +52,7 @@ const DEFAULT_DATA: WizardData = {
 
 const TOTAL_STEPS = 8
 
-function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<WizardData> {
+function mapFromServer(reg: NonNullable<MeResponse['viewer']>): Partial<WizardData> {
   return {
     gender: reg.gender ?? '',
     firstName: reg.first_name ?? '',
@@ -61,8 +61,8 @@ function mapFromServer(reg: NonNullable<MeResponse['registration']>): Partial<Wi
     relationship: reg.relationship_to_monitored_person ?? '',
     relationshipDescription: reg.relationship_description ?? '',
     dateOfBirth: reg.date_of_birth ?? '',
-    phoneVerified: reg.phone_verified,
-    phoneSkipped: !reg.phone_verified && reg.onboarding_current_step > 5,
+    phoneVerified: reg.phone_verified ?? false,
+    phoneSkipped: !(reg.phone_verified ?? false) && (reg.onboarding_current_step ?? 0) > 5,
     notifyEmailLevels: reg.notify_email_levels ?? ['warning', 'emergency'],
     notifyPushLevels: reg.notify_push_levels ?? ['emergency'],
     notifySms: reg.preferred_notification_channels?.includes('sms') ?? false,
@@ -89,11 +89,11 @@ export default function RegistrationFlow() {
 
   useEffect(() => {
     if (initialized || !meQuery.data) return
-    const reg = meQuery.data.registration
-    if (reg) {
-      const startStep = Math.max(1, reg.onboarding_current_step ?? 1)
+    const viewerData = meQuery.data.viewer
+    if (viewerData) {
+      const startStep = Math.max(1, viewerData.onboarding_current_step ?? 1)
       setStep(startStep)
-      setData(prev => ({ ...prev, ...mapFromServer(reg) }))
+      setData(prev => ({ ...prev, ...mapFromServer(viewerData) }))
     }
     setInitialized(true)
   }, [meQuery.data, initialized])
@@ -103,7 +103,7 @@ export default function RegistrationFlow() {
     meQuery.data?.roles.includes('caregiver') ? 'caregiver' :
     meQuery.data?.roles.includes('family') ? 'family' :
     (viewerType === 'family' || viewerType === 'caregiver') ? viewerType :
-    (meQuery.data?.registration?.role ?? null)
+    (meQuery.data?.viewer?.role ?? null)
 
   function merge(updates: Partial<WizardData>) {
     setData(prev => ({ ...prev, ...updates }))

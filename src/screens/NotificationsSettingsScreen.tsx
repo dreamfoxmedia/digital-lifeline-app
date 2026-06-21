@@ -154,7 +154,7 @@ export default function NotificationsSettingsScreen() {
     queryFn: () => apiClient.get('/api/mobile/me'),
   })
 
-  const reg = meQuery.data?.registration
+  const reg = meQuery.data?.viewer
   const phoneVerified = reg?.phone_verified ?? false
 
   const [state, setState] = useState<NotifState>({
