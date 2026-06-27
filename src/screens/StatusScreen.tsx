@@ -367,7 +367,7 @@ export default function StatusScreen() {
             {avatarOpen && (
               <button
                 onClick={() => setAvatarOpen(false)}
-                aria-label="Sluiten"
+                aria-label={t('common.close')}
                 style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
               >
                 <Icon name="x" size={24} color={tk.icon} />
@@ -375,14 +375,14 @@ export default function StatusScreen() {
             )}
             <button
               onClick={() => navigate('/notifications')}
-              aria-label="Meldingen"
+              aria-label={t('status.notifications_btn')}
               style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
             >
               <Icon name="bell" size={24} color={tk.icon} />
             </button>
             <button
               onClick={() => navigate('/settings')}
-              aria-label="Instellingen"
+              aria-label={t('settings.title')}
               style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
             >
               <Icon name="settings" size={24} color={tk.icon} />
@@ -429,7 +429,7 @@ export default function StatusScreen() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
           <button
             onClick={() => setAvatarOpen(true)}
-            aria-label="Foto vergroten"
+            aria-label={t('status.avatar_enlarge')}
             style={{
               width: 64, height: 64, borderRadius: '50%',
               background: tk.avatarBg,
@@ -460,13 +460,13 @@ export default function StatusScreen() {
         {/* Error state */}
         {dashboardQuery.isError && !isLoading && (
           <div style={{ background: '#fce4e2', borderRadius: 14, padding: '16px 18px', marginBottom: 14 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#b3261e', marginBottom: 4 }}>Gegevens niet beschikbaar</div>
-            <div style={{ fontSize: 14, color: '#bb453d', marginBottom: 12 }}>Controleer je verbinding en probeer opnieuw.</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#b3261e', marginBottom: 4 }}>{t('status.error_title')}</div>
+            <div style={{ fontSize: 14, color: '#bb453d', marginBottom: 12 }}>{t('status.error_body')}</div>
             <button
               onClick={refresh}
               style={{ background: '#eda49d', border: 'none', borderRadius: 8, padding: '8px 16px', fontSize: 14, fontWeight: 600, color: '#b3261e', cursor: 'pointer' }}
             >
-              Opnieuw proberen
+              {t('status.retry')}
             </button>
           </div>
         )}
@@ -490,7 +490,7 @@ export default function StatusScreen() {
 
             {/* NU — insight cards grid */}
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.4px', color: tk.label, marginBottom: 12, textTransform: 'uppercase' }}>
-              Nu
+              {t('status.now_section')}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 26 }}>
               {dashboard.cards.map((card, i) => (
@@ -500,11 +500,11 @@ export default function StatusScreen() {
 
             {/* VANDAAG — timeline */}
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.4px', color: tk.label, marginBottom: 6, textTransform: 'uppercase' }}>
-              Vandaag
+              {t('status.today_section')}
             </div>
             {dashboard.timeline.length === 0 ? (
               <div style={{ padding: '22px 4px 26px', color: tk.time, fontSize: 16, lineHeight: 1.4 }}>
-                Er worden nog gegevens verzameld …
+                {t('status.no_data_yet')}
               </div>
             ) : (
               <div>

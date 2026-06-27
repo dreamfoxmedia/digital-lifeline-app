@@ -68,7 +68,7 @@ export default function OnboardingScreen() {
       await queryClient.invalidateQueries({ queryKey: ['me'] })
       navigate('/', { replace: true })
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Onbekende fout')
+      setApiError(err instanceof Error ? err.message : t('common.error_unknown'))
     } finally {
       setSaving(false)
     }

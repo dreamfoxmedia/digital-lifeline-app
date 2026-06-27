@@ -68,7 +68,7 @@ export default function SettingsScreen() {
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Onbekende fout')
+      setApiError(err instanceof Error ? err.message : t('common.error_unknown'))
     } finally {
       setSaving(false)
     }

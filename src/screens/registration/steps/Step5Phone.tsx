@@ -1,26 +1,26 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { apiClient } from '../../../lib/apiClient'
 
 const COUNTRY_CODES = [
-  { code: '+31', country: 'Nederland', flag: '🇳🇱' },
-  { code: '+32', country: 'België', flag: '🇧🇪' },
-  { code: '+49', country: 'Duitsland', flag: '🇩🇪' },
-  { code: '+33', country: 'Frankrijk', flag: '🇫🇷' },
-  { code: '+44', country: 'Verenigd Koninkrijk', flag: '🇬🇧' },
-  { code: '+1', country: 'VS / Canada', flag: '🇺🇸' },
-  { code: '+34', country: 'Spanje', flag: '🇪🇸' },
-  { code: '+39', country: 'Italië', flag: '🇮🇹' },
-  { code: '+351', country: 'Portugal', flag: '🇵🇹' },
-  { code: '+48', country: 'Polen', flag: '🇵🇱' },
-  { code: '+45', country: 'Denemarken', flag: '🇩🇰' },
-  { code: '+46', country: 'Zweden', flag: '🇸🇪' },
-  { code: '+47', country: 'Noorwegen', flag: '🇳🇴' },
-  { code: '+41', country: 'Zwitserland', flag: '🇨🇭' },
-  { code: '+43', country: 'Oostenrijk', flag: '🇦🇹' },
-  { code: '+352', country: 'Luxemburg', flag: '🇱🇺' },
-  { code: '+61', country: 'Australië', flag: '🇦🇺' },
-  { code: '+27', country: 'Zuid-Afrika', flag: '🇿🇦' },
+  { code: '+31', regionCode: 'NL', flag: '🇳🇱' },
+  { code: '+32', regionCode: 'BE', flag: '🇧🇪' },
+  { code: '+49', regionCode: 'DE', flag: '🇩🇪' },
+  { code: '+33', regionCode: 'FR', flag: '🇫🇷' },
+  { code: '+44', regionCode: 'GB', flag: '🇬🇧' },
+  { code: '+1',  regionCode: 'US', flag: '🇺🇸' },
+  { code: '+34', regionCode: 'ES', flag: '🇪🇸' },
+  { code: '+39', regionCode: 'IT', flag: '🇮🇹' },
+  { code: '+351', regionCode: 'PT', flag: '🇵🇹' },
+  { code: '+48', regionCode: 'PL', flag: '🇵🇱' },
+  { code: '+45', regionCode: 'DK', flag: '🇩🇰' },
+  { code: '+46', regionCode: 'SE', flag: '🇸🇪' },
+  { code: '+47', regionCode: 'NO', flag: '🇳🇴' },
+  { code: '+41', regionCode: 'CH', flag: '🇨🇭' },
+  { code: '+43', regionCode: 'AT', flag: '🇦🇹' },
+  { code: '+352', regionCode: 'LU', flag: '🇱🇺' },
+  { code: '+61', regionCode: 'AU', flag: '🇦🇺' },
+  { code: '+27', regionCode: 'ZA', flag: '🇿🇦' },
 ]
 
 const MAX_ATTEMPTS = 5
@@ -42,7 +42,11 @@ interface Props {
 }
 
 export default function Step5Phone({ onVerified, onSkip }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const countryNames = useMemo(
+    () => new Intl.DisplayNames([i18n.language, 'en'], { type: 'region' }),
+    [i18n.language],
+  )
   const [stage, setStage] = useState<Stage>('choice')
   const [countryCode, setCountryCode] = useState('+31')
   const [phoneNumber, setPhoneNumber] = useState('')
@@ -188,7 +192,7 @@ export default function Step5Phone({ onVerified, onSkip }: Props) {
           >
             {COUNTRY_CODES.map(c => (
               <option key={c.code} value={c.code}>
-                {c.flag} {c.country} ({c.code})
+                {c.flag} {countryNames.of(c.regionCode)} ({c.code})
               </option>
             ))}
           </select>

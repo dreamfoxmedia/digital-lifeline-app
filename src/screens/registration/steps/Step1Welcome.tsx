@@ -43,7 +43,7 @@ export default function Step1Welcome({ role, saving, onAccept, onDecline }: Prop
 
       <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-5">
         <p className="text-amber-900 dark:text-amber-200 text-sm leading-relaxed">
-          <span className="font-semibold block mb-1">Let op</span>
+          <span className="font-semibold block mb-1">{t('status.warning_label')}</span>
           {t('reg.step1_warning')}
         </p>
       </div>

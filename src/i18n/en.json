@@ -89,7 +89,12 @@
     "card_sub_alert": "Anomaly at {{time}}",
     "card_sub_empty": "Sensors are being read",
     "timeline_alert": "Anomaly in {{category}}",
-    "timeline_activity": "Activity {{category}}"
+    "timeline_activity": "Activity {{category}}",
+    "notifications_btn": "Notifications",
+    "avatar_enlarge": "Enlarge photo",
+    "error_title": "Data unavailable",
+    "error_body": "Check your connection and try again.",
+    "no_data_yet": "Data is still being collected …"
   },
   "settings": {
     "title": "Settings",
@@ -206,6 +211,8 @@
     "err_email_invalid": "Please enter a valid email address.",
     "err_email_mismatch": "The email addresses do not match. Please check both fields.",
     "err_generic": "Something went wrong. Please try again.",
+    "err_save_failed": "Save failed. Check your connection and try again.",
+    "pending_progress": "{{completed}} / {{total}} steps",
     "err_code_invalid": "The code you entered is incorrect. Please try again.",
     "err_code_expired": "This code has expired. Please request a new one.",
     "err_too_many_attempts": "Too many attempts. Please request a new code.",
@@ -320,6 +327,8 @@
   "common": {
     "back": "Back",
     "cancel": "Cancel",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "close": "Close",
+    "error_unknown": "Unknown error"
   }
 }

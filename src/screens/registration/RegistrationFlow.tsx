@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
@@ -78,6 +79,7 @@ function mapFromServer(reg: NonNullable<MeResponse['viewer']>): Partial<WizardDa
 
 export default function RegistrationFlow() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { signOut } = useAuth()
 
@@ -137,7 +139,7 @@ export default function RegistrationFlow() {
         onboarding_current_step: nextStep,
       })
     } catch {
-      setSaveError('Opslaan mislukt. Controleer je verbinding en probeer opnieuw.')
+      setSaveError(t('reg.err_save_failed'))
       throw new Error('save_failed')
     } finally {
       setSaving(false)

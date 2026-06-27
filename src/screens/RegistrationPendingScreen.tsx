@@ -72,7 +72,7 @@ export default function RegistrationPendingScreen() {
         {/* Voortgangsbalk */}
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            {completedCount} / {steps.length} stappen
+            {t('reg.pending_progress', { completed: completedCount, total: steps.length })}
           </span>
           <span className="text-xs text-gray-400">{pct}%</span>
         </div>

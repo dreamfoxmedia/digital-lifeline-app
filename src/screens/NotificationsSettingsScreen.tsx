@@ -213,7 +213,7 @@ export default function NotificationsSettingsScreen() {
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Er is iets misgegaan.')
+      setError(e instanceof Error ? e.message : t('reg.err_generic'))
     } finally {
       setSaving(false)
     }
