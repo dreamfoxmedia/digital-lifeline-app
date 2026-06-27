@@ -10,7 +10,11 @@
     "preview": "vite preview",
     "cap:sync": "npx cap sync",
     "cap:open:ios": "npx cap open ios",
-    "cap:open:android": "npx cap open android"
+    "cap:open:android": "npx cap open android",
+    "build:aab": "npm run build && npx cap sync android",
+    "play:upload": "node scripts/upload-play-store.mjs",
+    "play:upload:beta": "node scripts/upload-play-store.mjs beta",
+    "play:upload:production": "node scripts/upload-play-store.mjs production"
   },
   "dependencies": {
     "@capacitor-firebase/analytics": "^8.3.0",
@@ -37,6 +41,7 @@
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.0",
+    "googleapis": "^173.0.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.0",
