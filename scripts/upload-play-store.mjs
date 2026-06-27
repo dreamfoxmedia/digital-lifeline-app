@@ -20,7 +20,7 @@ const ROOT = path.join(__dirname, '..')
 
 const PACKAGE_NAME = 'com.digilifeline.free.smartrevolutions.app'
 const KEY_FILE     = path.join(ROOT, 'android', 'app', 'play-store-key.json')
-const AAB_FILE     = path.join(ROOT, 'android', 'app', 'build', 'outputs', 'bundle', 'release', 'app-release.aab')
+const AAB_FILE     = path.join(ROOT, 'android', 'app', 'release', 'app-release.aab')
 const TRACK        = process.argv[2] ?? 'internal'
 
 if (!fs.existsSync(KEY_FILE)) {
