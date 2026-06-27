@@ -47,6 +47,7 @@ function initials(name: string) {
 
 type IconName = 'activity' | 'door' | 'shield' | 'shield-alert' | 'thermometer' | 'moon'
   | 'check-circle' | 'alert-triangle' | 'info' | 'coffee' | 'door-open' | 'sun' | 'bell'
+  | 'settings' | 'x'
 
 function Icon({ name, size = 24, color = 'currentColor' }: { name: string; size?: number; color?: string }) {
   const p: React.SVGProps<SVGSVGElement> = {
@@ -81,6 +82,10 @@ function Icon({ name, size = 24, color = 'currentColor' }: { name: string; size?
       return <svg {...p}><path d="M13 4h3a2 2 0 0 1 2 2v14" /><path d="M2 20h3" /><path d="M13 20h9" /><path d="M10 12v.01" /><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56Z" /></svg>
     case 'sun':
       return <svg {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+    case 'settings':
+      return <svg {...p}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>
+    case 'x':
+      return <svg {...p}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
     default:
       return <svg {...p}><circle cx="12" cy="12" r="10" /></svg>
   }
@@ -274,6 +279,7 @@ export default function StatusScreen() {
   const isDark = useIsDark()
   const tk = isDark ? T.dark : T.light
   const [emergency, setEmergency] = useState<CategoryStatus | null>(null)
+  const [avatarOpen, setAvatarOpen] = useState(false)
   const eventsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const meQuery = useQuery<MeResponse>({
@@ -357,29 +363,87 @@ export default function StatusScreen() {
           <div style={{ fontSize: 16, fontWeight: 500, color: tk.muted, letterSpacing: '-0.1px' }}>
             {formatDateTime(now, i18n.language)}
           </div>
-          <button
-            onClick={() => navigate('/settings')}
-            aria-label="Instellingen"
-            style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
-          >
-            <Icon name="bell" size={24} color={tk.icon} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {avatarOpen && (
+              <button
+                onClick={() => setAvatarOpen(false)}
+                aria-label="Sluiten"
+                style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
+              >
+                <Icon name="x" size={24} color={tk.icon} />
+              </button>
+            )}
+            <button
+              onClick={() => navigate('/notifications')}
+              aria-label="Meldingen"
+              style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
+            >
+              <Icon name="bell" size={24} color={tk.icon} />
+            </button>
+            <button
+              onClick={() => navigate('/settings')}
+              aria-label="Instellingen"
+              style={{ color: tk.icon, background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}
+            >
+              <Icon name="settings" size={24} color={tk.icon} />
+            </button>
+          </div>
         </div>
+
+        {/* Avatar overlay */}
+        {avatarOpen && (
+          <div
+            onClick={() => setAvatarOpen(false)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 200,
+              background: 'rgba(0,0,0,0.82)',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}
+            >
+              <div style={{
+                width: 180, height: 180, borderRadius: '50%',
+                background: tk.avatarBg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+              }}>
+                {dashboard?.personAvatarUrl
+                  ? <img src={dashboard.personAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <span style={{ fontSize: 56, fontWeight: 600, color: tk.avatarText }}>
+                      {dashboard?.personInitials ?? initials(viewerName)}
+                    </span>
+                }
+              </div>
+              <div style={{ fontSize: 24, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.3px' }}>
+                {dashboard?.personName ?? viewerName}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Profile row — monitored person */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            background: tk.avatarBg,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden',
-          }}>
+          <button
+            onClick={() => setAvatarOpen(true)}
+            aria-label="Foto vergroten"
+            style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: tk.avatarBg,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden',
+              border: 'none', padding: 0, cursor: 'pointer',
+            }}
+          >
             {dashboard?.personAvatarUrl
               ? <img src={dashboard.personAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : <span style={{ fontSize: 19, fontWeight: 600, color: tk.avatarText, letterSpacing: '0.3px' }}>
                   {dashboard?.personInitials ?? initials(viewerName)}
                 </span>
             }
-          </div>
+          </button>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 26, fontWeight: 600, color: tk.heading, lineHeight: 1.15, letterSpacing: '-0.4px' }}>
               {dashboard?.personName ?? viewerName}
