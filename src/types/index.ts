@@ -4,24 +4,25 @@ export type WellbeingStatus = 'gerust' | 'aandacht' | 'afwijkend' | 'waarschuwin
 
 export interface DashboardCard {
   icon: string
-  label: string
-  value: string
-  sub: string
+  category: string
+  state: 'ok' | 'alert' | 'empty'
+  lastSeen: string | null
 }
 
 export interface DashboardTimelineEvent {
   id: string
-  time: string
+  observedAt: string
   icon: string
-  text: string
-  tone?: 'danger' | 'warning'
+  category: string
+  status: string | null
+  tone: 'danger' | 'warning' | null
 }
 
 export interface DashboardData {
   status: WellbeingStatus
-  statusLine: string
-  banner: { title: string; sub: string; icon: string }
-  alert: { title: string; sub: string } | null
+  statusLineKey: string
+  banner: { titleKey: string; subKey: string; icon: string }
+  alert: { category: string; observedAt: string } | null
   cards: DashboardCard[]
   timeline: DashboardTimelineEvent[]
   personName: string

@@ -125,14 +125,9 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-function localizeTimelineText(text: string, t: ReturnType<typeof useTranslation>['t']): string {
-  const colonIdx = text.indexOf(': ')
-  if (colonIdx > 0) {
-    const cat = text.slice(0, colonIdx)
-    const rest = text.slice(colonIdx + 2)
-    return `${t(`categories.${cat}`, { defaultValue: capitalize(cat) })}: ${rest}`
-  }
-  return text
+function fmtTime(iso: string, lang: string) {
+  const locale = CLOCK_LOCALES[lang] ?? 'nl-NL'
+  return new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -162,6 +157,7 @@ function StatusBanner({ status, dashboard, isDark, borderWidth }: {
   isDark: boolean
   borderWidth: string
 }) {
+  const { t } = useTranslation()
   const b = isDark ? BANNERS[status].d : BANNERS[status].l
   return (
     <div style={{
@@ -174,10 +170,10 @@ function StatusBanner({ status, dashboard, isDark, borderWidth }: {
       </div>
       <div>
         <div style={{ fontSize: 18, fontWeight: 600, color: b.strong, lineHeight: 1.2 }}>
-          {dashboard.banner.title}
+          {t(dashboard.banner.titleKey)}
         </div>
         <div style={{ fontSize: 16, color: b.text, marginTop: 2 }}>
-          {dashboard.banner.sub}
+          {t(dashboard.banner.subKey)}
         </div>
       </div>
     </div>
@@ -185,10 +181,12 @@ function StatusBanner({ status, dashboard, isDark, borderWidth }: {
 }
 
 function SafetyBlock({ alert, isDark }: {
-  alert: { title: string; sub: string }
+  alert: { category: string; observedAt: string }
   isDark: boolean
 }) {
+  const { t, i18n } = useTranslation()
   const b = isDark ? BANNERS.waarschuwing.d : BANNERS.waarschuwing.l
+  const catLabel = t(`categories.${alert.category}`, { defaultValue: capitalize(alert.category) })
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 14,
@@ -200,13 +198,13 @@ function SafetyBlock({ alert, isDark }: {
       </div>
       <div>
         <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.6px', textTransform: 'uppercase', color: b.icon, marginBottom: 2 }}>
-          Veiligheid
+          {t('status.safety_label')}
         </div>
         <div style={{ fontSize: 17, fontWeight: 600, color: b.strong, lineHeight: 1.2 }}>
-          {alert.title}
+          {catLabel}
         </div>
         <div style={{ fontSize: 15, color: b.text, marginTop: 2 }}>
-          {alert.sub}
+          {t('status.alert_at', { time: fmtTime(alert.observedAt, i18n.language) })}
         </div>
       </div>
     </div>
@@ -214,8 +212,14 @@ function SafetyBlock({ alert, isDark }: {
 }
 
 function InsightCard({ card, tk }: { card: DashboardData['cards'][0]; tk: typeof T.light }) {
-  const { t } = useTranslation()
-  const label = t(`categories.${card.label}`, { defaultValue: capitalize(card.label) })
+  const { t, i18n } = useTranslation()
+  const label = t(`categories.${card.category}`, { defaultValue: capitalize(card.category) })
+  const value = t(`status.card_${card.state}`)
+  const sub = card.state === 'empty'
+    ? t('status.card_sub_empty')
+    : card.lastSeen
+      ? t(`status.card_sub_${card.state}`, { time: fmtTime(card.lastSeen, i18n.language) })
+      : ''
   return (
     <div style={{
       background: tk.tile,
@@ -226,16 +230,21 @@ function InsightCard({ card, tk }: { card: DashboardData['cards'][0]; tk: typeof
         <Icon name={card.icon} size={24} color={tk.tileIcon} />
       </div>
       <div style={{ fontSize: 14, color: tk.tileLabel, marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 18, fontWeight: 600, color: tk.value, lineHeight: 1.25 }}>{card.value}</div>
-      <div style={{ fontSize: 13.5, color: tk.tileLabel, marginTop: 4, lineHeight: 1.32 }}>{card.sub}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: tk.value, lineHeight: 1.25 }}>{value}</div>
+      <div style={{ fontSize: 13.5, color: tk.tileLabel, marginTop: 4, lineHeight: 1.32 }}>{sub}</div>
     </div>
   )
 }
 
 function TimelineRow({ ev, tk, isLast }: { ev: DashboardData['timeline'][0]; tk: typeof T.light; isLast: boolean }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const iconColor = ev.tone === 'danger' ? tk.dangerIcon : ev.tone === 'warning' ? tk.warnIcon : tk.tlIcon
-  const text = localizeTimelineText(ev.text, t)
+  const catLabel = t(`categories.${ev.category}`, { defaultValue: capitalize(ev.category) })
+  const text = ev.status
+    ? `${catLabel}: ${ev.status}`
+    : ev.tone
+      ? t('status.timeline_alert', { category: catLabel })
+      : t('status.timeline_activity', { category: catLabel })
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 18,
@@ -243,7 +252,7 @@ function TimelineRow({ ev, tk, isLast }: { ev: DashboardData['timeline'][0]; tk:
       borderBottom: isLast ? 'none' : `${tk.bw} solid ${tk.divider}`,
     }}>
       <div style={{ fontSize: 17, color: tk.time, fontVariantNumeric: 'tabular-nums', width: 48, flexShrink: 0 }}>
-        {ev.time}
+        {fmtTime(ev.observedAt, i18n.language)}
       </div>
       <div style={{ flexShrink: 0, display: 'flex', color: iconColor }}>
         <Icon name={ev.icon} size={22} color={iconColor} />
@@ -259,7 +268,7 @@ const REFETCH_INTERVAL = 5 * 60 * 1000
 
 export default function StatusScreen() {
   const navigate = useNavigate()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const now = useClock()
   const isDark = useIsDark()
@@ -376,7 +385,7 @@ export default function StatusScreen() {
               {dashboard?.personName ?? viewerName}
             </div>
             <div style={{ fontSize: 16, color: tk.subtle, marginTop: 3 }}>
-              {dashboard?.statusLine ?? (isLoading ? 'Gegevens worden verzameld' : 'Thuis · alles in orde')}
+              {isLoading ? t('status.onvoldoende_line') : dashboard ? t(dashboard.statusLineKey) : t('status.gerust_line')}
             </div>
           </div>
         </div>
