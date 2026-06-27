@@ -1,10 +1,29 @@
 import { Preferences } from '@capacitor/preferences'
 import { supabase } from './supabase'
 
+// Module-level cache — geldig totdat setAuthCache/clearAuthCache wordt aangeroepen
+let _authMode: string | null | undefined = undefined  // undefined = nog niet geladen
+let _apiKey: string | null = null
+let _serverUrl: string | null | undefined = undefined
+
+export function setAuthCache(mode: string, apiKey?: string) {
+  _authMode = mode
+  _apiKey = apiKey ?? null
+}
+
+export function clearAuthCache() {
+  _authMode = undefined
+  _apiKey = null
+  _serverUrl = undefined
+}
+
 async function getBaseUrl(): Promise<string> {
   if (import.meta.env.DEV) return ''
-  const { value } = await Preferences.get({ key: 'serverUrl' })
-  return value ?? 'https://mijn.digitallifeline.nl'
+  if (_serverUrl === undefined) {
+    const { value } = await Preferences.get({ key: 'serverUrl' })
+    _serverUrl = value
+  }
+  return _serverUrl ?? 'https://mijn.digitallifeline.nl'
 }
 
 let onUnauthorized: (() => void) | null = null
@@ -15,11 +34,18 @@ export function setUnauthorizedHandler(handler: () => void) {
 
 async function getHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  const { value: authMode } = await Preferences.get({ key: 'authMode' })
 
-  if (authMode === 'apiKey') {
-    const { value: apiKey } = await Preferences.get({ key: 'apiKey' })
-    if (apiKey) headers['X-API-Key'] = apiKey
+  if (_authMode === undefined) {
+    const { value } = await Preferences.get({ key: 'authMode' })
+    _authMode = value
+  }
+
+  if (_authMode === 'apiKey') {
+    if (_apiKey === null) {
+      const { value } = await Preferences.get({ key: 'apiKey' })
+      _apiKey = value
+    }
+    if (_apiKey) headers['X-API-Key'] = _apiKey
   } else {
     const { data } = await supabase.auth.getSession()
     const token = data.session?.access_token

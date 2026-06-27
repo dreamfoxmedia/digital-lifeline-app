@@ -79,7 +79,14 @@
     "save": "Opslaan",
     "notif_screen_title": "Meldingen",
     "notif_row_label": "Meldingen",
-    "notif_row_sub": "E-mail, push, sms, WhatsApp en Telegram"
+    "notif_row_sub": "E-mail, push, sms, WhatsApp en Telegram",
+    "section_appearance": "Weergave",
+    "theme_label": "Kleurthema",
+    "theme_system": "Automatisch",
+    "theme_light": "Licht",
+    "theme_dark": "Donker",
+    "section_language": "Taal",
+    "change_language": "Taal wijzigen"
   },
   "events": {
     "beweging": "Beweging gedetecteerd",
@@ -242,6 +249,9 @@
     "notif_whatsapp_desc": "Ontvang een WhatsApp-bericht bij een melding.",
     "notif_telegram_desc": "Ontvang een Telegram-bericht bij een melding.",
     "notif_paid_phone_hint": "SMS en WhatsApp zijn alleen beschikbaar als je een telefoonnummer hebt toegevoegd.",
+    "notif_categories_section": "Categorieën",
+    "notif_categories_intro": "Kies voor welke activiteiten je meldingen wilt ontvangen.",
+    "notif_categories_empty": "De beheerder heeft nog geen meldingscategorieën ingesteld.",
     "notif_footer": "Bij instellingen en meldingen kun je dit later altijd aanpassen.",
     "notif_level_minor": "Afwijkend patroon",
     "notif_level_minor_desc": "Voor kleine veranderingen die aandacht kunnen vragen, maar niet direct zorgelijk zijn.",

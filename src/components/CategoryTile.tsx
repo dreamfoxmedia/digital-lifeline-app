@@ -27,9 +27,9 @@ const ICONS: Record<string, string> = {
 }
 
 const SEVERITY_VALUE_COLOR: Record<string, string> = {
-  info: 'text-gray-900',
-  warning: 'text-orange-600',
-  emergency: 'text-red-600',
+  info: 'text-gray-900 dark:text-gray-100',
+  warning: 'text-orange-600 dark:text-orange-400',
+  emergency: 'text-red-600 dark:text-red-400',
 }
 
 interface Props {
@@ -44,7 +44,7 @@ export default function CategoryTile({ item }: Props) {
   const label = t(`categories.${item.category.toLowerCase()}`, { defaultValue: fallbackLabel })
 
   return (
-    <div className="bg-stone-50 rounded-2xl p-4 flex flex-col gap-2 min-h-[100px]">
+    <div className="bg-stone-50 dark:bg-[#1e1e2e] rounded-2xl p-4 flex flex-col gap-2 min-h-[100px]">
       <span className="text-xl">{icon}</span>
       <p className="text-gray-400 text-sm leading-tight">{label}</p>
       <p className={`font-bold text-base leading-snug ${valueColor}`}>

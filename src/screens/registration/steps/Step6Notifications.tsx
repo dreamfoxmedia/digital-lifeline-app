@@ -14,6 +14,7 @@ interface Props {
   notifySms: boolean
   notifyWhatsapp: boolean
   notifyTelegram: boolean
+  allowedChannels: string[]
   saving: boolean
   onChange: (updates: Partial<WizardData>) => void
   onNext: () => void
@@ -21,6 +22,10 @@ interface Props {
 
 function toggle(levels: string[], key: string): string[] {
   return levels.includes(key) ? levels.filter(l => l !== key) : [...levels, key]
+}
+
+function allowed(channels: string[], key: string): boolean {
+  return channels.length === 0 || channels.includes(key)
 }
 
 function Checkbox({ checked, onChange }: { checked: boolean; onChange: () => void }) {
@@ -148,11 +153,25 @@ export default function Step6Notifications({
   notifySms,
   notifyWhatsapp,
   notifyTelegram,
+  allowedChannels,
   saving,
   onChange,
   onNext,
 }: Props) {
   const { t } = useTranslation()
+
+  const showEmail = allowed(allowedChannels, 'email')
+  const showPush = allowed(allowedChannels, 'push')
+  const showSms = allowed(allowedChannels, 'sms')
+  const showWhatsapp = allowed(allowedChannels, 'whatsapp')
+  const showTelegram = allowed(allowedChannels, 'telegram')
+
+  const hasFree = showEmail || showPush
+  const paidChannels = [
+    showSms && { key: 'sms', label: 'SMS', desc: t('reg.notif_sms_desc'), checked: notifySms, onChange: () => onChange({ notifySms: !notifySms }) },
+    showWhatsapp && { key: 'whatsapp', label: 'WhatsApp', desc: t('reg.notif_whatsapp_desc'), checked: notifyWhatsapp, onChange: () => onChange({ notifyWhatsapp: !notifyWhatsapp }) },
+    showTelegram && { key: 'telegram', label: 'Telegram', desc: t('reg.notif_telegram_desc'), checked: notifyTelegram, onChange: () => onChange({ notifyTelegram: !notifyTelegram }) },
+  ].filter(Boolean) as { key: string; label: string; desc: string; checked: boolean; onChange: () => void }[]
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -166,59 +185,60 @@ export default function Step6Notifications({
       </div>
 
       {/* Gratis meldingen */}
-      <div>
-        <SectionHeader label={t('reg.notif_free_section')} />
+      {hasFree && (
+        <div>
+          <SectionHeader label={t('reg.notif_free_section')} />
 
-        <SubHeader label={t('reg.notif_email_channel')} />
-        <LevelRows
-          levels={LEVELS}
-          selected={emailLevels}
-          disabled={false}
-          onToggle={key => onChange({ notifyEmailLevels: toggle(emailLevels, key) })}
-        />
+          {showEmail && (
+            <>
+              <SubHeader label={t('reg.notif_email_channel')} />
+              <LevelRows
+                levels={LEVELS}
+                selected={emailLevels}
+                disabled={false}
+                onToggle={key => onChange({ notifyEmailLevels: toggle(emailLevels, key) })}
+              />
+            </>
+          )}
 
-        <SubHeader label={t('reg.notif_push_channel')} />
-        <LevelRows
-          levels={LEVELS}
-          selected={pushLevels}
-          disabled={false}
-          onToggle={key => onChange({ notifyPushLevels: toggle(pushLevels, key) })}
-        />
-      </div>
+          {showPush && (
+            <>
+              <SubHeader label={t('reg.notif_push_channel')} />
+              <LevelRows
+                levels={LEVELS}
+                selected={pushLevels}
+                disabled={false}
+                onToggle={key => onChange({ notifyPushLevels: toggle(pushLevels, key) })}
+              />
+            </>
+          )}
+        </div>
+      )}
 
       {/* Met eventuele kosten */}
-      <div>
-        <SectionHeader label={t('reg.notif_paid_section')} />
-        <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
-          <ChannelRow
-            label="SMS"
-            description={t('reg.notif_sms_desc')}
-            checked={notifySms}
-            disabled={!phoneVerified}
-            onChange={() => onChange({ notifySms: !notifySms })}
-          />
-          <ChannelRow
-            label="WhatsApp"
-            description={t('reg.notif_whatsapp_desc')}
-            checked={notifyWhatsapp}
-            disabled={!phoneVerified}
-            onChange={() => onChange({ notifyWhatsapp: !notifyWhatsapp })}
-          />
-          <ChannelRow
-            label="Telegram"
-            description={t('reg.notif_telegram_desc')}
-            checked={notifyTelegram}
-            disabled={false}
-            onChange={() => onChange({ notifyTelegram: !notifyTelegram })}
-            last
-          />
+      {paidChannels.length > 0 && (
+        <div>
+          <SectionHeader label={t('reg.notif_paid_section')} />
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
+            {paidChannels.map((ch, i) => (
+              <ChannelRow
+                key={ch.key}
+                label={ch.label}
+                description={ch.desc}
+                checked={ch.checked}
+                disabled={ch.key !== 'telegram' && !phoneVerified}
+                onChange={ch.onChange}
+                last={i === paidChannels.length - 1}
+              />
+            ))}
+          </div>
+          {!phoneVerified && (showSms || showWhatsapp) && (
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1 leading-relaxed">
+              {t('reg.notif_paid_phone_hint')}
+            </p>
+          )}
         </div>
-        {!phoneVerified && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1 leading-relaxed">
-            {t('reg.notif_paid_phone_hint')}
-          </p>
-        )}
-      </div>
+      )}
 
       <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed px-1">
         {t('reg.notif_footer')}

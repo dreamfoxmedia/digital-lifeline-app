@@ -23,6 +23,10 @@ function toggle(arr: string[], key: string): string[] {
   return arr.includes(key) ? arr.filter(l => l !== key) : [...arr, key]
 }
 
+function allowed(channels: string[], key: string): boolean {
+  return channels.length === 0 || channels.includes(key)
+}
+
 function Checkbox({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
     <button
@@ -156,6 +160,13 @@ export default function NotificationsSettingsScreen() {
 
   const reg = meQuery.data?.viewer
   const phoneVerified = reg?.phone_verified ?? false
+  const allowedChannels = meQuery.data?.household_notification_types ?? []
+
+  const showEmail = allowed(allowedChannels, 'email')
+  const showPush = allowed(allowedChannels, 'push')
+  const showSms = allowed(allowedChannels, 'sms')
+  const showWhatsapp = allowed(allowedChannels, 'whatsapp')
+  const showTelegram = allowed(allowedChannels, 'telegram')
 
   const [state, setState] = useState<NotifState>({
     emailLevels: ['warning', 'emergency'],
@@ -208,6 +219,12 @@ export default function NotificationsSettingsScreen() {
     }
   }
 
+  const paidChannels = [
+    showSms && { key: 'sms', label: 'SMS', desc: t('reg.notif_sms_desc'), checked: state.notifySms, onChange: () => set({ notifySms: !state.notifySms }) },
+    showWhatsapp && { key: 'whatsapp', label: 'WhatsApp', desc: t('reg.notif_whatsapp_desc'), checked: state.notifyWhatsapp, onChange: () => set({ notifyWhatsapp: !state.notifyWhatsapp }) },
+    showTelegram && { key: 'telegram', label: 'Telegram', desc: t('reg.notif_telegram_desc'), checked: state.notifyTelegram, onChange: () => set({ notifyTelegram: !state.notifyTelegram }) },
+  ].filter(Boolean) as { key: string; label: string; desc: string; checked: boolean; onChange: () => void }[]
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f13] flex flex-col">
       {/* Header */}
@@ -230,57 +247,58 @@ export default function NotificationsSettingsScreen() {
         ) : (
           <div className="space-y-6 py-6">
             {/* Gratis meldingen */}
-            <div>
-              <SectionHeader label={t('reg.notif_free_section')} />
+            {(showEmail || showPush) && (
+              <div>
+                <SectionHeader label={t('reg.notif_free_section')} />
 
-              <SubHeader label={t('reg.notif_email_channel')} />
-              <LevelRows
-                selected={state.emailLevels}
-                disabled={false}
-                onToggle={key => set({ emailLevels: toggle(state.emailLevels, key) })}
-              />
+                {showEmail && (
+                  <>
+                    <SubHeader label={t('reg.notif_email_channel')} />
+                    <LevelRows
+                      selected={state.emailLevels}
+                      disabled={false}
+                      onToggle={key => set({ emailLevels: toggle(state.emailLevels, key) })}
+                    />
+                  </>
+                )}
 
-              <SubHeader label={t('reg.notif_push_channel')} />
-              <LevelRows
-                selected={state.pushLevels}
-                disabled={false}
-                onToggle={key => set({ pushLevels: toggle(state.pushLevels, key) })}
-              />
-            </div>
+                {showPush && (
+                  <>
+                    <SubHeader label={t('reg.notif_push_channel')} />
+                    <LevelRows
+                      selected={state.pushLevels}
+                      disabled={false}
+                      onToggle={key => set({ pushLevels: toggle(state.pushLevels, key) })}
+                    />
+                  </>
+                )}
+              </div>
+            )}
 
             {/* Met eventuele kosten */}
-            <div>
-              <SectionHeader label={t('reg.notif_paid_section')} />
-              <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
-                <ChannelRow
-                  label="SMS"
-                  description={t('reg.notif_sms_desc')}
-                  checked={state.notifySms}
-                  disabled={!phoneVerified}
-                  onChange={() => set({ notifySms: !state.notifySms })}
-                />
-                <ChannelRow
-                  label="WhatsApp"
-                  description={t('reg.notif_whatsapp_desc')}
-                  checked={state.notifyWhatsapp}
-                  disabled={!phoneVerified}
-                  onChange={() => set({ notifyWhatsapp: !state.notifyWhatsapp })}
-                />
-                <ChannelRow
-                  label="Telegram"
-                  description={t('reg.notif_telegram_desc')}
-                  checked={state.notifyTelegram}
-                  disabled={false}
-                  onChange={() => set({ notifyTelegram: !state.notifyTelegram })}
-                  last
-                />
+            {paidChannels.length > 0 && (
+              <div>
+                <SectionHeader label={t('reg.notif_paid_section')} />
+                <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
+                  {paidChannels.map((ch, i) => (
+                    <ChannelRow
+                      key={ch.key}
+                      label={ch.label}
+                      description={ch.desc}
+                      checked={ch.checked}
+                      disabled={ch.key !== 'telegram' && !phoneVerified}
+                      onChange={ch.onChange}
+                      last={i === paidChannels.length - 1}
+                    />
+                  ))}
+                </div>
+                {!phoneVerified && (showSms || showWhatsapp) && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1 leading-relaxed">
+                    {t('reg.notif_paid_phone_hint')}
+                  </p>
+                )}
               </div>
-              {!phoneVerified && (
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 px-1 leading-relaxed">
-                  {t('reg.notif_paid_phone_hint')}
-                </p>
-              )}
-            </div>
+            )}
 
             {/* Opslaan */}
             {error && (

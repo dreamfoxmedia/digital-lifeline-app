@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 
 interface Props {
   role: 'family' | 'caregiver' | null
@@ -33,9 +33,11 @@ export default function Step1Welcome({ role, saving, onAccept, onDecline }: Prop
 
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-5">
         <p className="text-gray-800 dark:text-gray-100 text-base leading-relaxed">
-          {t('reg.step1_intro').split('<strong>')[0]}
-          {roleLabel && <strong>{roleLabel}</strong>}
-          {t('reg.step1_intro').split('</strong>')[1] ?? ''}
+          <Trans
+            i18nKey="reg.step1_intro"
+            values={{ role: roleLabel }}
+            components={{ strong: <strong /> }}
+          />
         </p>
       </div>
 

@@ -9,8 +9,14 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
   },
   lng: 'nl',
-  fallbackLng: 'nl',
+  fallbackLng: 'en',
   interpolation: { escapeValue: false },
 })
+
+export async function loadLanguage(lang: string): Promise<void> {
+  if (i18n.hasResourceBundle(lang, 'translation')) return
+  const module = await import(`./${lang}.json`)
+  i18n.addResourceBundle(lang, 'translation', module.default)
+}
 
 export default i18n

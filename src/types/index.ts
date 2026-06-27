@@ -1,5 +1,34 @@
 export type AuthMode = 'session' | 'apiKey'
 
+export type WellbeingStatus = 'gerust' | 'aandacht' | 'afwijkend' | 'waarschuwing' | 'onvoldoende'
+
+export interface DashboardCard {
+  icon: string
+  label: string
+  value: string
+  sub: string
+}
+
+export interface DashboardTimelineEvent {
+  id: string
+  time: string
+  icon: string
+  text: string
+  tone?: 'danger' | 'warning'
+}
+
+export interface DashboardData {
+  status: WellbeingStatus
+  statusLine: string
+  banner: { title: string; sub: string; icon: string }
+  alert: { title: string; sub: string } | null
+  cards: DashboardCard[]
+  timeline: DashboardTimelineEvent[]
+  personName: string
+  personInitials: string
+  personAvatarUrl?: string | null
+}
+
 export type RegistrationStatus =
   | 'started'
   | 'profile_completed'
@@ -67,14 +96,18 @@ export interface MeResponse {
   profile: Profile
   viewer: Viewer | null
   roles: string[]
+  household_notification_types?: string[]
 }
 
 export interface MonitoredPerson {
   id: string
-  name: string
-  email?: string
-  phone?: string
-  notes?: string
+  first_name?: string | null
+  last_name?: string | null
+  nickname?: string | null
+  email?: string | null
+  phone_number_e164?: string | null
+  notes?: string | null
+  avatar_url?: string | null
 }
 
 export interface Household {

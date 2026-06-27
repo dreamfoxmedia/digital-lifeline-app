@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Preferences } from '@capacitor/preferences'
 import { apiClient } from '../lib/apiClient'
 import { useAuth } from '../context/AuthContext'
+import { saveTheme, loadSavedTheme, type Theme } from '../lib/theme'
 import ProfileForm from '../components/ProfileForm'
 import PhoneVerifySection from '../components/PhoneVerifySection'
 import type { MeResponse, ProfileFormData } from '../types'
@@ -12,12 +13,18 @@ import type { MeResponse, ProfileFormData } from '../types'
 export default function SettingsScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { signOut, signOutAll, mode } = useAuth()
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const [showLogoutSheet, setShowLogoutSheet] = useState(false)
   const [errors] = useState<Partial<Record<keyof ProfileFormData, string>>>({})
+  const [theme, setTheme] = useState<Theme>('system')
+
+  useEffect(() => {
+    loadSavedTheme().then(setTheme)
+  }, [])
 
   const meQuery = useQuery<MeResponse>({
     queryKey: ['me'],
@@ -57,6 +64,7 @@ export default function SettingsScreen() {
     setSaving(true)
     try {
       await apiClient.patch('/api/mobile/me', formData)
+      queryClient.invalidateQueries({ queryKey: ['me'] })
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
@@ -71,18 +79,23 @@ export default function SettingsScreen() {
     await signOut()
   }
 
+  async function handleTheme(t2: Theme) {
+    setTheme(t2)
+    await saveTheme(t2)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0f13] flex flex-col">
+    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex flex-col">
       {/* Header */}
-      <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-4 bg-[#0f0f13] flex items-center gap-3">
+      <div className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-4 bg-white dark:bg-[#0f0f13] border-b border-gray-100 dark:border-transparent flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20"
+          className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center active:bg-gray-200 dark:active:bg-white/20"
           aria-label={t('common.back')}
         >
-          <span className="text-white text-base">←</span>
+          <span className="text-gray-700 dark:text-white text-base">←</span>
         </button>
-        <h1 className="text-white font-bold text-lg">{t('settings.title')}</h1>
+        <h1 className="text-gray-900 dark:text-white font-bold text-lg">{t('settings.title')}</h1>
       </div>
 
       <form onSubmit={handleSave} className="flex-1 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+24px)]">
@@ -112,6 +125,49 @@ export default function SettingsScreen() {
                 <p className="text-gray-900 dark:text-white font-medium text-left">{t('settings.notif_row_label')}</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 text-left mt-0.5">{t('settings.notif_row_sub')}</p>
               </div>
+              <span className="text-gray-400 text-lg ml-3">→</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Weergave */}
+        <div className="px-4 pt-6">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {t('settings.section_appearance')}
+          </p>
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl p-4">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{t('settings.theme_label')}</p>
+            <div className="flex gap-2">
+              {(['system', 'light', 'dark'] as Theme[]).map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => handleTheme(opt)}
+                  className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                    theme === opt
+                      ? 'bg-brand-teal text-white border-brand-teal'
+                      : 'bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  {t(`settings.theme_${opt}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Taal */}
+        <div className="px-4 pt-6">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {t('settings.section_language')}
+          </p>
+          <div className="bg-white dark:bg-[#1a1a24] rounded-2xl overflow-hidden">
+            <button
+              type="button"
+              onClick={() => navigate('/language')}
+              className="w-full flex items-center justify-between px-4 py-4 active:bg-gray-50 dark:active:bg-gray-800"
+            >
+              <p className="text-gray-900 dark:text-white font-medium text-left">{t('settings.change_language')}</p>
               <span className="text-gray-400 text-lg ml-3">→</span>
             </button>
           </div>

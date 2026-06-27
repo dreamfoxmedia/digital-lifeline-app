@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
+import { supabase } from '../../lib/supabase'
 import RegistrationProgressBar from '../../components/RegistrationProgressBar'
 import Step1Welcome from './steps/Step1Welcome'
 import Step2PersonalData from './steps/Step2PersonalData'
@@ -29,6 +30,7 @@ export interface WizardData {
   notifySms: boolean
   notifyWhatsapp: boolean
   notifyTelegram: boolean
+  notifyCategories: string[]
   dataShielded: boolean
 }
 
@@ -47,6 +49,7 @@ const DEFAULT_DATA: WizardData = {
   notifySms: false,
   notifyWhatsapp: false,
   notifyTelegram: false,
+  notifyCategories: [],
   dataShielded: false,
 }
 
@@ -57,7 +60,7 @@ function mapFromServer(reg: NonNullable<MeResponse['viewer']>): Partial<WizardDa
     gender: reg.gender ?? '',
     firstName: reg.first_name ?? '',
     lastName: reg.last_name ?? '',
-    displayName: reg.display_name ?? '',
+    displayName: '',
     relationship: reg.relationship_to_monitored_person ?? '',
     relationshipDescription: reg.relationship_description ?? '',
     dateOfBirth: reg.date_of_birth ?? '',
@@ -68,6 +71,7 @@ function mapFromServer(reg: NonNullable<MeResponse['viewer']>): Partial<WizardDa
     notifySms: reg.preferred_notification_channels?.includes('sms') ?? false,
     notifyWhatsapp: reg.preferred_notification_channels?.includes('whatsapp') ?? false,
     notifyTelegram: reg.preferred_notification_channels?.includes('telegram') ?? false,
+    notifyCategories: reg.notify_categories ?? [],
     dataShielded: reg.profile_shielded ?? false,
   }
 }
@@ -86,6 +90,14 @@ export default function RegistrationFlow() {
   const [data, setData] = useState<WizardData>(DEFAULT_DATA)
   const [initialized, setInitialized] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [sessionEmail, setSessionEmail] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: s }) => {
+      setSessionEmail(s.session?.user?.email ?? '')
+    })
+  }, [])
 
   useEffect(() => {
     if (initialized || !meQuery.data) return
@@ -117,13 +129,16 @@ export default function RegistrationFlow() {
   }
 
   async function save(payload: object, nextStep: number) {
+    setSaveError(null)
     setSaving(true)
     try {
       await apiClient.patch('/api/mobile/registration', {
         ...payload,
         onboarding_current_step: nextStep,
       })
-      queryClient.invalidateQueries({ queryKey: ['me'] })
+    } catch {
+      setSaveError('Opslaan mislukt. Controleer je verbinding en probeer opnieuw.')
+      throw new Error('save_failed')
     } finally {
       setSaving(false)
     }
@@ -231,6 +246,7 @@ export default function RegistrationFlow() {
         onboarding_completed: true,
         registration_status: data.phoneVerified ? 'fully_completed' : 'partially_completed',
       }, 8)
+      queryClient.invalidateQueries({ queryKey: ['me'] })
     } catch {}
     navigate('/welcome', { replace: true })
   }
@@ -248,6 +264,12 @@ export default function RegistrationFlow() {
       <div className="sticky top-0 z-10">
         <RegistrationProgressBar current={step} total={TOTAL_STEPS} />
       </div>
+
+      {saveError && (
+        <div className="mx-4 mt-3 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+          <p className="text-red-700 dark:text-red-300 text-sm">{saveError}</p>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         {step === 1 && (
@@ -276,7 +298,7 @@ export default function RegistrationFlow() {
         )}
         {step === 4 && (
           <Step4EmailVerify
-            prefillEmail={meQuery.data?.profile?.email ?? ''}
+            prefillEmail={meQuery.data?.profile?.email || sessionEmail}
             onVerified={handleStep4Done}
           />
         )}
@@ -294,6 +316,7 @@ export default function RegistrationFlow() {
             notifySms={data.notifySms}
             notifyWhatsapp={data.notifyWhatsapp}
             notifyTelegram={data.notifyTelegram}
+            allowedChannels={meQuery.data?.household_notification_types ?? []}
             saving={saving}
             onChange={merge}
             onNext={handleStep6NotifDone}

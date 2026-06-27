@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { logScreenView } from './lib/analytics'
 import { Preferences } from '@capacitor/preferences'
@@ -6,32 +6,43 @@ import { App as CapApp } from '@capacitor/app'
 import brandIcon from './assets/brand-icon.png'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { setUnauthorizedHandler } from './lib/apiClient'
-import { supabase } from './lib/supabase'
+import { loadSavedTheme, applyTheme } from './lib/theme'
 import i18n from './i18n'
 
-function applyTheme(dark: boolean) {
-  document.documentElement.classList.toggle('dark', dark)
-}
-
-function useSystemTheme() {
+function useTheme() {
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    applyTheme(mq.matches)
-    const handler = (e: MediaQueryListEvent) => applyTheme(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
+    let mq: MediaQueryList | null = null
+    let handler: ((e: MediaQueryListEvent) => void) | null = null
+
+    loadSavedTheme().then(theme => {
+      applyTheme(theme)
+      if (theme === 'system') {
+        mq = window.matchMedia('(prefers-color-scheme: dark)')
+        handler = () => applyTheme('system')
+        mq.addEventListener('change', handler)
+      }
+    })
+
+    return () => { if (mq && handler) mq.removeEventListener('change', handler) }
   }, [])
 }
-import LanguageScreen from './screens/LanguageScreen'
-import LoginScreen from './screens/LoginScreen'
-import OnboardingScreen from './screens/OnboardingScreen'
-import StatusScreen from './screens/StatusScreen'
-import SettingsScreen from './screens/SettingsScreen'
-import MonitoredPersonScreen from './screens/MonitoredPersonScreen'
-import RegistrationFlow from './screens/registration/RegistrationFlow'
-import RegistrationPendingScreen from './screens/RegistrationPendingScreen'
-import NotificationsSettingsScreen from './screens/NotificationsSettingsScreen'
-import WelcomeScreen from './screens/WelcomeScreen'
+
+const LanguageScreen               = lazy(() => import('./screens/LanguageScreen'))
+const LoginScreen                  = lazy(() => import('./screens/LoginScreen'))
+const StatusScreen                 = lazy(() => import('./screens/StatusScreen'))
+const SettingsScreen               = lazy(() => import('./screens/SettingsScreen'))
+const MonitoredPersonScreen        = lazy(() => import('./screens/MonitoredPersonScreen'))
+const RegistrationFlow             = lazy(() => import('./screens/registration/RegistrationFlow'))
+const RegistrationPendingScreen    = lazy(() => import('./screens/RegistrationPendingScreen'))
+const NotificationsSettingsScreen  = lazy(() => import('./screens/NotificationsSettingsScreen'))
+const WelcomeScreen                = lazy(() => import('./screens/WelcomeScreen'))
+const OnboardingScreen             = lazy(() => import('./screens/OnboardingScreen'))
+
+const LoadingScreen = () => (
+  <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex items-center justify-center">
+    <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
+  </div>
+)
 
 type AppState = 'loading' | 'language' | 'ready'
 
@@ -45,77 +56,91 @@ function BackButtonHandler() {
   const navigate = useNavigate()
   const location = useLocation()
   useEffect(() => {
-    const handler = CapApp.addListener('backButton', () => {
+    let listener: { remove: () => void } | null = null
+    CapApp.addListener('backButton', () => {
       if (location.pathname === '/') return
       navigate(-1)
-    })
-    return () => { handler.then((h: { remove: () => void }) => h.remove()) }
+    }).then(h => { listener = h })
+    return () => { listener?.remove() }
   }, [location.pathname, navigate])
   return null
 }
 
+function LanguageScreenRoute() {
+  const navigate = useNavigate()
+  return <LanguageScreen onDone={() => navigate(-1)} />
+}
+
 function AppRoutes() {
   const { mode, initializing, signOut } = useAuth()
-  setUnauthorizedHandler(signOut)
+  const navigate = useNavigate()
 
-  if (initializing) return (
-    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex items-center justify-center">
-      <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
-    </div>
+  useEffect(() => {
+    setUnauthorizedHandler(signOut)
+  }, [signOut])
+
+  useEffect(() => {
+    if (!initializing && mode === null) {
+      navigate('/', { replace: true })
+    }
+  }, [mode, initializing, navigate])
+
+  if (initializing) return <LoadingScreen />
+
+  if (mode === null) return (
+    <Suspense fallback={<LoadingScreen />}>
+      <LoginScreen />
+    </Suspense>
   )
-
-  if (mode === null) return <LoginScreen />
 
   return (
     <>
       <ScreenTracker />
       <BackButtonHandler />
-      <Routes>
-      <Route path="/" element={<StatusScreen />} />
-      <Route path="/registration" element={<RegistrationFlow />} />
-      <Route path="/pending" element={<RegistrationPendingScreen />} />
-      <Route path="/notifications" element={<NotificationsSettingsScreen />} />
-      <Route path="/welcome" element={<WelcomeScreen />} />
-      <Route path="/onboarding" element={<OnboardingScreen />} />
-      <Route path="/monitored" element={<MonitoredPersonScreen />} />
-      <Route path="/settings" element={<SettingsScreen />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
+          <Route path="/"              element={<StatusScreen />} />
+          <Route path="/language"      element={<LanguageScreenRoute />} />
+          <Route path="/registration"  element={<RegistrationFlow />} />
+          <Route path="/pending"       element={<RegistrationPendingScreen />} />
+          <Route path="/notifications" element={<NotificationsSettingsScreen />} />
+          <Route path="/welcome"       element={<WelcomeScreen />} />
+          <Route path="/onboarding"    element={<OnboardingScreen />} />
+          <Route path="/monitored"     element={<MonitoredPersonScreen />} />
+          <Route path="/settings"      element={<SettingsScreen />} />
+          <Route path="*"              element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </>
   )
 }
 
 export default function App() {
-  useSystemTheme()
+  useTheme()
   const [appState, setAppState] = useState<AppState>('loading')
 
   useEffect(() => {
     async function init() {
-      const [{ value: lang }, { data: { session } }] = await Promise.all([
+      const [{ value: lang }, { value: langConfirmed }] = await Promise.all([
         Preferences.get({ key: 'language' }),
-        supabase.auth.getSession(),
+        Preferences.get({ key: 'languageConfirmed' }),
       ])
-      if (lang) i18n.changeLanguage(lang)
-      if (lang && session) {
-        setAppState('ready')
-      } else {
-        setAppState('language')
-      }
+      // Toon taalscherm als er nooit expliciet een taal is gekozen via de nieuwe UI,
+      // ook als een oudere versie van de app al een 'language' waarde had opgeslagen.
+      const hasChosen = !!(lang && langConfirmed)
+      if (hasChosen) i18n.changeLanguage(lang!)
+      setAppState(hasChosen ? 'ready' : 'language')
     }
     init()
   }, [])
 
-  if (appState === 'loading') {
-    return (
-      <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex items-center justify-center">
-        <img src={brandIcon} alt="Digital Lifeline" className="w-12 h-12 rounded-xl shadow-md" />
-      </div>
-    )
-  }
+  if (appState === 'loading') return <LoadingScreen />
 
-  if (appState === 'language') {
-    return <LanguageScreen onDone={() => setAppState('ready')} />
-  }
+  if (appState === 'language') return (
+    <Suspense fallback={<LoadingScreen />}>
+      <LanguageScreen onDone={() => setAppState('ready')} />
+    </Suspense>
+  )
 
   return (
     <AuthProvider>

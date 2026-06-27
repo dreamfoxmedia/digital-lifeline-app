@@ -79,7 +79,14 @@
     "save": "Save",
     "notif_screen_title": "Notifications",
     "notif_row_label": "Notifications",
-    "notif_row_sub": "Email, push, SMS, WhatsApp and Telegram"
+    "notif_row_sub": "Email, push, SMS, WhatsApp and Telegram",
+    "section_appearance": "Appearance",
+    "theme_label": "Color theme",
+    "theme_system": "Automatic",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "section_language": "Language",
+    "change_language": "Change language"
   },
   "events": {
     "beweging": "Movement detected",
@@ -242,7 +249,10 @@
     "notif_whatsapp_desc": "Receive a WhatsApp message for each notification.",
     "notif_telegram_desc": "Receive a Telegram message for each notification.",
     "notif_paid_phone_hint": "SMS and WhatsApp are only available after adding a phone number.",
-    "notif_footer": "You can always change these preferences later in Settings & notifications.",
+    "notif_categories_section": "Categories",
+    "notif_categories_intro": "Choose which activities you want to receive notifications for.",
+    "notif_categories_empty": "The administrator has not yet configured any notification categories.",
+    "notif_footer":"You can always change these preferences later in Settings & notifications.",
     "notif_level_minor": "Unusual pattern",
     "notif_level_minor_desc": "For small changes that may need attention, but are not immediately concerning.",
     "notif_level_warning": "Notable pattern",

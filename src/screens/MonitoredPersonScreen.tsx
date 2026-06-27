@@ -32,12 +32,12 @@ export default function MonitoredPersonScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#ede9e3] flex flex-col items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+48px)] pb-[calc(env(safe-area-inset-bottom)+32px)]">
+    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex flex-col items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+48px)] pb-[calc(env(safe-area-inset-bottom)+32px)]">
 
       {/* Begroeting */}
       <div className="text-center">
-        <p className="text-gray-500 text-base">{t('monitored.greeting')}</p>
-        {name ? <p className="text-3xl font-bold text-gray-900 mt-1">{name}</p> : null}
+        <p className="text-gray-500 dark:text-gray-400 text-base">{t('monitored.greeting')}</p>
+        {name ? <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{name}</p> : null}
       </div>
 
       {/* Noodknop */}

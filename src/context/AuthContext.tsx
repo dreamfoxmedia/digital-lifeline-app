@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { Preferences } from '@capacitor/preferences'
 import { supabase } from '../lib/supabase'
+import { setAuthCache, clearAuthCache } from '../lib/apiClient'
 import type { AuthState } from '../types'
 
 interface AuthContextValue extends AuthState {
@@ -70,6 +71,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           accessToken: session.access_token,
           userId: session.user.id,
         })
+      } else {
+        clearAuthCache()
+        dispatch({ type: 'CLEAR' })
       }
     })
     return () => subscription.unsubscribe()
@@ -88,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(isServerError ? 'server_unavailable' : 'invalid_credentials')
     }
     await Preferences.set({ key: 'authMode', value: 'session' })
+    setAuthCache('session')
     dispatch({
       type: 'SET_SESSION',
       accessToken: data.session.access_token,
@@ -98,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signInWithApiKey(key: string) {
     await Preferences.set({ key: 'authMode', value: 'apiKey' })
     await Preferences.set({ key: 'apiKey', value: key })
+    setAuthCache('apiKey', key)
     dispatch({ type: 'SET_API_KEY', apiKey: key })
   }
 
@@ -105,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
     await Preferences.remove({ key: 'authMode' })
     await Preferences.remove({ key: 'apiKey' })
+    clearAuthCache()
     dispatch({ type: 'CLEAR' })
   }
 
@@ -112,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut({ scope: 'global' })
     await Preferences.remove({ key: 'authMode' })
     await Preferences.remove({ key: 'apiKey' })
+    clearAuthCache()
     dispatch({ type: 'CLEAR' })
   }
 

@@ -1,45 +1,27 @@
 import { useState } from 'react'
 import { Preferences } from '@capacitor/preferences'
 import brandIcon from '../assets/brand-icon.png'
-import i18n from '../i18n'
-
-function FlagNL() {
-  return (
-    <svg viewBox="0 0 30 20" className="w-9 h-6 rounded-sm shadow-sm" aria-hidden="true">
-      <rect width="30" height="20" fill="#21468B" />
-      <rect width="30" height="13.33" y="0" fill="#FFFFFF" />
-      <rect width="30" height="6.67" y="0" fill="#AE1C28" />
-    </svg>
-  )
-}
-
-function FlagGB() {
-  return (
-    <svg viewBox="0 0 60 40" className="w-9 h-6 rounded-sm shadow-sm" aria-hidden="true">
-      <rect width="60" height="40" fill="#012169" />
-      <path d="M0,0 L60,40 M60,0 L0,40" stroke="#FFFFFF" strokeWidth="8" />
-      <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" strokeWidth="4" />
-      <path d="M30,0 V40 M0,20 H60" stroke="#FFFFFF" strokeWidth="12" />
-      <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" strokeWidth="6" />
-    </svg>
-  )
-}
+import i18n, { loadLanguage } from '../i18n'
+import { clearAuthCache } from '../lib/apiClient'
 
 const LANGUAGES = [
-  {
-    code: 'nl',
-    label: 'Nederlands',
-    sublabel: 'mijn.digitallifeline.nl',
-    serverUrl: 'https://mijn.digitallifeline.nl',
-    Flag: FlagNL,
-  },
-  {
-    code: 'en',
-    label: 'English',
-    sublabel: 'my.digilifeline.com',
-    serverUrl: 'https://my.digilifeline.com',
-    Flag: FlagGB,
-  },
+  { code: 'nl', label: 'Nederlands',        flag: '🇳🇱', serverUrl: 'https://mijn.digitallifeline.nl' },
+  { code: 'en', label: 'English',           flag: '🇬🇧', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'zh', label: '中文 (简体)',        flag: '🇨🇳', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'hi', label: 'हिन्दी',            flag: '🇮🇳', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'es', label: 'Español',           flag: '🇪🇸', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'ar', label: 'العربية',           flag: '🇸🇦', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'fr', label: 'Français',          flag: '🇫🇷', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'bn', label: 'বাংলা',             flag: '🇧🇩', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'pt', label: 'Português',         flag: '🇧🇷', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'id', label: 'Bahasa Indonesia',  flag: '🇮🇩', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'ur', label: 'اردو',              flag: '🇵🇰', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'ru', label: 'Русский',           flag: '🇷🇺', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'ja', label: '日本語',             flag: '🇯🇵', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'de', label: 'Deutsch',           flag: '🇩🇪', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'ko', label: '한국어',             flag: '🇰🇷', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'it', label: 'Italiano',          flag: '🇮🇹', serverUrl: 'https://my.digilifeline.com' },
+  { code: 'tr', label: 'Türkçe',            flag: '🇹🇷', serverUrl: 'https://my.digilifeline.com' },
 ]
 
 interface Props {
@@ -51,36 +33,36 @@ export default function LanguageScreen({ onDone }: Props) {
 
   async function choose(lang: typeof LANGUAGES[0]) {
     setLoading(true)
+    await loadLanguage(lang.code)
     await Preferences.set({ key: 'language', value: lang.code })
+    await Preferences.set({ key: 'languageConfirmed', value: '1' })
     await Preferences.set({ key: 'serverUrl', value: lang.serverUrl })
+    clearAuthCache()
     await i18n.changeLanguage(lang.code)
     onDone()
   }
 
   return (
-    <div className="min-h-screen bg-[#ede9e3] flex flex-col items-center justify-center px-6 pb-[env(safe-area-inset-bottom)]">
+    <div className="min-h-screen bg-[#f5f3ef] dark:bg-[#0f0f13] flex flex-col items-center justify-center px-6 pb-[env(safe-area-inset-bottom)]">
       <div className="mb-10 flex flex-col items-center">
         <img src={brandIcon} alt="Digital Lifeline" className="w-16 h-16 rounded-2xl shadow-md mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900">Digital Lifeline</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Digital Lifeline</h1>
       </div>
 
-      <p className="text-gray-500 text-sm mb-8 text-center">
-        Kies uw taal&nbsp;&nbsp;·&nbsp;&nbsp;Choose your language
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 text-center">
+        Kies uw taal&nbsp;·&nbsp;Choose your language&nbsp;·&nbsp;选择语言
       </p>
 
-      <div className="w-full max-w-sm flex flex-col gap-4">
+      <div className="w-full max-w-sm flex flex-col gap-3">
         {LANGUAGES.map(lang => (
           <button
             key={lang.code}
             onClick={() => choose(lang)}
             disabled={loading}
-            className="w-full bg-white rounded-2xl p-5 flex items-center gap-4 shadow-sm active:scale-95 transition-transform disabled:opacity-60 text-left"
+            className="w-full bg-white dark:bg-[#1a1a24] rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm active:scale-95 transition-transform disabled:opacity-60 text-left"
           >
-            <lang.Flag />
-            <div>
-              <p className="font-bold text-gray-900 text-lg leading-tight">{lang.label}</p>
-              <p className="text-gray-400 text-sm mt-0.5">{lang.sublabel}</p>
-            </div>
+            <span className="text-3xl leading-none">{lang.flag}</span>
+            <p className="font-semibold text-gray-900 dark:text-white text-base leading-tight">{lang.label}</p>
           </button>
         ))}
       </div>
