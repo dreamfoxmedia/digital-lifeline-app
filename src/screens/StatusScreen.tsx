@@ -135,6 +135,12 @@ function fmtTime(iso: string, lang: string) {
   return new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 }
 
+function personLabel(dashboard: DashboardData | null, fallback: string): string {
+  if (!dashboard) return fallback
+  const first = dashboard.personFirstName ?? dashboard.personName.split(' ')[0]
+  return dashboard.personDisplayName ? `${first} (${dashboard.personDisplayName})` : first
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function Shimmer({ tk }: { tk: typeof T.light }) {
@@ -419,7 +425,7 @@ export default function StatusScreen() {
                 }
               </div>
               <div style={{ fontSize: 24, fontWeight: 600, color: '#ffffff', letterSpacing: '-0.3px' }}>
-                {dashboard?.personName ?? viewerName}
+                {personLabel(dashboard, viewerName)}
               </div>
             </div>
           </div>
@@ -446,7 +452,7 @@ export default function StatusScreen() {
           </button>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 26, fontWeight: 600, color: tk.heading, lineHeight: 1.15, letterSpacing: '-0.4px' }}>
-              {dashboard?.personName ?? viewerName}
+              {personLabel(dashboard, viewerName)}
             </div>
             <div style={{ fontSize: 16, color: tk.subtle, marginTop: 3 }}>
               {isLoading ? t('status.onvoldoende_line') : dashboard ? t(dashboard.statusLineKey) : t('status.gerust_line')}

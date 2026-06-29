@@ -26,6 +26,8 @@ export interface DashboardData {
   cards: DashboardCard[]
   timeline: DashboardTimelineEvent[]
   personName: string
+  personFirstName?: string
+  personDisplayName?: string
   personInitials: string
   personAvatarUrl?: string | null
 }
