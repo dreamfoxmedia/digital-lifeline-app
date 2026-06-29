@@ -225,23 +225,37 @@ function SafetyBlock({ alert, isDark }: {
 function InsightCard({ card, tk }: { card: DashboardData['cards'][0]; tk: typeof T.light }) {
   const { t, i18n } = useTranslation()
   const label = t(`categories.${card.category}`, { defaultValue: capitalize(card.category) })
-  const value = t(`status.card_${card.state}`)
+
+  const iconColor = card.tone === 'danger' ? tk.dangerIcon
+    : card.tone === 'warning' ? tk.warnIcon
+    : tk.tileIcon
+  const valueColor = card.tone === 'danger' ? tk.dangerIcon
+    : card.tone === 'warning' ? tk.warnIcon
+    : tk.value
+
+  const value = card.state === 'alert' && card.temperatureDirection === 'hot'
+    ? t('status.card_too_hot')
+    : card.state === 'alert' && card.temperatureDirection === 'cold'
+      ? t('status.card_too_cold')
+      : t(`status.card_${card.state}`)
+
   const sub = card.state === 'empty'
     ? t('status.card_sub_empty')
     : card.lastSeen
       ? t(`status.card_sub_${card.state}`, { time: fmtTime(card.lastSeen, i18n.language) })
       : ''
+
   return (
     <div style={{
       background: tk.tile,
       border: `${tk.bw} solid ${tk.tileBorder}`,
       borderRadius: 14, padding: '16px 16px 18px',
     }}>
-      <div style={{ color: tk.tileIcon, marginBottom: 12, display: 'flex' }}>
-        <Icon name={card.icon} size={24} color={tk.tileIcon} />
+      <div style={{ color: iconColor, marginBottom: 12, display: 'flex' }}>
+        <Icon name={card.icon} size={24} color={iconColor} />
       </div>
       <div style={{ fontSize: 14, color: tk.tileLabel, marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 18, fontWeight: 600, color: tk.value, lineHeight: 1.25 }}>{value}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: valueColor, lineHeight: 1.25 }}>{value}</div>
       <div style={{ fontSize: 13.5, color: tk.tileLabel, marginTop: 4, lineHeight: 1.32 }}>{sub}</div>
     </div>
   )
@@ -250,12 +264,17 @@ function InsightCard({ card, tk }: { card: DashboardData['cards'][0]; tk: typeof
 function TimelineRow({ ev, tk, isLast }: { ev: DashboardData['timeline'][0]; tk: typeof T.light; isLast: boolean }) {
   const { t, i18n } = useTranslation()
   const iconColor = ev.tone === 'danger' ? tk.dangerIcon : ev.tone === 'warning' ? tk.warnIcon : tk.tlIcon
+  const textColor = ev.tone === 'danger' ? tk.dangerIcon : ev.tone === 'warning' ? tk.warnIcon : tk.value
   const catLabel = t(`categories.${ev.category}`, { defaultValue: capitalize(ev.category) })
-  const text = ev.status
-    ? `${catLabel}: ${ev.status}`
-    : ev.tone
-      ? t('status.timeline_alert', { category: catLabel })
-      : t('status.timeline_activity', { category: catLabel })
+  const text = ev.temperatureDirection === 'hot'
+    ? t('status.timeline_too_hot', { category: catLabel })
+    : ev.temperatureDirection === 'cold'
+      ? t('status.timeline_too_cold', { category: catLabel })
+      : ev.status
+        ? `${catLabel}: ${ev.status}`
+        : ev.tone
+          ? t('status.timeline_alert', { category: catLabel })
+          : t('status.timeline_activity', { category: catLabel })
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 18,
@@ -268,7 +287,7 @@ function TimelineRow({ ev, tk, isLast }: { ev: DashboardData['timeline'][0]; tk:
       <div style={{ flexShrink: 0, display: 'flex', color: iconColor }}>
         <Icon name={ev.icon} size={22} color={iconColor} />
       </div>
-      <div style={{ fontSize: 18, color: tk.value, fontWeight: 500 }}>{text}</div>
+      <div style={{ fontSize: 18, color: textColor, fontWeight: 500 }}>{text}</div>
     </div>
   )
 }

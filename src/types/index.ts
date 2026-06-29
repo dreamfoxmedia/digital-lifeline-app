@@ -7,6 +7,8 @@ export interface DashboardCard {
   category: string
   state: 'ok' | 'alert' | 'empty'
   lastSeen: string | null
+  tone?: 'warning' | 'danger' | null
+  temperatureDirection?: 'hot' | 'cold' | null
 }
 
 export interface DashboardTimelineEvent {
@@ -16,6 +18,7 @@ export interface DashboardTimelineEvent {
   category: string
   status: string | null
   tone: 'danger' | 'warning' | null
+  temperatureDirection?: 'hot' | 'cold' | null
 }
 
 export interface DashboardData {

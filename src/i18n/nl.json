@@ -90,6 +90,10 @@
     "card_sub_empty": "Sensoren worden uitgelezen",
     "timeline_alert": "Afwijking bij {{category}}",
     "timeline_activity": "Activiteit {{category}}",
+    "timeline_too_hot": "Te warm: {{category}}",
+    "timeline_too_cold": "Te koud: {{category}}",
+    "card_too_hot": "Te warm",
+    "card_too_cold": "Te koud",
     "notifications_btn": "Meldingen",
     "avatar_enlarge": "Foto vergroten",
     "error_title": "Gegevens niet beschikbaar",
@@ -137,7 +141,8 @@
     "aanwezigheid": "Aanwezigheid",
     "voordeur": "Voordeur",
     "temperatuur": "Temperatuur",
-    "woonkamer": "Woonkamer"
+    "woonkamer": "Woonkamer",
+    "comfort": "Comfort"
   },
   "monitored": {
     "greeting": "Goededag",

@@ -90,6 +90,10 @@
     "card_sub_empty": "Sensors are being read",
     "timeline_alert": "Anomaly in {{category}}",
     "timeline_activity": "Activity {{category}}",
+    "timeline_too_hot": "Too warm: {{category}}",
+    "timeline_too_cold": "Too cold: {{category}}",
+    "card_too_hot": "Too warm",
+    "card_too_cold": "Too cold",
     "notifications_btn": "Notifications",
     "avatar_enlarge": "Enlarge photo",
     "error_title": "Data unavailable",
@@ -137,7 +141,8 @@
     "aanwezigheid": "Presence",
     "voordeur": "Front door",
     "temperatuur": "Temperature",
-    "woonkamer": "Living room"
+    "woonkamer": "Living room",
+    "comfort": "Comfort"
   },
   "monitored": {
     "greeting": "Hello",
